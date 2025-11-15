@@ -1,0 +1,6 @@
+fastapi[standard]
+uvicorn
+
+bcrypt # Hashování hesel.
+PyJWT # Generování a verifikace JWT tokenů
+python-multipart # Je potřeba pro form-data (např. login formulář, file upload)
