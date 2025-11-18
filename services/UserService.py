@@ -96,7 +96,7 @@ class UserService:
 
 
     # COMMON: GET USER
-    def get_user(self, conn: sqlite3.Connection, user_id: int) -> Dict[str, any] | None:
+    def get_user_by_id(self, conn: sqlite3.Connection, user_id: int) -> Dict[str, any] | None:
         return repo_get_by_id(conn, user_id)
 
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
         # ----- GET USER -----
         print("\n=== TEST: get_user ===")
-        print("Get u1:", service.get_user(conn, u1["id"]))
+        print("Get u1:", service.get_user_by_id(conn, u1["id"]))
 
         # ----- UPDATE PROFILE -----
         print("\n=== TEST: update_user_profile ===")

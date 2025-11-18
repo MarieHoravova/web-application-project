@@ -10,7 +10,7 @@ class BookingStatusService:
     def list_statuses(self, conn: sqlite3.Connection) -> List[Dict[str, Any]]:
         return repo_list_statuses(conn)
 
-    def get_by_id(self, conn: sqlite3.Connection, status_id: int) -> Optional[Dict[str, Any]]:
+    def get_booking_status_by_id(self, conn: sqlite3.Connection, status_id: int) -> Optional[Dict[str, Any]]:
         return repo_get_by_id(conn, status_id)
 
 if __name__ == "__main__":
@@ -23,12 +23,12 @@ if __name__ == "__main__":
         statuses = service.list_statuses(conn)
         print("Statuses:", statuses)
 
-        print("\n=== TEST: get_by_id (existing ID = 1) ===")
-        status1 = service.get_by_id(conn, 1)
+        print("\n=== TEST: get_booking_status_by_id (existing ID = 1) ===")
+        status1 = service.get_booking_status_by_id(conn, 1)
         print("Status 1:", status1)
 
-        print("\n=== TEST: get_by_id (non-existing ID = 999) ===")
-        status_none = service.get_by_id(conn, 999)
+        print("\n=== TEST: get_booking_status_by_id (non-existing ID = 999) ===")
+        status_none = service.get_booking_status_by_id(conn, 999)
         print("Status 999:", status_none)
 
 

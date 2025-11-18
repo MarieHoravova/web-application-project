@@ -6,7 +6,7 @@ from repositories.RoleRepository import (
 ,)
 
 class RoleService:
-    def get_by_id(self, conn: sqlite3.Connection, role_id: int):
+    def get_role_by_id(self, conn: sqlite3.Connection, role_id: int):
         return repo_get_by_id(conn, role_id)
 
     def list_roles(self, conn: sqlite3.Connection):
@@ -25,11 +25,11 @@ if __name__ == "__main__":
         roles = service.list_roles(conn)
         print("Roles:", roles)
 
-        print("\n=== TEST: get_by_id (existing ID = 1) ===")
-        role1 = service.get_by_id(conn, 1)
+        print("\n=== TEST: get_role_by_id (existing ID = 1) ===")
+        role1 = service.get_role_by_id(conn, 1)
         print("Role 1:", role1)
 
-        print("\n=== TEST: get_by_id (non-existing ID = 999) ===")
-        role_none = service.get_by_id(conn, 999)
+        print("\n=== TEST: get_role_by_id (non-existing ID = 999) ===")
+        role_none = service.get_role_by_id(conn, 999)
         print("Role 999:", role_none)
 
