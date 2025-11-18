@@ -11,6 +11,10 @@ from repositories.UserRepository import (
     create_user as repo_create_user,)
 from core.security import hash_password
 
+from domain.constants import (
+    ROLE_ADMIN, ROLE_CUSTOMER,
+)
+
 
 class UserService:
     # ADMIN: LIST USERS
@@ -88,7 +92,7 @@ class UserService:
             raise ValueError("Uživatel neexistuje")
 
         # Pokud není admin, smí mazat jen sám sebe
-        if current_user_role != 1 and target_user_id != current_user_id:
+        if current_user_role != ROLE_ADMIN and target_user_id != current_user_id:
             raise PermissionError("Nemáte oprávnění mazat tento účet")
 
         repo_delete_user(conn, target_user_id)
@@ -119,7 +123,7 @@ if __name__ == "__main__":
             first_name="Test",
             last_name="User1",
             phone_number="123456789",
-            role_id=1
+            role_id= ROLE_ADMIN
         )
         print("Created:", u1)
 
@@ -130,7 +134,7 @@ if __name__ == "__main__":
             first_name="Test",
             last_name="User2",
             phone_number=None,
-            role_id=3
+            role_id= ROLE_CUSTOMER
         )
         print("Created:", u2)
 
