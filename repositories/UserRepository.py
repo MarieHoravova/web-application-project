@@ -88,6 +88,11 @@ def list_users_by_role(conn: sqlite3.Connection, role_id: int) -> List[Dict[str,
     rows = conn.execute("SELECT * FROM users WHERE role_id = ?", (role_id,)).fetchall()
     return [dict(r) for r in rows]
 
+def update_password(conn, user_id: int, hashed_password: str):
+    conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hashed_password, user_id))
+    conn.commit()
+
+
 # TEST
 if __name__ == "__main__":
     from database.database import open_connection
@@ -116,6 +121,10 @@ if __name__ == "__main__":
         updated = update_user(conn, created["id"], first_name="Johnny")
         print(updated)
 
+        print("\n=== TEST: update_password ===")
+        update_password(conn, created["id"], "NEW_HASH_999")
+        print("Password after update:", get_by_id(conn, created["id"])["password_hash"])
+
         print("\n=== TEST: list_users ===")
         print(list_users(conn))
 
@@ -124,3 +133,4 @@ if __name__ == "__main__":
 
         print("\n=== TEST: get_by_id (should be None) ===")
         print(get_by_id(conn, created["id"]))
+
