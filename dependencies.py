@@ -16,8 +16,6 @@ from services.RoomTypeService import RoomTypeService
 from services.UserService import UserService
 
 
-
-
 def get_conn() -> Iterator[sqlite3.Connection]:
     with open_connection() as conn:
         yield conn

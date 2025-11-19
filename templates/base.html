@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}Aplikace{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <header class="container">
+    <h1>{% block header %}Hotel App{% endblock %}</h1>
+        <nav>
+          <a href="{{ url_for('auth_login') }}">Přihlášení</a>
+          <a href="{{ url_for('auth_register') }}">Registrace</a>
+            <a href="{{ url_for('bookings_list') }}">Bookingy</a>
+        </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

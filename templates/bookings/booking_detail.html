@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Detail bookingu {{ booking.code }}{% endblock %}
+
+{% block content %}
+  <h2>Booking {{ booking.code }}</h2>
+
+  <dl>
+    <dt>ID</dt><dd>{{ booking.id }}</dd>
+    <dt>Uživatel</dt><dd>{{ booking.user_id }}</dd>
+    <dt>Aktuální status (ID)</dt><dd>{{ booking.status_id }}</dd>
+    <dt>Vytvořeno</dt><dd>{{ booking.created_at }}</dd>
+  </dl>
+
+  <h3>Změnit status</h3>
+  <form method="post" action="{{ url_for('booking_update_status', booking_id=booking.id) }}">
+    <label>Nový status:
+      <select name="new_status_id">
+        {% for s in statuses %}
+          <option value="{{ s.id }}" {% if s.id == booking.status_id %}selected{% endif %}>
+            {{ s.id }} – {{ s.description }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit">Uložit</button>
+  </form>
+
+  <p><a href="{{ url_for('bookings_list') }}">← Zpět na seznam bookingů</a></p>
+{% endblock %}
