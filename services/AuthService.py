@@ -63,16 +63,38 @@ if __name__ == "__main__":
 
     with open_connection() as conn:
         auth = AuthService(conn)
-        print(f"\n=== PREP: Ensure role exists (id=3, customer) ===")
-        role = repo_get_role_by_id(conn, ROLE_CUSTOMER) # volám tady přímo repository
+
+        # zajistí, že v tabulce roles existuje záznam s id=ROLE_CUSTOMER
+        print(f"\n=== PREP: Ensure role exists (id={ROLE_CUSTOMER}, customer) ===")
+        role = repo_get_role_by_id(conn, ROLE_CUSTOMER)
         if not role:
-            conn.execute("INSERT INTO roles (description) VALUES ('user')")
+            conn.execute("INSERT INTO roles (id, description) VALUES (?, 'customer')", (ROLE_CUSTOMER,))
             conn.commit()
-            print("Created role id=3")
+            print(f"Created role id={ROLE_CUSTOMER}")
         else:
-            print("Role id=3 OK")
+            print(f"Role id={ROLE_CUSTOMER} OK")
 
         print("\n=== TEST: register (new user) ===")
+
+        # nejdřív smažeme závislá data kvůli FOREIGN KEY constraintům
+        conn.execute("""
+            DELETE FROM payments
+            WHERE booking_id IN (
+                SELECT id FROM bookings
+                WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
+            )
+        """)
+        conn.execute("""
+            DELETE FROM reservations
+            WHERE booking_id IN (
+                SELECT id FROM bookings
+                WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
+            )
+        """)
+        conn.execute("""
+            DELETE FROM bookings
+            WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
+        """)
         conn.execute("DELETE FROM users WHERE email = 'auth_test@example.com'")
         conn.commit()
 
