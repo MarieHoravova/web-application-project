@@ -6,7 +6,7 @@ def get_payment_by_id(conn: sqlite3.Connection, payment_id: int) -> Optional[Dic
     row = conn.execute("SELECT * FROM payments WHERE id = ?", (payment_id,)).fetchone()
     return dict(row) if row else None
 
-def list_all_payments(conn: sqlite3.Connection):
+def list_all_payments(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
     rows = conn.execute("SELECT * FROM payments ORDER BY paid_at DESC").fetchall()
     return [dict(r) for r in rows]
 

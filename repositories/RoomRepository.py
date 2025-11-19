@@ -1,6 +1,6 @@
 import sqlite3
 from typing import List, Dict, Any, Optional
-
+from domain.constants import ROOM_STATUS_AVAILABLE, ROOM_TYPE_STANDART
 
 def get_room_by_id(conn: sqlite3.Connection, room_id: int) -> Optional[Dict[str, Any]]:
     row = conn.execute("SELECT * FROM rooms WHERE id = ?", (room_id,)).fetchone()
@@ -78,8 +78,8 @@ if __name__ == "__main__":
         new_room = create_room(
             conn,
             number=999,
-            room_type_id=1,
-            room_status_id=1,
+            room_type_id=ROOM_TYPE_STANDART,
+            room_status_id=ROOM_STATUS_AVAILABLE,
             image_path="test.jpg",
             floor=9
         )
