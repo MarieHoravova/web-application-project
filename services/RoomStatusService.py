@@ -7,27 +7,31 @@ from repositories.RoomStatusRepository import (
 )
 
 class RoomStatusService:
-    def list_statuses(self, conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-        return repo_list_statuses(conn)
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
 
-    def get_room_status_by_id(self, conn: sqlite3.Connection, status_id: int) -> Optional[Dict[str, Any]]:
-        return repo_get_by_id(conn, status_id)
+    def list_statuses(self) -> List[Dict[str, Any]]:
+        return repo_list_statuses(self.conn)
+
+    def get_room_status_by_id(self, status_id: int) -> Optional[Dict[str, Any]]:
+        return repo_get_by_id(self.conn, status_id)
 
 
 if __name__ == "__main__":
     from database.database import open_connection
 
-    service = RoomStatusService()
 
     with open_connection() as conn:
+        service = RoomStatusService(conn)
+
         print("\n=== TEST: list_statuses ===")
-        statuses = service.list_statuses(conn)
+        statuses = service.list_statuses()
         print("Statuses:", statuses)
 
         print("\n=== TEST: get_by_id (existing ID = 1) ===")
-        st1 = service.get_room_status_by_id(conn, 1)
+        st1 = service.get_room_status_by_id(1)
         print("Status 1:", st1)
 
         print("\n=== TEST: get_by_id (non-existing ID = 999) ===")
-        st_none = service.get_room_status_by_id(conn, 999)
+        st_none = service.get_room_status_by_id(999)
         print("Status 999:", st_none)

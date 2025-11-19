@@ -15,25 +15,26 @@ from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
 
 class RoomService:
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
 
     # ---- GET ----
-    def get_room(self, conn: sqlite3.Connection, room_id: int):
-        return repo_get_by_id(conn, room_id)
+    def get_room(self, room_id: int):
+        return repo_get_by_id(self.conn, room_id)
 
     # ---- LIST ----
-    def list_rooms(self, conn: sqlite3.Connection):
-        return repo_list_rooms(conn)
+    def list_rooms(self):
+        return repo_list_rooms(self.conn)
 
-    def list_rooms_by_status(self, conn: sqlite3.Connection, status_id: int):
-        return repo_list_by_status(conn, status_id)
+    def list_rooms_by_status(self, status_id: int):
+        return repo_list_by_status(self.conn, status_id)
 
-    def list_rooms_by_type(self, conn: sqlite3.Connection, room_type_id: int):
-        return repo_list_by_type(conn, room_type_id)
+    def list_rooms_by_type(self, room_type_id: int):
+        return repo_list_by_type(self.conn, room_type_id)
 
     # ---- CREATE (ADMIN ONLY) ----
     def create_room(
         self,
-        conn: sqlite3.Connection,
         number: int,
         room_type_id: int,
         room_status_id: int,
@@ -46,7 +47,7 @@ class RoomService:
             raise PermissionError("Pouze admin může vytvářet pokoje")
 
         return repo_create_room(
-            conn,
+            self.conn,
             number,
             room_type_id,
             room_status_id,
@@ -57,7 +58,6 @@ class RoomService:
     # ---- UPDATE (ADMIN or RECEPCE) ----
     def update_room(
         self,
-        conn: sqlite3.Connection,
         room_id: int,
         current_user_role: int,
         number: Optional[int] = None,
@@ -70,12 +70,12 @@ class RoomService:
         if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
             raise PermissionError("Nemáte oprávnění upravovat pokoje")
 
-        room = repo_get_by_id(conn, room_id)
+        room = repo_get_by_id(self.conn, room_id)
         if not room:
             raise ValueError("Pokoj neexistuje")
 
         updated = repo_update_room(
-            conn,
+            self.conn,
             room_id,
             number,
             room_type_id,
@@ -86,47 +86,58 @@ class RoomService:
         return updated
 
     # ---- DELETE (ADMIN ONLY) ----
-    def delete_room(self, conn: sqlite3.Connection, room_id: int, current_user_role: int):
+    def delete_room(self, room_id: int, current_user_role: int):
 
         if current_user_role != ROLE_ADMIN:
             raise PermissionError("Pouze admin může mazat pokoje")
 
-        room = repo_get_by_id(conn, room_id)
+        room = repo_get_by_id(self.conn, room_id)
         if not room:
             raise ValueError("Pokoj neexistuje")
 
-        repo_delete_room(conn, room_id)
+        repo_delete_room(self.conn, room_id)
         return True
 
 
 # TEST
 if __name__ == "__main__":
     from database.database import open_connection
-    service = RoomService()
 
     with open_connection() as conn:
-        conn.execute("PRAGMA foreign_keys = ON")
+        service = RoomService(conn)
 
         print("\n=== PREP: clean test rooms ===")
         conn.execute("DELETE FROM rooms WHERE number >= 900")
+
+        # 1) Delete bookings belonging to test users
+        conn.execute("""
+                     DELETE
+                     FROM bookings
+                     WHERE user_id IN (SELECT id
+                                       FROM users
+                                       WHERE email LIKE 'room_%')
+                     """)
+
+        # 2) Delete test users
+        conn.execute("DELETE FROM users WHERE email LIKE 'room_%'")
+
         conn.commit()
 
         # --- CREATE admin + receptionist ---
         admin_id = conn.execute(
             "INSERT INTO users (email, password_hash, first_name, last_name, role_id, created_at)"
-            " VALUES ('room_admin@example.com', 'X', 'R', 'A', 1, datetime('now'))"
+            " VALUES ('room_admin@example.com', 'X', 'R', 'A', ROLE_ADMIN, datetime('now'))"
         ).lastrowid
 
         rec_id = conn.execute(
             "INSERT INTO users (email, password_hash, first_name, last_name, role_id, created_at)"
-            " VALUES ('room_rec@example.com', 'X', 'R', 'R', 2, datetime('now'))"
+            " VALUES ('room_rec@example.com', 'X', 'R', 'R', ROLE_RECEPTIONIST, datetime('now'))"
         ).lastrowid
 
         conn.commit()
 
         print("\n=== TEST: create_room (admin OK) ===")
         room = service.create_room(
-            conn,
             number=900,
             room_type_id=1,
             room_status_id=1,
@@ -140,7 +151,6 @@ if __name__ == "__main__":
         print("\n=== TEST: create_room as receptionist (FAIL) ===")
         try:
             service.create_room(
-                conn,
                 number=901,
                 room_type_id=1,
                 room_status_id=1,
@@ -153,7 +163,6 @@ if __name__ == "__main__":
 
         print("\n=== TEST: update_room as receptionist (OK) ===")
         updated = service.update_room(
-            conn,
             room_id,
             current_user_role=ROLE_RECEPTIONIST,
             floor=10
@@ -163,7 +172,6 @@ if __name__ == "__main__":
         print("\n=== TEST: update_room as customer (FAIL) ===")
         try:
             service.update_room(
-                conn,
                 room_id,
                 current_user_role=ROLE_CUSTOMER,
                 floor=11
@@ -172,11 +180,11 @@ if __name__ == "__main__":
             print("Expected:", e)
 
         print("\n=== TEST: delete_room as admin (OK) ===")
-        result = service.delete_room(conn, room_id, ROLE_ADMIN)
+        result = service.delete_room(room_id, ROLE_ADMIN)
         print("Deleted:", result)
 
         print("\n=== TEST: delete_room as receptionist (FAIL) ===")
         try:
-            service.delete_room(conn, room_id, ROLE_RECEPTIONIST)
+            service.delete_room(room_id, ROLE_RECEPTIONIST)
         except PermissionError as e:
             print("Expected:", e)

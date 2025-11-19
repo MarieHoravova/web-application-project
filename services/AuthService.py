@@ -1,14 +1,20 @@
 import sqlite3
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 from core.security import hash_password, verify_password, create_access_token
-from repositories.UserRepository import get_by_email, get_by_id, create_user, update_user
-from repositories.RoleRepository import get_by_id as get_role_by_id
+from repositories.UserRepository import get_by_email as repo_get_by_email, get_by_id as get_user_by_id, create_user as repo_create_user, update_password as repo_update_password
+from repositories.RoleRepository import get_by_id as repo_get_role_by_id
 from models.Auth import RegisterRequest, ChangePasswordRequest
 
+from domain.constants import ROLE_CUSTOMER
+
+
 class AuthService:
-    def login(self, conn: sqlite3.Connection, email: str, password: str) -> str:
-        user = get_by_email(conn, email)
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
+
+    def login(self, email: str, password: str) -> str:
+        user = repo_get_by_email(self.conn, email)
 
         if not user or not verify_password(password, user["password_hash"]):
             raise ValueError("Neplatné přihlášení")
@@ -18,27 +24,25 @@ class AuthService:
         token = create_access_token(sub=str(user["id"]), roles=[str(role)])
         return token
 
-    def register(self, conn: sqlite3.Connection, data: RegisterRequest) -> Dict[str, any]:
-        if get_by_email(conn, data.email):
+    def register(self, data: RegisterRequest) -> Dict[str, Any]:
+        if repo_get_by_email(self.conn, data.email):
             raise ValueError("Uživatel s tímto emailem již existuje")
-
-        DEFAULT_ROLE_CUSTOMER = 3
 
         hashed = hash_password(data.password)
 
-        user = create_user(
-            conn,
+        user = repo_create_user(
+            self.conn,
             email=data.email,
             password_hash=hashed,
             first_name=data.first_name,
             last_name=data.last_name,
             phone_number=data.phone_number,
-            role_id=DEFAULT_ROLE_CUSTOMER
+            role_id=ROLE_CUSTOMER
         )
         return user
 
-    def change_password(self, conn: sqlite3.Connection, user_id: int, data: ChangePasswordRequest):
-        user = get_by_id(conn, user_id)
+    def change_password(self, user_id: int, data: ChangePasswordRequest):
+        user = get_user_by_id(self.conn, user_id)
         if not user:
             raise ValueError("Uživatel neexistuje")
 
@@ -46,26 +50,21 @@ class AuthService:
             raise ValueError("Neplatné staré heslo")
 
         new_hash = hash_password(data.new_password)
-
-        conn.execute(
-            "UPDATE users SET password_hash = ? WHERE id = ?",
-            (new_hash, user_id)
-        )
-        conn.commit()
+        repo_update_password(self.conn, user_id, new_hash)
 
         return True
 
-    def get_current_user(self, conn: sqlite3.Connection, user_id: int) -> Optional[Dict[str, any]]:
-        return get_by_id(conn, user_id)
+    def get_current_user(self, user_id: int) -> Optional[Dict[str, Any]]:
+        return get_user_by_id(self.conn, user_id)
 
 # TEST
 if __name__ == "__main__":
     from database.database import open_connection
-    auth = AuthService()
 
     with open_connection() as conn:
-        print("\n=== PREP: Ensure role exists (id=3) ===")
-        role = get_role_by_id(conn, 3)
+        auth = AuthService(conn)
+        print(f"\n=== PREP: Ensure role exists (id=3, customer) ===")
+        role = repo_get_role_by_id(conn, ROLE_CUSTOMER) # volám tady přímo repository
         if not role:
             conn.execute("INSERT INTO roles (description) VALUES ('user')")
             conn.commit()
@@ -85,37 +84,37 @@ if __name__ == "__main__":
             phone_number="123456789"
         )
 
-        user = auth.register(conn, req)
+        user = auth.register(req)
         print("Registered:", user)
         user_id = user["id"]
 
         print("\n=== TEST: login (correct password) ===")
-        token = auth.login(conn, "auth_test@example.com", "secret123")
+        token = auth.login("auth_test@example.com", "secret123")
         print("Token:", token)
 
         print("\n=== TEST: login (incorrect password) ===")
         try:
-            auth.login(conn, "auth_test@example.com", "WRONGPASS")
+            auth.login("auth_test@example.com", "WRONGPASS")
         except ValueError as e:
             print("Expected error:", e)
 
         print("\n=== TEST: get_current_user ===")
-        print(auth.get_current_user(conn, user_id))
+        print(auth.get_current_user(user_id))
 
         print("\n=== TEST: change_password ===")
         cp = ChangePasswordRequest(
             old_password="secret123",
             new_password="newpass456"
         )
-        auth.change_password(conn, user_id, cp)
+        auth.change_password(user_id, cp)
         print("Password changed OK")
 
         print("\n=== TEST: login with old password (should fail) ===")
         try:
-            auth.login(conn, "auth_test@example.com", "secret123")
+            auth.login("auth_test@example.com", "secret123")
         except ValueError as e:
             print("Expected error:", e)
 
         print("\n=== TEST: login with new password (should work) ===")
-        token2 = auth.login(conn, "auth_test@example.com", "newpass456")
+        token2 = auth.login("auth_test@example.com", "newpass456")
         print("Token:", token2)

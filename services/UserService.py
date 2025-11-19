@@ -12,37 +12,62 @@ from repositories.UserRepository import (
 from core.security import hash_password
 
 from domain.constants import (
-    ROLE_ADMIN, ROLE_CUSTOMER,
+    ROLE_ADMIN, ROLE_CUSTOMER, ROLE_RECEPTIONIST
 )
 
 
 class UserService:
-    # ADMIN: LIST USERS
-    def list_users(self, conn: sqlite3.Connection) -> List[Dict[str, any]]:
-        return repo_list_users(conn)
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
 
-    def list_users_by_role(self, conn: sqlite3.Connection, role_id: int) -> List[Dict[str, any]]:
-        return repo_list_users_by_role(conn, role_id)
+    # ADMIN, RECEPTIONIST: LIST USERS
+    def list_users(self, current_user_role: int):
+        if current_user_role == ROLE_ADMIN:
+            return repo_list_users(self.conn)
+
+        if current_user_role == ROLE_RECEPTIONIST:
+            return repo_list_users_by_role(self.conn, ROLE_CUSTOMER)
+
+        raise PermissionError("Nemáte oprávnění zobrazit uživatele")
+
+    def list_users_by_role(self, role_id: int, current_user_role: int):
+        if current_user_role != ROLE_ADMIN:
+            raise PermissionError("Pouze admin může filtrovat uživatele podle role")
+
+        return repo_list_users_by_role(self.conn, role_id)
 
     # ADMIN: CREATE USER (např. sekretářka)
     def create_user_admin(
-        self,
-        conn: sqlite3.Connection,
-        email: str,
-        password: str,
-        first_name: str,
-        last_name: str,
-        phone_number: Optional[str],
-        role_id: int
+            self,
+            email: str,
+            password: str,
+            first_name: str,
+            last_name: str,
+            phone_number: Optional[str],
+            role_id: int,
+            current_user_role: int
     ) -> Dict[str, any]:
 
-        if repo_get_by_email(conn, email):
+        # --- Kontrola oprávnění ---
+        if current_user_role == ROLE_RECEPTIONIST:
+            # recepční smí vytvářet jen zákazníky
+            if role_id != ROLE_CUSTOMER:
+                raise PermissionError("Recepční může vytvářet pouze zákazníky")
+
+        elif current_user_role != ROLE_ADMIN:
+            # ostatní (customer) nesmí vytvářet vůbec
+            raise PermissionError("Nemáte oprávnění vytvářet uživatele")
+
+        # --- Validace unikátního emailu ---
+        if repo_get_by_email(self.conn, email):
             raise ValueError("Uživatel s tímto emailem již existuje")
 
+        # --- Hash hesla ---
         pwd_hash = hash_password(password)
 
+        # --- Uložení uživatele ---
         return repo_create_user(
-            conn,
+            self.conn,
             email=email,
             password_hash=pwd_hash,
             first_name=first_name,
@@ -52,30 +77,29 @@ class UserService:
         )
 
     # ADMIN: CHANGE USER ROLE
-    def change_role(self, conn: sqlite3.Connection, user_id: int, role_id: int):
-        user = repo_get_by_id(conn, user_id)
+    def change_role(self, user_id: int, role_id: int):
+        user = repo_get_by_id(self.conn, user_id)
         if not user:
             raise ValueError("Uživatel neexistuje")
 
-        return repo_update_user(conn, user_id, role_id=role_id)
+        return repo_update_user(self.conn, user_id, role_id=role_id)
 
     # ADMIN / USER: UPDATE PROFILE
     # (admin pro jiné, user pro sebe)
     def update_user_profile(
         self,
-        conn: sqlite3.Connection,
         user_id: int,
         email: Optional[str] = None,
         first_name: Optional[str] = None,
         last_name: Optional[str] = None,
         phone_number: Optional[str] = None
     ):
-        user = repo_get_by_id(conn, user_id)
+        user = repo_get_by_id(self.conn, user_id)
         if not user:
             raise ValueError("Uživatel neexistuje")
 
         return repo_update_user(
-            conn,
+            self.conn,
             user_id=user_id,
             email=email,
             first_name=first_name,
@@ -86,8 +110,8 @@ class UserService:
     # ADMIN: DELETE USER
     # - Customer může mazat jen sám sebe
     # - Admin (ROLE_ADMIN) může mazat kohokoli
-    def delete(self, conn: sqlite3.Connection, target_user_id: int, current_user_id: int, current_user_role: int):
-        user = repo_get_by_id(conn, target_user_id)
+    def delete(self, target_user_id: int, current_user_id: int, current_user_role: int):
+        user = repo_get_by_id(self.conn, target_user_id)
         if not user:
             raise ValueError("Uživatel neexistuje")
 
@@ -95,120 +119,129 @@ class UserService:
         if current_user_role != ROLE_ADMIN and target_user_id != current_user_id:
             raise PermissionError("Nemáte oprávnění mazat tento účet")
 
-        repo_delete_user(conn, target_user_id)
+        repo_delete_user(self.conn, target_user_id)
         return True
 
 
     # COMMON: GET USER
-    def get_user_by_id(self, conn: sqlite3.Connection, user_id: int) -> Dict[str, any] | None:
-        return repo_get_by_id(conn, user_id)
+    def get_user_by_id(self, user_id: int) -> Dict[str, any] | None:
+        return repo_get_by_id(self.conn, user_id)
 
 
 # TEST
 if __name__ == "__main__":
     from database.database import open_connection
 
-    service = UserService()
-
     with open_connection() as conn:
+        service = UserService(conn)
+
         # ----- PREP: smažu staré testovací uživatele -----
         conn.execute("DELETE FROM users WHERE email LIKE 'test_user_%'")
         conn.commit()
 
-        print("\n=== TEST: create_user_admin ===")
+        print("\n=== TEST: create_user_admin (ADMIN) ===")
         u1 = service.create_user_admin(
-            conn,
             email="test_user_1@example.com",
             password="secret123",
             first_name="Test",
             last_name="User1",
             phone_number="123456789",
-            role_id= ROLE_ADMIN
+            role_id=ROLE_ADMIN,
+            current_user_role=ROLE_ADMIN
         )
         print("Created:", u1)
 
+        print("\n=== TEST: create_user_admin (ADMIN vytváří CUSTOMER) ===")
         u2 = service.create_user_admin(
-            conn,
             email="test_user_2@example.com",
             password="secret123",
             first_name="Test",
             last_name="User2",
             phone_number=None,
-            role_id= ROLE_CUSTOMER
+            role_id=ROLE_CUSTOMER,
+            current_user_role=ROLE_ADMIN
         )
         print("Created:", u2)
 
-        # ----- LIST USERS -----
-        print("\n=== TEST: list_users ===")
-        print(service.list_users(conn))
+        print("\n=== TEST: create_user_admin (CUSTOMER -> FAIL) ===")
+        try:
+            service.create_user_admin(
+                email="test_user_3@example.com",
+                password="secret123",
+                first_name="Self",
+                last_name="Delete",
+                phone_number=None,
+                role_id=ROLE_CUSTOMER,
+                current_user_role=ROLE_CUSTOMER
+            )
+        except PermissionError as e:
+            print("Expected error:", e)
 
-        # ----- LIST USERS BY ROLE -----
+        print("\n=== TEST: list_users (ADMIN) ===")
+        print(service.list_users(ROLE_ADMIN))
+
+        print("\n=== TEST: list_users (RECEPTIONIST – only CUSTOMERS) ===")
+        print(service.list_users(ROLE_RECEPTIONIST))
+
         print("\n=== TEST: list_users_by_role (ROLE_CUSTOMER) ===")
-        print(service.list_users_by_role(conn, ROLE_CUSTOMER))
+        print(service.list_users_by_role(ROLE_CUSTOMER, ROLE_ADMIN))
 
-        # ----- GET USER -----
+        print("\n=== TEST: list_users_by_role (FAIL – receptionist tries) ===")
+        try:
+            service.list_users_by_role(ROLE_CUSTOMER, ROLE_RECEPTIONIST)
+        except PermissionError as e:
+            print("Expected error:", e)
+
         print("\n=== TEST: get_user ===")
-        print("Get u1:", service.get_user_by_id(conn, u1["id"]))
+        print("Get u1:", service.get_user_by_id(u1["id"]))
 
-        # ----- UPDATE PROFILE -----
         print("\n=== TEST: update_user_profile ===")
         updated = service.update_user_profile(
-            conn,
             user_id=u1["id"],
             first_name="UpdatedName",
             phone_number="999999999"
         )
         print("Updated:", updated)
 
-        # ----- CHANGE ROLE (admin action) -----
         print("\n=== TEST: change_role ===")
         changed = service.change_role(
-            conn,
             user_id=u2["id"],
-            role_id=2
+            role_id=ROLE_RECEPTIONIST
         )
         print("Role updated:", changed)
 
-        # ----- DELETE (admin deletes someone else) -----
         print("\n=== TEST: delete user as ADMIN ===")
         deleted = service.delete(
-            conn,
             target_user_id=u2["id"],
             current_user_id=u1["id"],
-            current_user_role=u1["role_id"]
+            current_user_role=ROLE_ADMIN
         )
         print("Deleted OK:", deleted)
 
-        # ----- DELETE (customer tries to delete someone else → error) -----
         print("\n=== TEST: delete user as CUSTOMER (should fail) ===")
         try:
             service.delete(
-                conn,
                 target_user_id=u1["id"],
-                current_user_id=999,       # random user
-                current_user_role=3        # 3 = customer
+                current_user_id=999,
+                current_user_role=ROLE_CUSTOMER
             )
         except PermissionError as e:
             print("Expected PermissionError:", e)
 
-        # ----- DELETE (customer deletes himself → OK) -----
         print("\n=== TEST: delete self ===")
         u3 = service.create_user_admin(
-            conn,
             email="test_user_3@example.com",
             password="secret123",
             first_name="Self",
             last_name="Delete",
             phone_number=None,
-            role_id=3
+            role_id=ROLE_CUSTOMER,
+            current_user_role=ROLE_ADMIN
         )
-        try:
-            result = service.delete(
-                conn,
-                target_user_id=u3["id"],   # mažu sám sebe
-                current_user_id=u3["id"],
-                current_user_role=u3["role_id"]
-            )
-            print("Self-delete OK:", result)
-        except Exception as e:
-            print("Unexpected error:", e)
+
+        result = service.delete(
+            target_user_id=u3["id"],
+            current_user_id=u3["id"],
+            current_user_role=ROLE_CUSTOMER
+        )
+        print("Self-delete OK:", result)
