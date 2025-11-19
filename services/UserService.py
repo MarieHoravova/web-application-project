@@ -85,7 +85,7 @@ class UserService:
 
     # ADMIN: DELETE USER
     # - Customer může mazat jen sám sebe
-    # - Admin (1) může mazat kohokoli
+    # - Admin (ROLE_ADMIN) může mazat kohokoli
     def delete(self, conn: sqlite3.Connection, target_user_id: int, current_user_id: int, current_user_role: int):
         user = repo_get_by_id(conn, target_user_id)
         if not user:
@@ -143,8 +143,8 @@ if __name__ == "__main__":
         print(service.list_users(conn))
 
         # ----- LIST USERS BY ROLE -----
-        print("\n=== TEST: list_users_by_role (role 3) ===")
-        print(service.list_users_by_role(conn, 3))
+        print("\n=== TEST: list_users_by_role (ROLE_CUSTOMER) ===")
+        print(service.list_users_by_role(conn, ROLE_CUSTOMER))
 
         # ----- GET USER -----
         print("\n=== TEST: get_user ===")
