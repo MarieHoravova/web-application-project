@@ -1,6 +1,7 @@
 import sqlite3
 from typing import Optional, List, Dict, Any
 
+from domain.constants import ROLE_CUSTOMER
 
 def get_by_id(conn: sqlite3.Connection, user_id: int) -> Optional[Dict[str, Any]]:
     row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
@@ -88,9 +89,10 @@ def list_users_by_role(conn: sqlite3.Connection, role_id: int) -> List[Dict[str,
     rows = conn.execute("SELECT * FROM users WHERE role_id = ?", (role_id,)).fetchall()
     return [dict(r) for r in rows]
 
-def update_password(conn, user_id: int, hashed_password: str):
+def update_password(conn: sqlite3.Connection, user_id: int, hashed_password: str) -> Optional[Dict[str, Any]]:
     conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hashed_password, user_id))
     conn.commit()
+    return get_by_id(conn, user_id)
 
 
 # TEST
@@ -110,7 +112,7 @@ if __name__ == "__main__":
             first_name="John",
             last_name="Doe",
             phone_number="123456789",
-            role_id=3
+            role_id=ROLE_CUSTOMER
         )
         print(created)
 
