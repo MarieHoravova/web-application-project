@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  <dl>
+    <dt>ID</dt><dd>{{ room.id }}</dd>
+    <dt>Číslo pokoje</dt><dd>{{ room.number }}</dd>
+    <dt>Typ pokoje (ID)</dt><dd>{{ room.room_type_id }}</dd>
+    <dt>Stav pokoje (ID)</dt><dd>{{ room.room_status_id }}</dd>
+    <dt>Patro</dt><dd>{{ room.floor }}</dd>
+    <dt>Obrázek</dt><dd>{{ room.image_path }}</dd>
+  </dl>
+
+  {% if is_admin or is_receptionist %}
+    <p><a href="{{ url_for('room_edit', room_id=room.id) }}">Upravit pokoj</a></p>
+  {% endif %}
+
+  {% if is_admin %}
+    <form method="post" action="{{ url_for('room_delete', room_id=room.id) }}" onsubmit="return confirm('Opravdu smazat tento pokoj?');">
+      <button type="submit">Smazat pokoj</button>
+    </form>
+  {% endif %}
+
+  <p><a href="{{ url_for('rooms_list') }}">← Zpět na seznam pokojů</a></p>
+{% endblock %}

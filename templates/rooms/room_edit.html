@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  <form method="post" action="{{ url_for('room_update', room_id=room.id) }}">
+    <label>Číslo pokoje:<br>
+      <input type="number" name="number" value="{{ room.number }}" required>
+    </label><br>
+
+    <label>Typ pokoje:<br>
+      <select name="room_type_id" required>
+        {% for rt in room_types %}
+          <option value="{{ rt.id }}" {% if rt.id == room.room_type_id %}selected{% endif %}>
+            {{ rt.id }} – {{ rt.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+
+    <label>Stav pokoje:<br>
+      <select name="room_status_id" required>
+        {% for st in statuses %}
+          <option value="{{ st.id }}" {% if st.id == room.room_status_id %}selected{% endif %}>
+            {{ st.id }} – {{ st.name if st.name is defined else st.description if st.description is defined else st.id }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+
+    <label>Patro:<br>
+      <input type="number" name="floor" value="{{ room.floor }}" required>
+    </label><br>
+
+    <label>Obrázek (cesta):<br>
+      <input type="text" name="image_path" value="{{ room.image_path }}">
+    </label><br>
+
+    <button type="submit">Uložit změny</button>
+  </form>
+
+  <p><a href="{{ url_for('room_detail', room_id=room.id) }}">← Zpět na detail pokoje</a></p>
+{% endblock %}
