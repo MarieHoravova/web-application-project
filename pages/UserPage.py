@@ -1,10 +1,14 @@
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
+from datetime import date, timedelta
 
 from services.UserService import UserService
 from services.RoleService import RoleService
-from dependencies import user_service, role_service
+from services.BookingService import BookingService
+from services.ReservationService import ReservationService
+
+from dependencies import user_service, role_service, booking_service, reservation_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
@@ -84,35 +88,6 @@ def _get_user_detail_for_view(target_user_id: int, current_user, user_svc: UserS
         can_edit = False
 
     return user, is_owner, can_edit
-
-
-@router.get("/me", name="user_profile")
-async def user_profile(
-    request: Request,
-    user_svc: UserService = Depends(user_service),
-    role_svc: RoleService = Depends(role_service),
-    current_user = Depends(get_current_user),
-):
-    if isinstance(current_user, RedirectResponse):
-        return current_user
-
-    user, is_owner, can_edit = _get_user_detail_for_view(current_user["id"], current_user, user_svc)
-
-    roles = role_svc.list_roles() if current_user["role_id"] == ROLE_ADMIN else []
-
-    tpl = request.app.state.templates
-    return tpl.TemplateResponse(
-        "users/user_detail.html",
-        {
-            "request": request,
-            "title": "Můj profil",
-            "user": user,
-            "current_user": current_user,
-            "is_owner": is_owner,
-            "can_edit": can_edit,
-            "roles": roles,
-        },
-    )
 
 
 @router.get("/{user_id}", name="user_detail")
