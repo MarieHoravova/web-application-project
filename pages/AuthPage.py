@@ -33,6 +33,7 @@ async def auth_login_post(
     try:
         token = svc.login(email, password)
     except ValueError as e:
+        # špatné přihlášení → vrátíme formulář s chybou
         return tpl.TemplateResponse(
             "auth/auth_login.html",
             {
@@ -44,15 +45,28 @@ async def auth_login_post(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
-    return tpl.TemplateResponse(
-        "auth/auth_login.html",
-        {
-            "request": request,
-            "title": "Přihlášení",
-            "error": None,
-            "token": token,
-        },
+    # ÚSPĚŠNÝ LOGIN:
+    # uložíme JWT do cookie a přesměrujeme třeba na seznam bookingů
+    response = RedirectResponse(
+        url=request.url_for("bookings_list"),  # MARK: nebo jiná „home“ stránka
+        status_code=status.HTTP_303_SEE_OTHER,
     )
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+    )
+    return response
+
+@router.get("/logout", name="auth_logout")
+async def auth_logout(request: Request):
+    response = RedirectResponse(
+        url=request.url_for("auth_login"),
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
+    response.delete_cookie("access_token")
+    return response
 
 
 @router.get("/register", name="auth_register")
