@@ -38,6 +38,13 @@ body {
     color: var(--color-text-main);
 }
 
+h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
 .logo {
 /*    logo bude obrázek*/
 }
@@ -425,6 +432,131 @@ h1 {
     outline: none; /* vypnu default */
     border-color: var(--color-primary-500); /* dám vlastní zvýraznění */
 }
+/* GALERIE – layout*/
+.gallery-page {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 24px 24px 0;
+}
+
+/* navigace – záložky místo odrážek */
+.gallery-nav {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.gallery-nav ul {
+    list-style: none;     /* zruší tečky */
+    margin: 0;
+    padding: 0 0 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.gallery-nav a {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    text-decoration: none;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-main);
+}
+
+.gallery-nav a:hover {
+    background: var(--color-primary-100);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-700);
+}
+
+/* jednotlivé sekce galerie jako „karty“ */
+.gallery-section {
+    margin-top: 24px;
+    background: var(--color-bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+    padding: 16px 20px 20px;
+}
+
+.gallery-section h2 {
+    margin: 0 0 6px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+.gallery-section-intro {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+}
+
+/* GRID – 3 obrázky vedle sebe */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));  /* 3 sloupce */
+    gap: 16px;
+}
+
+/* styl položek */
+.gallery-item {
+    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+}
+
+.gallery-item img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;   /* zajistí mi výřez obrázku, ne deformaci */
+}
+
+.gallery-item figcaption {
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--color-text-main);
+}
+
+/*!* Nice to have *!*/
+/*@media (max-width: 900px) {*/
+/*    .gallery-page {*/
+/*        padding: 16px;*/
+/*    }*/
+
+/*    .gallery-grid {*/
+/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
+/*    }*/
+/*}*/
+
+/*@media (max-width: 600px) {*/
+/*    .gallery-grid {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+/*}*/
+
+
+/* NICE TO HAVE */
+
+/*@media (max-width: 900px) {*/
+/*    .gallery-page {*/
+/*        padding: 16px;*/
+/*    }*/
+
+/*    .gallery-grid {*/
+/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
+/*    }*/
+/*}*/
+
+/*@media (max-width: 600px) {*/
+/*    .gallery-grid {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+/*}*/
 
 
 
@@ -557,4 +689,76 @@ h1 {
     margin-top: 8px;
     color: var(--color-text-muted);
     font-size: 13px;
+}
+
+/* PROFILE */
+
+.profile-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+}
+
+/* levý sloupec – menu */
+
+.profile-sidebar {
+    flex: 0 0 240px; /* má pevnou šířku, zbytek se donastaví auto*/
+    border-right: 1px solid var(--color-border-subtle);
+    padding-right: 20px;
+}
+
+.profile-sidebar h2 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+/* menu bloky */
+.profile-menu h3 {
+    margin: 20px 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+}
+
+.profile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-menu li {
+    margin-bottom: 4px;
+}
+
+.profile-menu a {
+    display: block;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--color-text-main);
+    text-decoration: none;
+}
+
+.profile-menu a:hover {
+    color: var(--color-primary-500);
+}
+
+/*  aktivní položka  */
+.profile-menu a.is-active {
+    font-weight: 600;
+    color: var(--color-primary-700);
+}
+
+/* pravý sloupec – obsah */
+
+.profile-main {
+    flex: 1;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 20px 24px;
 }
