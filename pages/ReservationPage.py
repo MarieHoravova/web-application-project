@@ -98,18 +98,22 @@ async def reservations_create_for_booking(
 
 
 
+
 @router.get("/reservations/create", name="reservation_create_page")
-async def reservation_create_page(
+def reservation_create_page(
     request: Request,
-    check_in: Optional[str] = None,
-    check_out: Optional[str] = None,
+    check_in: str | None = None,
+    check_out: str | None = None,
     adults: int = 1,
     children: int = 0,
     room_svc: RoomService = Depends(room_service),
+    current_user = Depends(get_current_user),
 ):
-    rooms: List[Dict[str, Any]] = []
+    # nepřihlášený -> redirect na login (get_current_user to řeší)
+    if isinstance(current_user, RedirectResponse):
+        return current_user
 
-    # pouze když jsou obě data vyplněná – jinak jen zobrazíme prázdnou stránku
+    rooms = []
     if check_in and check_out:
         rooms = room_svc.list_available_rooms(
             check_in=check_in,
@@ -132,5 +136,6 @@ async def reservation_create_page(
             "request": request,
             "rooms": rooms,
             "search": search,
+            "current_user": current_user,
         },
     )
