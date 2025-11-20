@@ -42,6 +42,7 @@ body {
 /*    logo bude obrázek*/
 }
 
+/* HEADER */
 .header-inner {
     display: flex;
     margin: 0 auto;
@@ -131,3 +132,342 @@ body {
     color: var(--color-primary-500);
 }
 
+/* FOOTER */
+.site-footer {
+    border-top: 1px solid var(--color-border-subtle);
+    background: var(--color-primary-white);
+    margin-top: 40px;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    /*align-items: flex-start;*/
+    /*gap: 24px;*/
+}
+
+/*.footer-brand {*/
+/*    max-width: 100000000px;*/
+/*}*/
+
+/*.footer-logo {*/
+/*    font-size: 24px;*/
+/*    font-weight: 700;*/
+/*    color: var(--color-primary-700);*/
+/*}*/
+
+.footer-tagline {
+    margin-top: 8px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.footer-columns {
+    display: flex;
+    gap: 16px;
+}
+
+.footer-column h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.footer-card {
+    background: var(--color-bg-main);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 180px;
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+.footer-card p {
+    margin: 0 0 4px 0;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.social-link {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-subtle);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--color-text-main);
+}
+
+.social-link:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+}
+
+/*HOME PAGE*/
+
+.page-main {
+    padding: 24px 24px 40px;
+}
+
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/*Výchozí H1 pro všechny stránky*/
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--color-primary-900);
+}
+
+.home-alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--color-primary-100);
+    color: var(--color-primary-900);
+    border: 1px solid var(--color-primary-500);
+    font-size: 14px;
+    width: 320px;
+
+    margin: 0 auto 16px; /* vlevo/vpravo auto → prohlížeč box vycentruje (nedělám přes flex) */
+    text-align: center;    /* ← zarovnání textu uvnitř */
+}
+
+/* univerzální karta pro homepage, bílé pozadí pro všechno */
+.home-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.home-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.home-hero-text {
+    margin: 0;
+    color: var(--color-text-main);
+}
+
+.home-hero-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* řádky layoutu, dělím si to tím na 2 karty*/
+.home-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* pevná šířky sloupců */
+.home-quick-info,
+.home-basic-info {
+    flex: 0 0 260px;
+}
+
+/* Zbytek se roztáhne do zbylé části*/
+.home-amenities,
+.home-gallery,
+.home-map, /*Když je to 1-1 pro home-map i home-contact, tak je to napůl */
+.home-contact {
+    flex: 1;
+}
+
+.home-card-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+/* Rychlé info */
+.home-quick-info-list {
+    padding-top: 2px;
+}
+
+.home-quick-info-list li {
+    margin-top: 6px;
+}
+
+/* Základní info */
+.home-basic-info p {
+    margin: 0 0 4px 0;
+}
+
+.home-basic-info-contact {
+    padding-top: 8px;
+    color: var(--color-text-muted);
+}
+
+/* Služby */
+.home-amenities-text {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+.home-amenities-icons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.home-amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--color-primary-100);
+    border: 1px solid var(--color-border-subtle);
+}
+
+.home-amenity-icon {
+    font-size: 20px;
+}
+
+.home-amenity-label {
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+/* Galerie */
+.home-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+/*Trochu je zvětším, až tam budu dávat ty obrázky*/
+.home-gallery-item {
+    background: var(--color-primary-100);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    height: 120px;
+}
+
+/* Mapa – placeholder */
+.home-map-box {
+    background: var(--color-primary-100);
+    border-radius: 8px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+/* Kontaktní formulář */
+.home-contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.home-contact-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: var(--color-text-main);
+    gap: 4px;
+}
+
+.home-contact-form input,
+.home-contact-form textarea {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-subtle);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.home-contact-form input:focus,
+.home-contact-form textarea:focus {
+    outline: none; /*
+    border-color: var(--color-primary-500);
+}
+
+
+
+
+/*NICE TO HAVE*/
+/*!* jednoduchá responsivita homepage *!*/
+/*@media (max-width: 900px) {*/
+/*    .home-hero {*/
+/*        flex-direction: column;*/
+/*        align-items: flex-start;*/
+/*    }*/
+
+/*    .home-row {*/
+/*        flex-direction: column;*/
+/*    }*/
+
+/*    .home-quick-info,*/
+/*    .home-basic-info,*/
+/*    .home-amenities,*/
+/*    .home-gallery,*/
+/*    .home-map,*/
+/*    .home-contact {*/
+/*        flex: 1 1 auto;*/
+/*    }*/
+
+/*    .page-main {*/
+/*        padding: 16px;*/
+/*    }*/
+/*}*/
+
+
+/*!* NICE TO HAVE *!*/
+/*@media (max-width: 768px) {*/
+/*    .footer-inner {*/
+/*        flex-direction: column;*/
+/*        align-items: flex-start;*/
+/*    }*/
+
+/*    .footer-right {*/
+/*        align-items: flex-start;*/
+/*        width: 100%;*/
+/*    }*/
+
+/*    .footer-columns {*/
+/*        flex-direction: column;*/
+/*        width: 100%;*/
+/*    }*/
+
+/*    .footer-card {*/
+/*        width: 100%;*/
+/*    }*/
+/*}*/

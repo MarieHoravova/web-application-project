@@ -18,7 +18,7 @@
 
       <!-- Menu uprostřed -->
       <nav class="main-nav">
-        <a href="/">Domů</a>
+        <a href="{{ url_for('home_page')}}">Domů</a>
         <span class="divider">|</span>
         <a href="#galerie">Galerie</a>
         <span class="divider">|</span>
@@ -43,5 +43,44 @@
   <main class="page-main">
     {% block content %}{% endblock %}
   </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <!-- Logo / název vlevo -->
+      <div>
+        <div class="footer-logo">Hotel App</div>
+        <p class="footer-tagline">Váš klidný pobyt v srdci Prahy.</p>
+      </div>
+
+      <!-- Kontakt + adresa + sociální sítě vpravo -->
+      <div class="footer-right">
+        <div class="footer-columns">
+          <div class="footer-column">
+            <h4>Kontakt</h4>
+            <div class="footer-card">
+              <p><strong>Telefon:</strong><br>+420 123 456 789</p>
+              <p><strong>E-mail:</strong><br>recepce@hotel-aurora.cz</p>
+            </div>
+          </div>
+
+          <div class="footer-column">
+            <h4>Adresa</h4>
+            <div class="footer-card">
+              <p>Hotel Aurora</p>
+              <p>Náměstí 1</p>
+              <p>110 00 Praha 1</p>
+              <p>Česká republika</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-social">
+          <a href="#" class="social-link">IG</a>
+          <a href="#" class="social-link">f</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
 </body>
+
 </html>

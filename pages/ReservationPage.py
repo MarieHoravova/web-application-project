@@ -1,14 +1,17 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from starlette import status
+from starlette.templating import Jinja2Templates
 
 from services.ReservationService import ReservationService
 from services.BookingService import BookingService
-from dependencies import reservation_service, booking_service
+from dependencies import reservation_service, booking_service, room_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST
+from services.RoomService import RoomService
 
+tpl = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 
@@ -94,28 +97,40 @@ async def reservations_create_for_booking(
     )
 
 
-@router.post("/booking/{booking_id}/delete/{reservation_id}", name="reservation_delete")
-async def reservation_delete(
-    booking_id: int,
-    reservation_id: int,
+
+@router.get("/reservations/create", name="reservation_create_page")
+async def reservation_create_page(
     request: Request,
-    res_svc: ReservationService = Depends(reservation_service),
-    current_user=Depends(get_current_user),
+    check_in: Optional[str] = None,
+    check_out: Optional[str] = None,
+    adults: int = 1,
+    children: int = 0,
+    room_svc: RoomService = Depends(room_service),
 ):
-    if isinstance(current_user, RedirectResponse):
-        return current_user
+    rooms: List[Dict[str, Any]] = []
 
-    try:
-        res_svc.delete_reservation(
-            reservation_id=reservation_id,
-            current_user_role=current_user["role_id"],
+    # pouze když jsou obě data vyplněná – jinak jen zobrazíme prázdnou stránku
+    if check_in and check_out:
+        rooms = room_svc.list_available_rooms(
+            check_in=check_in,
+            check_out=check_out,
+            adults=adults,
+            children=children,
         )
-    except PermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e))
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
 
-    return RedirectResponse(
-        url=request.url_for("reservations_by_booking", booking_id=booking_id),
-        status_code=status.HTTP_303_SEE_OTHER,
+    search = {
+        "check_in": check_in or "",
+        "check_out": check_out or "",
+        "adults": adults,
+        "children": children,
+    }
+
+    tpl = request.app.state.templates
+    return tpl.TemplateResponse(
+        "reservations/reservation_create.html",
+        {
+            "request": request,
+            "rooms": rooms,
+            "search": search,
+        },
     )

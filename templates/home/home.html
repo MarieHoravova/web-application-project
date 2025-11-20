@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Hotel App – O hotelu{% endblock %}
+
+{% block content %}
+<section id="home-section">
+  <div class="home-container">
+
+<!-- Po odeslání formuláře   -->
+    {% if message_sent %}
+      <div class="home-alert">Děkujeme za zprávu, brzy se vám ozveme.</div>
+    {% endif %}
+
+    <h1>O hotelu</h1>
+
+    <!-- Horní box: popisek + tlačítka -->
+    <div class="home-hero home-card">
+      <div>
+        <p class="home-hero-text">
+          Hotel Aurora je moderní, klidný hotel v centru Prahy. Nabízí pohodlné pokoje, snídaně formou bufetu a skvělé spojení MHD.
+        </p>
+      </div>
+      <div class="home-hero-actions">
+        <a href="{{ url_for('public_rooms_list') }}" class="btn btn-secondary">Prohlédnout pokoje</a>
+        <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervovat</a>
+      </div>
+    </div>
+
+    <!-- Řádek: Rychlé info + služby -->
+    <div class="home-row">
+      <div class="home-card home-quick-info">
+        <h2 class="home-card-title">Rychlé info</h2>
+        <ul class="home-quick-info-list">
+          <li>Check-in: 14:00</li>
+          <li>Check-out: 10:00</li>
+          <li>Počet pokojů: 45</li>
+          <li>Nekuřácký hotel</li>
+          <li>Platby kartou</li>
+        </ul>
+      </div>
+<div class="home-card home-amenities">
+  <h2 class="home-card-title">Služby</h2>
+  <p class="home-amenities-text">
+    Hostům nabízíme pohodlné zázemí pro odpočinek i práci. Všechny služby máte zahrnuté přímo v pobytu.
+  </p>
+  <div class="home-amenities-icons">
+    <div class="home-amenity-item">
+      <span class="home-amenity-icon">☕</span>
+      <span class="home-amenity-label">Snídaně formou bufetu</span>
+    </div>
+    <div class="home-amenity-item">
+      <span class="home-amenity-icon">📶</span>
+      <span class="home-amenity-label">Wi-Fi zdarma v celém hotelu</span>
+    </div>
+    <div class="home-amenity-item">
+      <span class="home-amenity-icon">ℹ️</span>
+      <span class="home-amenity-label">Recepce a info 24/7</span>
+    </div>
+    <div class="home-amenity-item">
+      <span class="home-amenity-icon">🅿️</span>
+      <span class="home-amenity-label">Parkování u hotelu</span>
+    </div>
+    <div class="home-amenity-item">
+      <span class="home-amenity-icon">🐾</span>
+      <span class="home-amenity-label">Domácí mazlíčci vítáni</span>
+    </div>
+  </div>
+</div>
+
+    </div>
+
+    <!-- Řádek: Základní info + galerie -->
+    <div class="home-row" id="pokoje">
+      <div class="home-card home-basic-info">
+        <h2 class="home-card-title">Základní info</h2>
+        <p><strong>Hotel Aurora</strong></p>
+        <p>Náměstí 1</p>
+        <p>110 00 Praha 1</p>
+        <p>Česká republika</p>
+        <p class="home-basic-info-contact">
+          Tel.: +420 123 456 789<br>
+          E-mail: recepce@hotel-aurora.cz
+        </p>
+      </div>
+
+      <div class="home-card home-gallery" id="galerie">
+        <h2 class="home-card-title">Galerie</h2>
+        <div class="home-gallery-grid">
+          <div class="home-gallery-item">Obrázek</div>
+          <div class="home-gallery-item">Obrázek</div>
+          <div class="home-gallery-item">Obrázek</div>
+          <div class="home-gallery-item">Obrázek</div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Řádek: mapa + kontaktní formulář -->
+    <div class="home-row">
+      <div class="home-card home-map">
+        <h2 class="home-card-title">Kde nás najdete</h2>
+        <div class="home-map-box">
+          Mapa hotelu – později sem vložíme mapu (např. Google Maps).
+        </div>
+      </div>
+
+      <div class="home-card home-contact" id="kontakt">
+        <h2 class="home-card-title">Máte dotazy? Napište nám</h2>
+        <form class="home-contact-form" method="post" action="{{ url_for('home_contact') }}">
+          <label>
+            Jméno
+            <input type="text" name="name" placeholder="Vaše jméno" required>
+          </label>
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="vas@email.cz" required>
+          </label>
+          <label>
+            Zpráva
+            <textarea name="message" rows="4" placeholder="Jak vám můžeme pomoci?" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary">Odeslat</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
