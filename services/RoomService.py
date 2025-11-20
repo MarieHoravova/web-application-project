@@ -10,6 +10,10 @@ from repositories.RoomRepository import (
     update_room as repo_update_room,
     delete_room as repo_delete_room,
 )
+from repositories.ReservationRepository import (
+    find_conflicting_reservations as repo_find_conflicts,
+)
+
 
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
@@ -25,6 +29,41 @@ class RoomService:
     # ---- LIST ----
     def list_rooms(self):
         return repo_list_rooms(self.conn)
+
+    def list_available_rooms(
+        self,
+        check_in: str,
+        check_out: str,
+        adults: int,
+        children: int,
+    ) -> List[Dict[str, Any]]:
+        """
+        Najde pokoje, které NEMAJÍ žádnou rezervaci překrývající se
+        s intervalem [check_in, check_out).
+        Případná kontrola kapacity se dá doplnit podle toho,
+        kde kapacitu v DB ukládáš.
+        """
+        total_guests = adults + children
+
+        all_rooms = repo_list_rooms(self.conn)
+        available_rooms: List[Dict[str, Any]] = []
+
+        for room in all_rooms:
+            # Pokud máš v rooms nebo přes JOIN kapacitu, můžeš kontrolovat i ji.
+            # Např.: if "capacity" in room and room["capacity"] < total_guests:
+            #           continue
+
+            conflicts = repo_find_conflicts(
+                self.conn,
+                room_id=room["id"],
+                check_in=check_in,
+                check_out=check_out,
+            )
+
+            if not conflicts:
+                available_rooms.append(room)
+
+        return available_rooms
 
     def list_rooms_by_status(self, status_id: int):
         return repo_list_by_status(self.conn, status_id)
