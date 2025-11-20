@@ -8,6 +8,7 @@ from repositories.ReservationRepository import (
     create_reservation as repo_create_reservation,
     delete_reservation as repo_delete_reservation,
     find_conflicting_reservations as repo_find_conflicts,
+    list_reservations_in_period as repo_list_in_period,
 )
 
 from repositories.BookingRepository import (
@@ -77,6 +78,8 @@ class ReservationService:
         repo_delete_reservation(self.conn, reservation_id)
         return True
 
+    def list_reservations_in_period(self, date_from: str, date_to: str):
+        return repo_list_in_period(self.conn, date_from, date_to)
 
 if __name__ == "__main__":
     from database.database import open_connection
