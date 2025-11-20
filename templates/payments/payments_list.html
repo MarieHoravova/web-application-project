@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  {% if payments|length == 0 %}
+    <p>Zatím žádné platby.</p>
+  {% else %}
+    <table class="data">
+      <tr>
+        <th>ID</th>
+        <th>Booking ID</th>
+        <th>Částka</th>
+        <th>Metoda</th>
+        <th>Zaplaceno kdy</th>
+        <th>Akce</th>
+      </tr>
+      {% for p in payments %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.booking_id }}</td>
+          <td>{{ "%.2f"|format(p.amount) }} Kč</td>
+          <td>{{ method_map.get(p.method_id, p.method_id) }}</td>
+          <td>{{ p.paid_at }}</td>
+          <td>
+            <a href="{{ url_for('payments_by_booking', booking_id=p.booking_id) }}">Detail / úprava</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}

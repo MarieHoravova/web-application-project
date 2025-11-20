@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  <h3>Booking</h3>
+  <dl>
+    <dt>ID</dt><dd>{{ booking.id }}</dd>
+    <dt>Kód</dt><dd>{{ booking.code }}</dd>
+    <dt>Uživatel</dt><dd>{{ booking.user_id }}</dd>
+    <dt>Status</dt><dd>{{ booking.status_id }}</dd>
+  </dl>
+
+  {% if is_admin_or_receptionist %}
+    <h3>Nová platba</h3>
+    <form method="post" action="{{ url_for('payments_create_for_booking', booking_id=booking.id) }}">
+      <label>Částka:<br>
+        <input type="number" name="amount" step="0.01" min="0" required>
+      </label><br>
+
+      <label>Způsob platby:<br>
+        <select name="method_id" required>
+          {% for m in methods %}
+            <option value="{{ m.id }}">{{ m.id }} – {{ m.description }}</option>
+          {% endfor %}
+        </select>
+      </label><br>
+
+      <button type="submit">Přidat platbu</button>
+    </form>
+  {% endif %}
+
+  <h3>Seznam plateb</h3>
+  {% if payments|length == 0 %}
+    <p>Zatím žádné platby.</p>
+  {% else %}
+    <table class="data">
+      <tr>
+        <th>ID</th>
+        <th>Částka</th>
+        <th>Metoda</th>
+        <th>Zaplaceno kdy</th>
+        {% if is_admin %}<th>Akce</th>{% endif %}
+      </tr>
+      {% for p in payments %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ "%.2f"|format(p.amount) }} Kč</td>
+          <td>{{ method_map.get(p.method_id, p.method_id) }}</td>
+          <td>{{ p.paid_at }}</td>
+          {% if is_admin %}
+            <td>
+              <form method="post" action="{{ url_for('payment_delete', booking_id=booking.id, payment_id=p.id) }}" style="display:inline">
+                <button type="submit" onclick="return confirm('Opravdu smazat platbu?');">Smazat</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
+  <p><a href="{{ url_for('booking_detail', booking_id=booking.id) }}">← Zpět na detail bookingu</a></p>
+{% endblock %}
