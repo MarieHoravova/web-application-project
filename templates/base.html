@@ -8,11 +8,26 @@
 <body>
   <header class="container">
     <h1>{% block header %}Hotel App{% endblock %}</h1>
-        <nav>
-          <a href="{{ url_for('auth_login') }}">Přihlášení</a>
-          <a href="{{ url_for('auth_register') }}">Registrace</a>
-            <a href="{{ url_for('bookings_list') }}">Bookingy</a>
-        </nav>
+    <nav>
+      {% if current_user is defined and current_user %}
+        {# přihlášený uživatel #}
+        <a href="{{ url_for('bookings_list') }}">Bookingy</a>
+
+        {# ADMIN (1) + RECEPTIONIST (2) vidí Uživatelé, Pokoje, Platby #}
+        {% if current_user.role_id == 1 or current_user.role_id == 2 %}
+          <a href="{{ url_for('users_list') }}">Uživatelé</a>
+          <a href="{{ url_for('rooms_list') }}">Pokoje</a>
+          <a href="{{ url_for('payments_list') }}">Platby</a>
+        {% endif %}
+
+        <a href="{{ url_for('user_profile') }}">Můj profil</a>
+        <a href="{{ url_for('auth_logout') }}">Odhlásit</a>
+      {% else %}
+        {# nepřihlášený #}
+        <a href="{{ url_for('auth_login') }}">Přihlášení</a>
+        <a href="{{ url_for('auth_register') }}">Registrace</a>
+      {% endif %}
+    </nav>
   </header>
   <main class="container">
     {% block content %}{% endblock %}
