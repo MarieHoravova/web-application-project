@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  <h3>Booking</h3>
+  <dl>
+    <dt>ID</dt><dd>{{ booking.id }}</dd>
+    <dt>Kód</dt><dd>{{ booking.code }}</dd>
+    <dt>Uživatel</dt><dd>{{ booking.user_id }}</dd>
+  </dl>
+
+  {% if is_admin_or_receptionist %}
+    <h3>Nová rezervace pokoje</h3>
+    <form method="post" action="{{ url_for('reservations_create_for_booking', booking_id=booking.id) }}">
+      <label>ID pokoje:<br>
+        <input type="number" name="room_id" required>
+      </label><br>
+
+      <label>Check-in (YYYY-MM-DD):<br>
+        <input type="text" name="check_in" placeholder="2025-02-01" required>
+      </label><br>
+
+      <label>Check-out (YYYY-MM-DD):<br>
+        <input type="text" name="check_out" placeholder="2025-02-05" required>
+      </label><br>
+
+      <label>Dospělí:<br>
+        <input type="number" name="adults" min="1" value="2" required>
+      </label><br>
+
+      <label>Děti:<br>
+        <input type="number" name="children" min="0" value="0">
+      </label><br>
+
+      <button type="submit">Přidat rezervaci</button>
+    </form>
+  {% endif %}
+
+  <h3>Seznam rezervací</h3>
+  {% if reservations|length == 0 %}
+    <p>Zatím žádné rezervace.</p>
+  {% else %}
+    <table class="data">
+      <tr>
+        <th>ID</th>
+        <th>Pokoj</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Dospělí</th>
+        <th>Děti</th>
+        {% if is_admin_or_receptionist %}
+          <th>Akce</th>
+        {% endif %}
+      </tr>
+      {% for r in reservations %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.room_id }}</td>
+          <td>{{ r.check_in }}</td>
+          <td>{{ r.check_out }}</td>
+          <td>{{ r.adults }}</td>
+          <td>{{ r.children }}</td>
+          {% if is_admin_or_receptionist %}
+            <td>
+              <form method="post" action="{{ url_for('reservation_delete', booking_id=booking.id, reservation_id=r.id) }}" style="display:inline">
+                <button type="submit" onclick="return confirm('Opravdu smazat rezervaci?');">Smazat</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
+  <p><a href="{{ url_for('booking_detail', booking_id=booking.id) }}">← Zpět na detail bookingu</a></p>
+{% endblock %}

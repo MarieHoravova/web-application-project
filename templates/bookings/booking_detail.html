@@ -11,13 +11,23 @@
     <dt>Vytvořeno</dt><dd>{{ booking.created_at }}</dd>
   </dl>
 
-  {% if is_admin_or_receptionist %}
-    <p>
-      <a href="{{ url_for('payments_by_booking', booking_id=booking.id) }}">
-        Zobrazit / upravit platby k tomuto bookingu
+  <h3>Další akce</h3>
+  <ul>
+    <li>
+      <a href="{{ url_for('reservations_by_booking', booking_id=booking.id) }}">
+        Zobrazit / upravit rezervace k tomuto bookingu
       </a>
-    </p>
+    </li>
+    {% if is_admin_or_receptionist %}
+      <li>
+        <a href="{{ url_for('payments_by_booking', booking_id=booking.id) }}">
+          Zobrazit / upravit platby k tomuto bookingu
+        </a>
+      </li>
+    {% endif %}
+  </ul>
 
+  {% if is_admin_or_receptionist %}
     <h3>Změnit status</h3>
     <form method="post" action="{{ url_for('booking_update_status', booking_id=booking.id) }}">
       <label>Nový status:
