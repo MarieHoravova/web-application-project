@@ -4,7 +4,8 @@ from starlette import status
 
 from services.AuthService import AuthService
 from dependencies import auth_service
-
+from models.Auth import RegisterRequest
+from pydantic import ValidationError
 router = APIRouter()
 
 
@@ -82,6 +83,7 @@ async def auth_register_get(request: Request):
     )
 
 
+
 @router.post("/register", name="auth_register_post")
 async def auth_register_post(
     request: Request,
@@ -96,16 +98,38 @@ async def auth_register_post(
 
     tpl = request.app.state.templates
 
-    data = RegisterRequest(
-        email=email,
-        password=password,
-        first_name=first_name,
-        last_name=last_name,
-        phone_number=phone_number,
-    )
-
     try:
+        data = RegisterRequest(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+        )
         svc.register(data)
+
+    except ValidationError as e:
+        errors = e.errors()
+        messages = []
+        for err in errors:
+            msg = err["msg"]  # např. "Value error, Heslo musí mít alespoň 6 znaků"
+            prefix = "Value error, "
+            if msg.startswith(prefix):
+                msg = msg[len(prefix):]  # => "Heslo musí mít alespoň 6 znaků"
+            messages.append(msg)
+
+        friendly_error = " ".join(messages)
+
+        return tpl.TemplateResponse(
+            "auth/auth_register.html",
+            {
+                "request": request,
+                "title": "Registrace",
+                "error": friendly_error,
+            },
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
     except ValueError as e:
         return tpl.TemplateResponse(
             "auth/auth_register.html",
