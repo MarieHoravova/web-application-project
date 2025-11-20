@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;  /*definuje, že šířka a výška prvku už v sobě zahrnují padding i border*/
+    font-family: "Inter", sans-serif;
+}
+
+
+:root {
+  /* Brand / primární modrá */
+  --color-primary-900: #0B1F33;  /* hodně tmavá – header, footer */
+  --color-primary-700: #123457;  /* hover, zvýrazněné texty */
+  --color-primary-500: #1F5A96;  /* hlavní modrá – tlačítka, odkazy */
+  --color-primary-100: #E7F0FA;  /* světle modrá – pozadí boxů */
+  --color-primary-white: #FFFFFF; /* bílá */
+  /* Akcent (zlatá / písek) */
+  --color-accent-500: #D4A857;   /* sekundární akce, badge */
+  --color-accent-100: #FFF5E6;   /* světlé krémové pozadí */
+
+  /* Neutrály (pozadí, texty, rámečky) */
+  --color-bg-main: #F4F6FB;         /* hlavní pozadí stránky */
+  --color-bg-card: #FFFFFF;         /* karty, panely, formuláře */
+  --color-border-subtle: #E2E8F0;   /* jemné rámečky */
+  --color-text-main: #111827;       /* běžný text */
+  --color-text-muted: #6B7280;      /* sekundární text */
+  --color-text-on-dark: #F9FAFB;    /* text na tmavém pozadí */
+    --color-bg-secondary: #A8B3C6;
+
+  /* Stavové barvy */
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-error:   #DC2626;
+  --color-info:    #0EA5E9;
+
+}
+
+body {
+    margin: 0;
+    background: var(--color-bg-main);
+    color: var(--color-text-main);
+}
+
+.logo {
+/*    logo bude obrázek*/
+}
+
+.header-inner {
+    display: flex;
+    margin: 0 auto;
+    padding: 12px 24px;
+    max-width: 1200px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--color-text-main);
+    font-size: 16px;
+    padding: 4px 8px;
+}
+
+.main-nav a:hover {
+  color: var(--color-primary-500);
+}
+
+.divider {
+    color: var(--color-text-muted);
+    font-size: 20px;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+}
+
+/*TLAČÍTKA*/
+.btn {
+    padding: 6px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    white-space: nowrap; /* nezalamuje řádky */
+    cursor: pointer; /* při najetí myší*/
+}
+
+.btn-primary {
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-white);
+    border-color: var(--color-primary-500);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+}
+
+.btn-secondary {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    border-color: var(--color-bg-secondary);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+    background-color: var(--color-primary-100);
+}
+
+.site-header{
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: #fff;
+}
+
+.logout-link {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    text-decoration: underline;
+
+}
+
+.logout-link:hover {
+    color: var(--color-primary-500);
+}
+
