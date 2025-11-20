@@ -6,7 +6,8 @@ from starlette import status
 from services.BookingService import BookingService
 from services.BookingStatusService import BookingStatusService
 from dependencies import booking_service, booking_status_service
-from domain.constants import ROLE_ADMIN  # zatím napevno, než napojíš přihlášení
+from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
+from auth_dependencies import get_current_user
 
 router = APIRouter()
 
@@ -16,11 +17,24 @@ async def bookings_list(
     request: Request,
     user_id: Optional[int] = None,
     svc: BookingService = Depends(booking_service),
+    current_user = Depends(get_current_user),
 ):
-    if user_id is not None:
-        bookings: List[Dict[str, Any]] = svc.list_bookings_by_user(user_id)
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    role_id = current_user["role_id"]
+    current_user_id = current_user["id"]
+
+    if role_id == ROLE_CUSTOMER:
+        bookings: List[Dict[str, Any]] = svc.list_bookings_by_user(current_user_id)
+        filter_user_id = current_user_id
     else:
-        bookings = svc.list_bookings()
+        if user_id is not None:
+            bookings = svc.list_bookings_by_user(user_id)
+            filter_user_id = user_id
+        else:
+            bookings = svc.list_bookings()
+            filter_user_id = None
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
@@ -29,7 +43,10 @@ async def bookings_list(
             "request": request,
             "title": "Seznam bookingů",
             "bookings": bookings,
-            "filter_user_id": user_id,
+            "filter_user_id": filter_user_id,
+            "current_user": current_user,
+            "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+            "is_customer": role_id == ROLE_CUSTOMER,
         },
     )
 
@@ -39,7 +56,15 @@ async def bookings_create(
     request: Request,
     user_id: int = Form(...),
     svc: BookingService = Depends(booking_service),
+    current_user = Depends(get_current_user),
 ):
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    # vytvoření bookingu jen ADMIN/RECEPCE (klidně si to časem změň)
+    if current_user["role_id"] not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
+        raise HTTPException(status_code=403, detail="Nemáte oprávnění vytvářet bookingy")
+
     svc.create_booking(user_id=user_id)
 
     return RedirectResponse(
@@ -54,10 +79,19 @@ async def booking_detail(
     request: Request,
     svc: BookingService = Depends(booking_service),
     status_svc: BookingStatusService = Depends(booking_status_service),
+    current_user = Depends(get_current_user),
 ):
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
     booking = svc.get_booking_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
+
+    # pokud bys chtěla, můžeš tady ještě vynutit,
+    # že zákazník uvidí jen své vlastní bookingy
+    # if current_user["role_id"] == ROLE_CUSTOMER and booking["user_id"] != current_user["id"]:
+    #     raise HTTPException(status_code=403, detail="Nemáte přístup k tomuto bookingu")
 
     statuses = status_svc.list_statuses()
 
@@ -69,6 +103,9 @@ async def booking_detail(
             "title": f"Booking {booking['code']}",
             "booking": booking,
             "statuses": statuses,
+            "current_user": current_user,
+            "is_admin_or_receptionist": current_user["role_id"] in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+            "is_customer": current_user["role_id"] == ROLE_CUSTOMER,
         },
     )
 
@@ -79,10 +116,13 @@ async def booking_update_status(
     request: Request,
     new_status_id: int = Form(...),
     svc: BookingService = Depends(booking_service),
+    current_user = Depends(get_current_user),
 ):
-    # TODO: až napojíš autentizaci, vezmeš current_user_id a role z JWT
-    current_user_id = 1
-    current_user_role = ROLE_ADMIN  # recepční by byla ROLE_RECEPTIONIST
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    current_user_id = current_user["id"]
+    current_user_role = current_user["role_id"]
 
     try:
         svc.update_booking_status(
