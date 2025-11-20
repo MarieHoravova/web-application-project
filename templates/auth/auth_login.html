@@ -1,25 +1,43 @@
 {% extends "base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Přihlášení{% endblock %}
 
 {% block content %}
-  <h2>{{ title }}</h2>
+<section class="auth-section">
+  <div class="auth-container">
 
-  {% if error %}
-    <p style="color: red;">{{ error }}</p>
-  {% endif %}
+    <div class="auth-card">
+      <h1>Přihlášení</h1>
 
-  <form method="post" action="{{ url_for('auth_login_post') }}">
-    <label>Email:<br><input type="email" name="email" required></label><br>
-    <label>Heslo:<br><input type="password" name="password" required></label><br>
-    <button type="submit">Přihlásit</button>
-  </form>
+      {% if error %}
+        <p class="auth-error">{{ error }}</p>
+      {% endif %}
 
-  {% if token %}
-    <hr>
-    <h3>JWT token</h3>
-    <pre>{{ token }}</pre>
-    <p>(zatím ho jen zobrazujeme – později ho můžeš ukládat do cookie nebo používat na API požadavky)</p>
-  {% endif %}
+      <form method="post" action="{{ url_for('auth_login_post') }}" class="auth-form">
+        <label>
+          E-mail
+          <input type="email" name="email" required>
+        </label>
+        <label>
+          Heslo
+          <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="btn btn-primary auth-submit">Přihlásit</button>
+      </form>
 
-  <p>Nemáte účet? <a href="{{ url_for('auth_register') }}">Zaregistrujte se</a>.</p>
+      <p class="auth-register">
+        Nemáte účet?
+        <a href="{{ url_for('auth_register') }}">Zaregistrujte se</a>.
+      </p>
+    </div>
+
+    {% if token %}
+      <div class="auth-token-card">
+        <h2 class="auth-token-title">JWT token</h2>
+        <pre class="auth-token-pre">{{ token }}</pre>
+        <p class="auth-token-note">(zatím ho jen zobrazujeme – později ho můžeš ukládat do cookie nebo používat na API požadavky)</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
 {% endblock %}
