@@ -46,6 +46,23 @@ def find_conflicting_reservations(conn: sqlite3.Connection, room_id: int, check_
     return [dict(r) for r in rows]
 
 
+def list_reservations_in_period(conn: sqlite3.Connection, date_from: str, date_to: str) -> List[Dict[str, Any]]:
+    """
+    Jednoduchý přehled rezervací v období <date_from, date_to>.
+    Datumy jsou ve formátu YYYY-MM-DD.
+    """
+    rows = conn.execute(
+        """
+        SELECT * FROM reservations
+        WHERE check_in >= ? AND check_in <= ?
+        ORDER BY check_in
+        """,
+        (date_from, date_to),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+
 if __name__ == "__main__":
     from database.database import open_connection
 
