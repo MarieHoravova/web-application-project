@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  <h3>Základní údaje</h3>
+  <dl>
+    <dt>ID</dt><dd>{{ user.id }}</dd>
+    <dt>Email</dt><dd>{{ user.email }}</dd>
+    <dt>Jméno</dt><dd>{{ user.first_name }}</dd>
+    <dt>Příjmení</dt><dd>{{ user.last_name }}</dd>
+    <dt>Telefon</dt><dd>{{ user.phone_number }}</dd>
+    <dt>Role ID</dt><dd>{{ user.role_id }}</dd>
+  </dl>
+
+  {% if can_edit %}
+    <p>
+      <a href="{{ url_for('user_edit', user_id=user.id) }}">Upravit profil</a>
+    </p>
+  {% else %}
+    <p>Nemáte oprávnění upravovat tento profil.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('users_list') }}">← Zpět na seznam uživatelů</a></p>
+{% endblock %}

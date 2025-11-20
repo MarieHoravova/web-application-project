@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ title }}</h2>
+
+  {% if is_admin %}
+    <h3>Filtrovat podle role</h3>
+    <form method="get" action="{{ url_for('users_list') }}">
+      <label>Role:
+        <select name="role_id">
+          <option value="">-- všechny role --</option>
+          {% for r in roles %}
+            <option value="{{ r.id }}" {% if filter_role_id == r.id %}selected{% endif %}>
+              {{ r.id }} – {{ r.name or r.description }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Filtrovat</button>
+      <a href="{{ url_for('users_list') }}">Zrušit filtr</a>
+    </form>
+  {% endif %}
+
+  {% if users|length == 0 %}
+    <p>Žádní uživatelé k zobrazení.</p>
+  {% else %}
+    <table class="data">
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Jméno</th>
+        <th>Příjmení</th>
+        <th>Telefon</th>
+        <th>Role ID</th>
+        <th>Detail</th>
+      </tr>
+      {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.first_name }}</td>
+          <td>{{ u.last_name }}</td>
+          <td>{{ u.phone_number }}</td>
+          <td>{{ u.role_id }}</td>
+          <td><a href="{{ url_for('user_detail', user_id=u.id) }}">Detail</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}
