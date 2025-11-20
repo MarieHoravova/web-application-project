@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Můj profil{% endblock %}
+
+{% block content %}
+<section class="profile-layout">
+  <div class="profile-sidebar">
+    <h2>Profil</h2>
+
+    <nav class="profile-menu">
+      <h3>Přehled</h3>
+      <ul>
+        {% if is_customer %}
+          <li><a href="{{ url_for('bookings_list') }}">Moje rezervace</a></li>
+        {% elif is_receptionist %}
+          <li><a href="{{ url_for('bookings_list') }}">Rezervace hostů</a></li>
+          <li><a href="#">Kalendář obsazenosti</a></li>
+        {% elif is_admin %}
+          <li><a href="#">Uživatelé a role</a></li>
+          <li><a href="{{ url_for('bookings_list') }}">Rezervace</a></li>
+          <li><a href="{{ url_for('rooms_list') }}">Pokoje</a></li>
+          <li><a href="#">Typy pokojů</a></li>
+          <li><a href="#">Reporty</a></li>
+        {% endif %}
+      </ul>
+
+      <h3>Osobní údaje</h3>
+      <ul>
+        <li><a href="{{ url_for('user_profile') }}">Osobní údaje</a></li>
+        <li><a href="#">Podmínky / souhlasy</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="profile-main">
+    {% block profile_content %}{% endblock %}
+  </div>
+</section>
+{% endblock %}
