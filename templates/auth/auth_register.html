@@ -1,21 +1,47 @@
 {% extends "base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Registrace{% endblock %}
 
 {% block content %}
-  <h2>{{ title }}</h2>
+<section class="auth-section">
+  <div class="auth-container">
 
-  {% if error %}
-    <p style="color: red;">{{ error }}</p>
-  {% endif %}
+    <div class="auth-card">
+      <h1>Registrace</h1>
 
-  <form method="post" action="{{ url_for('auth_register_post') }}">
-    <label>Jméno:<br><input type="text" name="first_name" required></label><br>
-    <label>Příjmení:<br><input type="text" name="last_name" required></label><br>
-    <label>Telefon:<br><input type="text" name="phone_number" required></label><br>
-    <label>Email:<br><input type="email" name="email" required></label><br>
-    <label>Heslo:<br><input type="password" name="password" required></label><br>
-    <button type="submit">Registrovat</button>
-  </form>
+      {% if error %}
+        <p class="auth-error">{{ error }}</p>
+      {% endif %}
 
-  <p>Už máte účet? <a href="{{ url_for('auth_login') }}">Přihlaste se</a>.</p>
+      <form method="post" action="{{ url_for('auth_register_post') }}" class="auth-form">
+        <label>
+          Jméno
+          <input type="text" name="first_name" required>
+        </label>
+        <label>
+          Příjmení
+          <input type="text" name="last_name" required>
+        </label>
+        <label>
+          Telefon
+          <input type="tel" name="phone_number" required>
+        </label>
+        <label>
+          E-mail
+          <input type="email" name="email" required>
+        </label>
+        <label>
+          Heslo
+          <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="btn btn-primary auth-submit">Registrovat</button>
+      </form>
+
+      <p class="auth-register">
+        Už máte účet?
+        <a href="{{ url_for('auth_login') }}">Přihlaste se</a>.
+      </p>
+    </div>
+
+  </div>
+</section>
 {% endblock %}
