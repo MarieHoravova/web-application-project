@@ -4,52 +4,78 @@
 {% block content %}
   <h2>{{ title }}</h2>
 
-  <section class="grid">
-    <div>
-      <h3>Nový booking</h3>
-      <form method="post" action="{{ url_for('bookings_create') }}">
-        <label>ID uživatele:<br>
-          <input type="number" name="user_id" required>
-        </label><br>
-        <button type="submit">Vytvořit booking</button>
-      </form>
+  {% if is_admin_or_receptionist %}
+    <section class="grid">
+      <div>
+        <h3>Nový booking</h3>
+        <form method="post" action="{{ url_for('bookings_create') }}">
+          <label>ID uživatele:<br>
+            <input type="number" name="user_id" required>
+          </label><br>
+          <button type="submit">Vytvořit booking</button>
+        </form>
 
-      <h4>Filtrovat podle uživatele</h4>
-      <form method="get" action="{{ url_for('bookings_list') }}">
-        <label>ID uživatele:<br>
-          <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
-        </label><br>
-        <button type="submit">Filtrovat</button>
-        <a href="{{ url_for('bookings_list') }}">Zrušit filtr</a>
-      </form>
-    </div>
+        <h4>Filtrovat podle uživatele</h4>
+        <form method="get" action="{{ url_for('bookings_list') }}">
+          <label>ID uživatele:<br>
+            <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
+          </label><br>
+          <button type="submit">Filtrovat</button>
+          <a href="{{ url_for('bookings_list') }}">Zrušit filtr</a>
+        </form>
+      </div>
 
-    <div>
-      <h3>Seznam bookingů</h3>
-      {% if bookings|length == 0 %}
-        <p>Žádné bookingy k zobrazení.</p>
-      {% else %}
-        <table class="data">
-          <tr>
-            <th>ID</th>
-            <th>Kód</th>
-            <th>Uživatel</th>
-            <th>Status</th>
-            <th>Vytvořeno</th>
-            <th>Detail</th>
-          </tr>
-          {% for b in bookings %}
+      <div>
+        <h3>Seznam bookingů</h3>
+        {% if bookings|length == 0 %}
+          <p>Žádné bookingy k zobrazení.</p>
+        {% else %}
+          <table class="data">
             <tr>
-              <td>{{ b.id }}</td>
-              <td>{{ b.code }}</td>
-              <td>{{ b.user_id }}</td>
-              <td>{{ b.status_id }}</td>
-              <td>{{ b.created_at }}</td>
-              <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}">Detail</a></td>
+              <th>ID</th>
+              <th>Kód</th>
+              <th>Uživatel</th>
+              <th>Status</th>
+              <th>Vytvořeno</th>
+              <th>Detail</th>
             </tr>
-          {% endfor %}
-        </table>
-      {% endif %}
-    </div>
-  </section>
+            {% for b in bookings %}
+              <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.code }}</td>
+                <td>{{ b.user_id }}</td>
+                <td>{{ b.status_id }}</td>
+                <td>{{ b.created_at }}</td>
+                <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}">Detail</a></td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% endif %}
+      </div>
+    </section>
+  {% else %}
+    <h3>Moje bookingy</h3>
+    {% if bookings|length == 0 %}
+      <p>Nemáte žádné bookingy.</p>
+    {% else %}
+      <table class="data">
+        <tr>
+          <th>ID</th>
+          <th>Kód</th>
+          <th>Status</th>
+          <th>Vytvořeno</th>
+          <th>Detail</th>
+        </tr>
+        {% for b in bookings %}
+          <tr>
+            <td>{{ b.id }}</td>
+            <td>{{ b.code }}</td>
+            <td>{{ b.status_id }}</td>
+            <td>{{ b.created_at }}</td>
+            <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}">Detail</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+  {% endif %}
 {% endblock %}
