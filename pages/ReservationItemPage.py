@@ -1,12 +1,16 @@
+from datetime import date
+
 from typing import List, Dict, Any
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
+from starlette import status
 
 from services.ReservationItemService import ReservationItemService
 from services.ReservationService import ReservationService
 from services.RoomService import RoomService
+from services.RoomTypeService import RoomTypeService
 
-from dependencies import reservation_item_service, reservation_service, room_service
+from dependencies import reservation_item_service, reservation_service, room_service, room_type_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST
 
@@ -96,6 +100,8 @@ async def reservation_items_create(
     )
 
 
+
+
 @router.get("/reservations/create", name="reservation_create_page")
 def reservation_create_page(
     request: Request,
@@ -106,11 +112,12 @@ def reservation_create_page(
     room_svc: RoomService = Depends(room_service),
     current_user = Depends(get_current_user),
 ):
-    # nepřihlášený -> redirect na login (get_current_user to řeší)
     if isinstance(current_user, RedirectResponse):
         return current_user
 
     rooms: List[Dict[str, Any]] = []
+    nights: int = 0
+
     if check_in and check_out:
         rooms = room_svc.list_available_rooms(
             check_in=check_in,
@@ -118,6 +125,27 @@ def reservation_create_page(
             adults=adults,
             children=children,
         )
+
+        try:
+            d_in = date.fromisoformat(check_in)
+            d_out = date.fromisoformat(check_out)
+            nights = (d_out - d_in).days
+            if nights < 0:
+                nights = 0
+        except ValueError:
+            nights = 0
+
+        rooms_with_prices: List[Dict[str, Any]] = []
+        for room in rooms:
+            base_price = room.get("base_price") or 0  # z room_types
+            total_price = base_price * nights if nights > 0 else 0
+            rooms_with_prices.append({
+                **room,
+                "price_per_night": base_price,
+                "total_price": total_price,
+                "nights": nights,
+            })
+        rooms = rooms_with_prices
 
     search = {
         "check_in": check_in or "",
@@ -133,6 +161,7 @@ def reservation_create_page(
             "request": request,
             "rooms": rooms,
             "search": search,
+            "nights": nights,
             "current_user": current_user,
         },
     )

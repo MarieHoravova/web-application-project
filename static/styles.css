@@ -1030,3 +1030,111 @@ table.data tbody tr:hover {
     margin-bottom: 8px;
 }
 
+/* REZERVACE – stránka */
+
+.reservation-page {
+    padding: 24px 0 40px;
+}
+
+/* horní filtr – využívá styly admin-detail-form-item pro label+input */
+.reservation-search-form {
+    margin-bottom: 20px;
+}
+
+.reservation-search-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.reservation-search-field {
+    flex: 1 1 180px;
+}
+
+.reservation-search-actions {
+    flex: 0 0 auto;
+}
+
+/* vybrané pokoje */
+
+.reservation-summary {
+    margin-top: 16px;
+}
+
+.room-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.room-summary-item {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: var(--color-primary-white);
+    font-size: 14px;
+}
+
+.room-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.room-summary-body {
+    color: var(--color-text-main);
+}
+
+/* menší sekundární tlačítko uvnitř karty */
+.btn-small {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+/* dostupné pokoje – grid kartiček */
+
+.room-results {
+    margin-top: 24px;
+}
+
+.room-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.room-card-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+}
+
+.room-card-image {
+    height: 120px;
+    border-radius: 8px;
+    background: var(--color-primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+}
+
+.room-card-body {
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+.room-price-line {
+    margin: 2px 0;
+}
+
+.room-card-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}

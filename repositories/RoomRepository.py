@@ -6,16 +6,37 @@ def get_room_by_id(conn: sqlite3.Connection, room_id: int) -> Optional[Dict[str,
     row = conn.execute("SELECT * FROM rooms WHERE id = ?", (room_id,)).fetchone()
     return dict(row) if row else None
 
-def list_rooms(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM rooms ORDER BY floor, number").fetchall()
+def list_rooms(conn):
+    rows = conn.execute("""
+        SELECT
+            r.*,
+            rt.name AS room_type_name,
+            rt.base_price AS base_price,
+            rt.capacity AS capacity,
+            rt.description AS room_type_description
+        FROM rooms r
+        JOIN room_types rt ON r.room_type_id = rt.id
+        ORDER BY r.floor, r.number
+    """).fetchall()
     return [dict(r) for r in rows]
 
 def list_rooms_by_status(conn: sqlite3.Connection, status_id: int) -> List[Dict[str, Any]]:
     rows = conn.execute("SELECT * FROM rooms WHERE room_status_id = ? ORDER BY floor, number", (status_id,)).fetchall()
     return [dict(r) for r in rows]
 
-def list_rooms_by_type(conn: sqlite3.Connection, room_type_id: int) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM rooms WHERE room_type_id = ? ORDER BY floor, number", (room_type_id,)).fetchall()
+def list_rooms_by_type(conn, room_type_id: int):
+    rows = conn.execute("""
+        SELECT
+            r.*,
+            rt.name AS room_type_name,
+            rt.base_price AS base_price,
+            rt.capacity AS capacity,
+            rt.description AS room_type_description
+        FROM rooms r
+        JOIN room_types rt ON r.room_type_id = rt.id
+        WHERE r.room_type_id = ?
+        ORDER BY r.floor, r.number
+    """, (room_type_id,)).fetchall()
     return [dict(r) for r in rows]
 
 def create_room(conn: sqlite3.Connection, number: int, room_type_id: int, room_status_id: int, image_path: str, floor: int) -> Dict[str, Any]:
