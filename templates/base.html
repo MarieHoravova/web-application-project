@@ -26,17 +26,18 @@
       </nav>
 
       <!-- Tlačítka vpravo -->
-     <div class="header-actions">
-          {% if current_user is defined and current_user %}
-            <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
+<div class="header-actions">
+  {% if current_user is defined and current_user %}
+    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
+    <a href="/profile" class="btn btn-secondary">Můj účet</a>
+    <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
+  {% else %}
+    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
+    <a href="{{ url_for('auth_login') }}" class="btn btn-secondary">Přihlásit se</a>
+  {% endif %}
+</div>
 
-         <a href="/profile" class="btn btn-secondary">Můj účet</a>
-            <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
-          {% else %}
-            <a href="{{ url_for('reservations_list') }}" class="btn btn-primary">Rezervace</a>
-            <a href="{{ url_for('auth_login') }}" class="btn btn-secondary">Přihlásit se</a>
-          {% endif %}
-        </div>
+
 
     </div>
   </header>
