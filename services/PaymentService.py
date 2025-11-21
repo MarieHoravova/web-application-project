@@ -5,12 +5,12 @@ from models.Payment import PaymentCreate
 from repositories.PaymentRepository import (
     get_payment_by_id as repo_get_payment_by_id,
     list_all_payments as repo_list_all,
-    list_payments_by_booking as repo_list_by_booking,
+    list_payments_by_reservation as repo_list_by_reservation,
     create_payment as repo_create_payment,
     delete_payment as repo_delete_payment,
 )
-from repositories.BookingRepository import (
-    get_booking_by_id as repo_get_booking_by_id,
+from repositories.ReservationRepository import (
+    get_reservation_by_id as repo_get_reservation_by_id,
 )
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
@@ -28,30 +28,30 @@ class PaymentService:
             raise PermissionError("Nemáte oprávnění zobrazit všechny platby")
         return repo_list_all(self.conn)
 
-    # ---- LIST BY BOOKING (práva podle role) ----
-    def list_payments_by_booking(
+    # ---- LIST BY reservation (práva podle role) ----
+    def list_payments_by_reservation(
         self,
-        booking_id: int,
+        reservation_id: int,
         current_user_id: int,
         current_user_role: int
     ) -> List[Dict[str, Any]]:
 
-        booking = repo_get_booking_by_id(self.conn, booking_id)
-        if not booking:
-            raise ValueError("Booking neexistuje")
+        reservation = repo_get_reservation_by_id(self.conn, reservation_id)
+        if not reservation:
+            raise ValueError("Rezervace neexistuje")
 
-        # CUSTOMER: může jen platby svých bookingů
+        # CUSTOMER: může jen platby svých rezervací
         if current_user_role == ROLE_CUSTOMER:
-            if booking["user_id"] != current_user_id:
-                raise PermissionError("Nemůžete zobrazit platby cizího bookingU")
+            if reservation["user_id"] != current_user_id:
+                raise PermissionError("Nemůžete zobrazit platby cizí rezervace")
 
         # ADMIN / RECEPCE: mohou všechno
-        return repo_list_by_booking(self.conn, booking_id)
+        return repo_list_by_reservation(self.conn, reservation_id)
 
     # ---- CREATE PAYMENT (jen ADMIN/RECEPCE) ----
     def create_payment(
         self,
-        booking_id: int,
+        reservation_id: int,
         amount: float,
         method_id: int,
         current_user_role: int
@@ -59,11 +59,11 @@ class PaymentService:
 
         if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
             raise PermissionError("Nemáte oprávnění vytvářet platby")
-        booking = repo_get_booking_by_id(self.conn, booking_id)
-        if not booking:
-            raise ValueError("Booking neexistuje")
+        reservation = repo_get_reservation_by_id(self.conn, reservation_id)
+        if not reservation:
+            raise ValueError("Rezervace neexistuje")
 
-        return repo_create_payment(self.conn, booking_id, amount, method_id)
+        return repo_create_payment(self.conn, reservation_id, amount, method_id)
 
     # ---- DELETE PAYMENT (jen ADMIN) ----
     def delete_payment(
@@ -97,17 +97,17 @@ if __name__ == "__main__":
         conn.execute("""
                      DELETE
                      FROM payments
-                     WHERE booking_id IN (SELECT id
-                                          FROM bookings
+                     WHERE reservation_id IN (SELECT id
+                                          FROM reservations
                                           WHERE user_id IN (SELECT id
                                                             FROM users
                                                             WHERE email LIKE 'pay_%'))
                      """)
 
-        # 2) Clean bookings
+        # 2) Clean reservations
         conn.execute("""
                      DELETE
-                     FROM bookings
+                     FROM reservations
                      WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'pay_%')
                      """)
 
@@ -131,9 +131,9 @@ if __name__ == "__main__":
         """, (ROLE_CUSTOMER,)).lastrowid
         conn.commit()
 
-        # booking pro customer
-        booking = conn.execute("""
-            INSERT INTO bookings (user_id, code, status_id, created_at)
+        # reservation pro customer
+        reservation = conn.execute("""
+            INSERT INTO reservations (user_id, code, status_id, created_at)
             VALUES (?, 'PMTEST', 1, datetime('now'))
         """, (customer,)).lastrowid
         conn.commit()
@@ -146,15 +146,15 @@ if __name__ == "__main__":
         conn.commit()
 
         print("\n=== TEST: create_payment as admin ===")
-        p1 = service.create_payment(booking, 9999.0, method, ROLE_ADMIN)
+        p1 = service.create_payment(reservation, 9999.0, method, ROLE_ADMIN)
         print("Created:", p1)
 
-        print("\n=== TEST: list_payments_by_booking as customer (OK) ===")
-        print(service.list_payments_by_booking(booking, customer, ROLE_CUSTOMER))
+        print("\n=== TEST: list_payments_by_reservation as customer (OK) ===")
+        print(service.list_payments_by_reservation(reservation, customer, ROLE_CUSTOMER))
 
-        print("\n=== TEST: list_payments_by_booking as someone else (FAIL) ===")
+        print("\n=== TEST: list_payments_by_reservation as someone else (FAIL) ===")
         try:
-            service.list_payments_by_booking(booking, 999, ROLE_CUSTOMER)
+            service.list_payments_by_reservation(reservation, 999, ROLE_CUSTOMER)
         except PermissionError as e:
             print("Expected:", e)
 

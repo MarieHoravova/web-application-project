@@ -6,100 +6,131 @@ def get_reservation_by_id(conn: sqlite3.Connection, reservation_id: int) -> Opti
     row = conn.execute("SELECT * FROM reservations WHERE id = ?", (reservation_id,)).fetchone()
     return dict(row) if row else None
 
-def list_reservations_by_booking(conn: sqlite3.Connection, booking_id: int) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM reservations WHERE booking_id = ? ORDER BY check_in", (booking_id,)).fetchall()
+def get_reservation_by_code(conn: sqlite3.Connection, code: str) -> Optional[Dict[str, Any]]:
+    row = conn.execute("SELECT * FROM reservations WHERE code = ?", (code,)).fetchone()
+    return dict(row) if row else None
+
+def list_reservations(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
+    rows = conn.execute("SELECT * FROM reservations ORDER BY created_at DESC").fetchall()
     return [dict(r) for r in rows]
 
-def list_reservations_by_room(conn: sqlite3.Connection, room_id: int) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM reservations WHERE room_id = ? ORDER BY check_in", (room_id,)).fetchall()
+def list_reservations_by_user(conn: sqlite3.Connection, user_id: int) -> List[Dict[str, Any]]:
+    rows = conn.execute("SELECT * FROM reservations WHERE user_id = ? ORDER BY created_at DESC", (user_id,)).fetchall()
     return [dict(r) for r in rows]
 
-def create_reservation(conn: sqlite3.Connection, room_id: int, check_in: str, check_out: str, adults: int, children: int, booking_id: int) -> Dict[str, Any]:
+def create_reservation(conn: sqlite3.Connection, user_id: int, code: str, status_id: int) -> Dict[str, Any]:
     cur = conn.execute(
-        "INSERT INTO reservations (room_id, check_in, check_out, adults, children, booking_id) VALUES (?, ?, ?, ?, ?, ?)",
-        (room_id, check_in, check_out, adults, children, booking_id)
+        "INSERT INTO reservations (user_id, code, status_id) VALUES (?, ?, ?)",
+        (user_id, code, status_id)
     )
     conn.commit()
     new_id = cur.lastrowid
     return get_reservation_by_id(conn, new_id)
 
+def update_reservation_status(conn: sqlite3.Connection, reservation_id: int, status_id: int) -> Optional[Dict[str, Any]]:
+    conn.execute("UPDATE reservations SET status_id = ? WHERE id = ?", (status_id, reservation_id))
+    conn.commit()
+    return get_reservation_by_id(conn, reservation_id)
+
+# Speciální update reservation pro admina – řeší výjimečné
+# případy (např. chybně přiřazený uživatel nebo kód)
+def update_reservation(
+    conn: sqlite3.Connection,
+    reservation_id: int,
+    user_id: Optional[int] = None,
+    code: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
+    updates = []
+    params = []
+
+    if user_id is not None:
+        updates.append("user_id = ?")
+        params.append(user_id)
+
+    if code is not None:
+        updates.append("code = ?")
+        params.append(code.strip())
+
+    if not updates:
+        return get_reservation_by_id(conn, reservation_id)
+
+    params.append(reservation_id)
+    sql = f"UPDATE reservations SET {', '.join(updates)} WHERE id = ?"
+
+    conn.execute(sql, params)
+    conn.commit()
+
+    return get_reservation_by_id(conn, reservation_id)
+
 def delete_reservation(conn: sqlite3.Connection, reservation_id: int) -> None:
     conn.execute("DELETE FROM reservations WHERE id = ?", (reservation_id,))
     conn.commit()
 
-def find_conflicting_reservations(conn: sqlite3.Connection, room_id: int, check_in: str, check_out: str) -> List[Dict[str, Any]]:
-    """
-    Najde rezervace, které kolidují s intervalem [check_in, check_out) pro daný pokoj.
-    Logika:
-        konflikt existuje, pokud NEnastane:
-        (existující_checkout <= nový_checkin) OR (existující_checkin >= nový_checkout)
-        -> proto NOT (A OR B)
-    """
-    rows = conn.execute(
-        """
-        SELECT * FROM reservations
-        WHERE room_id = ?
-        AND NOT (check_out <= ? OR check_in >= ?)
-        """,
-        (room_id, check_in, check_out)
-    ).fetchall()
-    return [dict(r) for r in rows]
 
-
+# TEST
 if __name__ == "__main__":
     from database.database import open_connection
 
     with open_connection() as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
 
-        print("\n=== PREP: Ensure room exists ===")
-        room = conn.execute("SELECT id FROM rooms LIMIT 1").fetchone()
-        if room is None:
+        # 1) Testovací user
+        user_row = conn.execute("SELECT id FROM users LIMIT 1").fetchone()
+        if user_row is None:
             cur = conn.execute(
-                "INSERT INTO rooms (number, room_type_id, room_status_id, image_path, floor) VALUES (?, ?, ?, ?, ?)",
-                (999, 1, 1, "test.jpg", 1)
+                "INSERT INTO users (email, password_hash, first_name, last_name, phone_number, role_id, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))",
+                ("reservation_test@example.com", "HASH123", "Reservation", "Tester", "123456789", 3)
             )
             conn.commit()
-            room_id = cur.lastrowid
+            user_id = cur.lastrowid
         else:
-            room_id = room["id"]
-        print("ROOM ID:", room_id)
+            user_id = user_row["id"]
 
-        print("\n=== PREP: Ensure booking exists ===")
-        booking = conn.execute("SELECT id FROM bookings LIMIT 1").fetchone()
-        if booking is None:
-            cur = conn.execute(
-                "INSERT INTO bookings (user_id, code, status_id) VALUES (?, ?, ?)",
-                (1, "RES-TEST", 1)
-            )
+        # 2) Reservation status
+        status_row = conn.execute("SELECT id FROM reservation_statuses ORDER BY id LIMIT 1").fetchone()
+        if status_row is None:
+            cur = conn.execute("INSERT INTO reservation_statuses (description) VALUES (?)", ("pending",))
             conn.commit()
-            booking_id = cur.lastrowid
+            status_id = cur.lastrowid
         else:
-            booking_id = booking["id"]
-        print("BOOKING ID:", booking_id)
+            status_id = status_row["id"]
 
-        # Clean old test reservations
-        conn.execute("DELETE FROM reservations WHERE booking_id = ?", (booking_id,))
+        # 3) Úklid testovacích reservation kódů, abych ho mohla pouštět opakovaně
+        conn.execute("DELETE FROM reservations WHERE code = ?", ("TEST-CODE-123",))
+        conn.execute("DELETE FROM reservations WHERE code = ?", ("ABC123",))
+        conn.execute("DELETE FROM reservations WHERE code = ?", ("NEW999",))
         conn.commit()
 
+        print("\n=== TEST: list_reservations (before) ===")
+        print(list_reservations(conn))
+
         print("\n=== TEST: create_reservation ===")
-        r1 = create_reservation(conn, room_id, "2025-01-10", "2025-01-15", 2, 0, booking_id)
-        print("Created:", r1)
+        reservation = create_reservation(conn, user_id=user_id, code="TEST-CODE-123", status_id=status_id)
+        print("Created:", reservation)
 
-        print("\n=== TEST: list_reservations_by_booking ===")
-        print(list_reservations_by_booking(conn, booking_id))
+        reservation_id = reservation["id"]
 
-        print("\n=== TEST: list_reservations_by_room ===")
-        print(list_reservations_by_room(conn, room_id))
+        print("\n=== TEST: get_reservation_by_id ===")
+        print(get_reservation_by_id(conn, reservation_id))
 
-        print("\n=== TEST: create 2nd reservation (overlap) ===")
-        r2 = create_reservation(conn, room_id, "2025-01-14", "2025-01-20", 2, 0, booking_id)
-        print("Created:", r2)
+        print("\n=== TEST: get_reservation_by_code ===")
+        print(get_reservation_by_code(conn, "TEST-CODE-123"))
 
-        print("\n=== TEST: find_conflicting_reservations (should find r1) ===")
-        conflicts = find_conflicting_reservations(conn, room_id, "2025-01-12", "2025-01-18")
-        print(conflicts)
+        print("\n=== TEST: list_reservations_by_user ===")
+        print(list_reservations_by_user(conn, user_id=user_id))
+
+        print("\n=== TEST: update_reservation_status ===")
+        updated = update_reservation_status(conn, reservation_id, status_id=status_id)
+        print("Updated:", updated)
+
+        print("\n=== TEST: update_reservation (admin-only operation) ===")
+        bk = create_reservation(conn, user_id=user_id, code="ABC123", status_id=status_id)
+        updated_reservation = update_reservation(conn, bk["id"], user_id=user_id, code="NEW999")
+        print(updated_reservation)
 
         print("\n=== TEST: delete_reservation ===")
-        delete_reservation(conn, r1["id"])
-        delete_reservation(conn, r2["id"])
-        print("After delete:", list_reservations_by_room(conn, room_id))
+        delete_reservation(conn, reservation_id)
+        print("After delete get_by_id:", get_reservation_by_id(conn, reservation_id))
+
+        print("\n=== TEST: list_reservations (after) ===")
+        print(list_reservations(conn))

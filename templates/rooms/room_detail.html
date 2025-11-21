@@ -1,27 +1,57 @@
-{% extends "base.html" %}
+{% extends "profile/profile_base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
-{% block content %}
-  <h2>{{ title }}</h2>
+{% block profile_content %}
 
-  <dl>
-    <dt>ID</dt><dd>{{ room.id }}</dd>
-    <dt>Číslo pokoje</dt><dd>{{ room.number }}</dd>
-    <dt>Typ pokoje (ID)</dt><dd>{{ room.room_type_id }}</dd>
-    <dt>Stav pokoje (ID)</dt><dd>{{ room.room_status_id }}</dd>
-    <dt>Patro</dt><dd>{{ room.floor }}</dd>
-    <dt>Obrázek</dt><dd>{{ room.image_path }}</dd>
-  </dl>
+  <div class="admin-detail-header">
+    <h2>{{ title }}</h2>
 
-  {% if is_admin or is_receptionist %}
-    <p><a href="{{ url_for('room_edit', room_id=room.id) }}">Upravit pokoj</a></p>
-  {% endif %}
+    {% if is_admin or is_receptionist %}
+      <a href="{{ url_for('room_edit', room_id=room.id) }}"
+         class="btn btn-secondary admin-detail-edit">
+        Upravit pokoj
+      </a>
+    {% endif %}
+  </div>
 
-  {% if is_admin %}
-    <form method="post" action="{{ url_for('room_delete', room_id=room.id) }}" onsubmit="return confirm('Opravdu smazat tento pokoj?');">
-      <button type="submit">Smazat pokoj</button>
-    </form>
-  {% endif %}
+  <div class="admin-detail">
+    <div class="admin-detail-grid">
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">ID</div>
+        <div class="admin-detail-value">{{ room.id }}</div>
+      </div>
 
-  <p><a href="{{ url_for('rooms_list') }}">← Zpět na seznam pokojů</a></p>
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Číslo pokoje</div>
+        <div class="admin-detail-value">{{ room.number }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Typ pokoje (ID)</div>
+        <div class="admin-detail-value">{{ room.room_type_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Stav pokoje (ID)</div>
+        <div class="admin-detail-value">{{ room.room_status_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Patro</div>
+        <div class="admin-detail-value">{{ room.floor }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Obrázek</div>
+        <div class="admin-detail-value">{{ room.image_path }}</div>
+      </div>
+    </div>
+
+    <div class="admin-detail-back">
+      <a href="{{ url_for('rooms_list') }}" class="btn btn-tertiary">
+        Zpět na seznam pokojů
+      </a>
+    </div>
+  </div>
+
 {% endblock %}

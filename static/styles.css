@@ -1,0 +1,1032 @@
+html, body {
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;  /*definuje, že šířka a výška prvku už v sobě zahrnují padding i border*/
+    font-family: "Inter", sans-serif;
+}
+
+
+:root {
+  /* Brand / primární modrá */
+  --color-primary-900: #0B1F33;  /* hodně tmavá – header, footer */
+  --color-primary-700: #123457;  /* hover, zvýrazněné texty */
+  --color-primary-500: #1F5A96;  /* hlavní modrá – tlačítka, odkazy */
+  --color-primary-100: #E7F0FA;  /* světle modrá – pozadí boxů */
+  --color-primary-white: #FFFFFF; /* bílá */
+  /* Akcent (zlatá / písek) */
+  --color-accent-500: #D4A857;   /* sekundární akce, badge */
+  --color-accent-100: #FFF5E6;   /* světlé krémové pozadí */
+
+  /* Neutrály (pozadí, texty, rámečky) */
+  --color-bg-main: #F4F6FB;         /* hlavní pozadí stránky */
+  --color-bg-card: #FFFFFF;         /* karty, panely, formuláře */
+  --color-border-subtle: #E2E8F0;   /* jemné rámečky */
+  --color-text-main: #111827;       /* běžný text */
+  --color-text-muted: #6B7280;      /* sekundární text */
+  --color-text-on-dark: #F9FAFB;    /* text na tmavém pozadí */
+    --color-bg-secondary: #A8B3C6;
+
+  /* Stavové barvy */
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-error:   #DC2626;
+  --color-info:    #0EA5E9;
+
+}
+
+body {
+    margin: 0;
+    background: var(--color-bg-main);
+    color: var(--color-text-main);
+}
+
+h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+.logo {
+/*    logo bude obrázek*/
+}
+
+/* HEADER */
+.header-inner {
+    display: flex;
+    margin: 0 auto;
+    padding: 12px 24px;
+    max-width: 1200px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--color-text-main);
+    font-size: 16px;
+    padding: 4px 8px;
+}
+
+.main-nav a:hover {
+  color: var(--color-primary-500);
+}
+
+.divider {
+    color: var(--color-text-muted);
+    font-size: 20px;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+}
+
+/*TLAČÍTKA*/
+.btn {
+    padding: 6px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    white-space: nowrap; /* nezalamuje řádky */
+    cursor: pointer; /* při najetí myší*/
+}
+
+.btn-primary {
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-white);
+    border-color: var(--color-primary-500);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+}
+
+.btn-secondary {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    border-color: var(--color-bg-secondary);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+    background-color: var(--color-primary-100);
+}
+
+.site-header{
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: #fff;
+}
+
+.logout-link {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    text-decoration: underline;
+
+}
+
+.logout-link:hover {
+    color: var(--color-primary-500);
+}
+
+/* FOOTER */
+.site-footer {
+    border-top: 1px solid var(--color-border-subtle);
+    background: var(--color-primary-white);
+    margin-top: 40px;
+    flex-shrink: 0;   /* footer zůstane dole */
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    /*align-items: flex-start;*/
+    /*gap: 24px;*/
+}
+
+/*.footer-brand {*/
+/*    max-width: 100000000px;*/
+/*}*/
+
+/*.footer-logo {*/
+/*    font-size: 24px;*/
+/*    font-weight: 700;*/
+/*    color: var(--color-primary-700);*/
+/*}*/
+
+.footer-tagline {
+    margin-top: 8px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.footer-columns {
+    display: flex;
+    gap: 16px;
+}
+
+.footer-column h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.footer-card {
+    background: var(--color-bg-main);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 180px;
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+.footer-card p {
+    margin: 0 0 4px 0;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.social-link {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-subtle);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--color-text-main);
+}
+
+.social-link:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+}
+
+/*HOME PAGE*/
+
+.page-main {
+    padding: 24px 24px 40px;
+}
+
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/*Výchozí H1 pro všechny stránky*/
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--color-primary-900);
+}
+
+.home-alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--color-primary-100);
+    color: var(--color-primary-900);
+    border: 1px solid var(--color-primary-500);
+    font-size: 14px;
+    width: 320px;
+
+    margin: 0 auto 16px; /* vlevo/vpravo auto → prohlížeč box vycentruje (nedělám přes flex) */
+    text-align: center;    /* ← zarovnání textu uvnitř */
+}
+
+/* univerzální karta pro homepage, bílé pozadí pro všechno */
+.home-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.home-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.home-hero-text {
+    margin: 0;
+    color: var(--color-text-main);
+}
+
+.home-hero-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* řádky layoutu, dělím si to tím na 2 karty*/
+.home-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* pevná šířky sloupců */
+.home-quick-info,
+.home-basic-info {
+    flex: 0 0 260px;
+}
+
+/* Zbytek se roztáhne do zbylé části*/
+.home-amenities,
+.home-gallery,
+.home-map, /*Když je to 1-1 pro home-map i home-contact, tak je to napůl */
+.home-contact {
+    flex: 1;
+}
+
+.home-card-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+/* Rychlé info */
+.home-quick-info-list {
+    padding-top: 2px;
+}
+
+.home-quick-info-list li {
+    margin-top: 6px;
+}
+
+/* Základní info */
+.home-basic-info p {
+    margin: 0 0 4px 0;
+}
+
+.home-basic-info-contact {
+    padding-top: 8px;
+    color: var(--color-text-muted);
+}
+
+/* Služby */
+.home-amenities-text {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+.home-amenities-icons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.home-amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--color-primary-100);
+    border: 1px solid var(--color-border-subtle);
+}
+
+.home-amenity-icon {
+    font-size: 20px;
+}
+
+.home-amenity-label {
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+/* Galerie */
+.home-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+/*Trochu je zvětším, až tam budu dávat ty obrázky*/
+.home-gallery-item {
+    background: var(--color-primary-100);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    height: 120px;
+}
+
+/* KONTAKT */
+/* Mapa – placeholder */
+.contact-map-box {
+    background: var(--color-primary-100);
+    border-radius: 8px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+.contact-intro {
+    margin: 0 auto 20px auto;
+}
+
+.contact-top-row {
+    justify-content: center;
+}
+
+.contact-card {
+    flex: 0 1 320px;  /* dvě hezky široké karty */
+    font-size: 14px;
+}
+.contact-card-address {
+    flex: 0 1 200px;  /* dvě hezky široké karty */
+    font-size: 14px;
+}
+.contact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.contact-list li {
+    margin-bottom: 4px;
+}
+
+/* Kontaktní formulář, auth formulář */
+.home-contact-form,
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.home-contact-form label,
+.auth-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: var(--color-text-main);
+    gap: 4px;
+}
+
+.home-contact-form input,
+.home-contact-form textarea,
+.auth-form input,
+.auth-form textarea {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-subtle);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.home-contact-form input:focus,
+.home-contact-form textarea:focus,
+.auth-form input:focus,
+.auth-form textarea:focus {
+    outline: none; /* vypnu default */
+    border-color: var(--color-primary-500); /* dám vlastní zvýraznění */
+}
+/* GALERIE – layout*/
+.gallery-page {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 24px 24px 0;
+}
+
+/* navigace – záložky místo odrážek */
+.gallery-nav {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.gallery-nav ul {
+    list-style: none;     /* zruší tečky */
+    margin: 0;
+    padding: 0 0 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.gallery-nav a {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    text-decoration: none;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-main);
+}
+
+.gallery-nav a:hover {
+    background: var(--color-primary-100);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-700);
+}
+
+/* jednotlivé sekce galerie jako „karty“ */
+.gallery-section {
+    margin-top: 24px;
+    background: var(--color-bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+    padding: 16px 20px 20px;
+}
+
+.gallery-section h2 {
+    margin: 0 0 6px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+.gallery-section-intro {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+}
+
+/* GRID – 3 obrázky vedle sebe */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));  /* 3 sloupce */
+    gap: 16px;
+}
+
+/* styl položek */
+.gallery-item {
+    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+}
+
+.gallery-item img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;   /* zajistí mi výřez obrázku, ne deformaci */
+}
+
+.gallery-item figcaption {
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--color-text-main);
+}
+
+/*!* Nice to have *!*/
+/*@media (max-width: 900px) {*/
+/*    .gallery-page {*/
+/*        padding: 16px;*/
+/*    }*/
+
+/*    .gallery-grid {*/
+/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
+/*    }*/
+/*}*/
+
+/*@media (max-width: 600px) {*/
+/*    .gallery-grid {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+/*}*/
+
+
+/* NICE TO HAVE */
+
+/*@media (max-width: 900px) {*/
+/*    .gallery-page {*/
+/*        padding: 16px;*/
+/*    }*/
+
+/*    .gallery-grid {*/
+/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
+/*    }*/
+/*}*/
+
+/*@media (max-width: 600px) {*/
+/*    .gallery-grid {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+/*}*/
+
+
+
+
+/*NICE TO HAVE*/
+/*!* jednoduchá responsivita homepage *!*/
+/*@media (max-width: 900px) {*/
+/*    .home-hero {*/
+/*        flex-direction: column;*/
+/*        align-items: flex-start;*/
+/*    }*/
+
+/*    .home-row {*/
+/*        flex-direction: column;*/
+/*    }*/
+
+/*    .home-quick-info,*/
+/*    .home-basic-info,*/
+/*    .home-amenities,*/
+/*    .home-gallery,*/
+/*    .home-map,*/
+/*    .home-contact {*/
+/*        flex: 1 1 auto;*/
+/*    }*/
+
+/*    .page-main {*/
+/*        padding: 16px;*/
+/*    }*/
+/*}*/
+
+
+/*!* NICE TO HAVE *!*/
+/*@media (max-width: 768px) {*/
+/*    .footer-inner {*/
+/*        flex-direction: column;*/
+/*        align-items: flex-start;*/
+/*    }*/
+
+/*    .footer-right {*/
+/*        align-items: flex-start;*/
+/*        width: 100%;*/
+/*    }*/
+
+/*    .footer-columns {*/
+/*        flex-direction: column;*/
+/*        width: 100%;*/
+/*    }*/
+
+/*    .footer-card {*/
+/*        width: 100%;*/
+/*    }*/
+/*}*/
+
+/*Celý "řádek"*/
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.auth-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+
+.auth-error {
+    display: block;
+    max-width: 230px;
+    margin: 0 auto 12px auto; /* auto zajistí centrování na střed*/
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--color-error);
+    color: var(--color-primary-white);
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-submit {
+    margin-top: 8px;
+}
+
+.auth-register {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.auth-register a {
+    color: var(--color-primary-500);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-register a:hover {
+    color: var(--color-primary-700);
+    text-decoration: underline;
+}
+
+/* volitelně – box pro debug JWT */
+.auth-token-card {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--color-bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+    font-size: 14px;
+}
+
+.auth-token-title {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.auth-token-pre {
+    background: var(--color-bg-main);
+    padding: 8px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.auth-token-note {
+    margin-top: 8px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+/* PROFILE */
+
+.profile-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+}
+
+/* levý sloupec – menu */
+
+.profile-sidebar {
+    flex: 0 0 240px; /* má pevnou šířku, zbytek se donastaví auto*/
+    border-right: 1px solid var(--color-border-subtle);
+    padding-right: 20px;
+}
+
+.profile-sidebar h2 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+}
+
+/* menu bloky */
+.profile-menu h3 {
+    margin: 20px 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+}
+
+.profile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-menu li {
+    margin-bottom: 4px;
+}
+
+.profile-menu a {
+    display: block;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--color-text-main);
+    text-decoration: none;
+}
+
+.profile-menu a:hover {
+    color: var(--color-primary-500);
+}
+
+/*  aktivní položka  */
+.profile-menu a.is-active {
+    font-weight: 600;
+    color: var(--color-primary-700);
+}
+
+/* pravý sloupec – obsah */
+
+.profile-main {
+    flex: 1;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+/* TABULKY V PROFILU */
+
+table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table.data thead {
+    background: var(--color-primary-100);
+}
+
+table.data th,
+table.data td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border-subtle);
+    vertical-align: top;
+}
+
+table.data th {
+    font-weight: 600;
+}
+
+table.data tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+table.data tbody tr:hover {
+    background: var(--color-primary-100);
+}
+
+/*FILTR*/
+
+.admin-form {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin: 8px auto;
+    align-items: center;
+    padding-bottom: 12px;
+}
+
+.admin-form-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+/*  */
+.admin-form-inline label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+.admin-form-inline select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-primary-white);
+    font-size: 14px;
+}
+
+/* tlačítko + zrušit filtr vedle sebe */
+.admin-filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-left: auto;   /* Zarovná mi to doprava */
+}
+
+.admin-link-reset-filter {
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid;
+    text-decoration: none;
+    color: var(--color-text-muted);
+}
+
+.admin-link-reset-filter:hover {
+    border-color: var(--color-border-subtle);
+    background: var(--color-bg-main);
+    color: var(--color-primary-700);
+}
+
+.admin-submit {
+    margin-left: auto;   /* Zarovná mi to doprava */
+}
+
+.table-id-link {
+    color: var(--color-primary-700);
+    font-weight: 600;
+}
+
+
+
+/* ADMIN DETAIL */
+.admin-detail {
+    max-width: 800px;
+    font-size: 14px;
+}
+
+.admin-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.admin-detail-edit {
+    margin-left: 16px;
+}
+
+/* 2–3 „kartičky“ vedle sebe podle šířky */
+.admin-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px 24px;
+    margin: 12px 0 24px 0;
+}
+
+/* každá kartička = dvousloupec: label | hodnota */
+.admin-detail-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.admin-detail-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.admin-detail-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+.admin-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+.admin-detail-back {
+    margin-top: 12px;
+}
+.btn-tertiary {
+    background-color: var(--color-bg-main);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-main);
+}
+.btn-tertiary:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-700);
+}
+
+
+/* EDITACE – formulář v podobném gridu jako detail */
+.admin-detail-form {
+    margin-top: 8px;
+}
+
+.admin-detail-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px 24px;
+}
+
+.admin-detail-form-item label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+.admin-detail-form-item input,
+.admin-detail-form-item select {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-subtle);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+/* stejné zvýraznění fokusu jako u ostatních formulářů */
+.admin-detail-form-item input:focus,
+.admin-detail-form-item select:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+}
+
+/* tlačítka dole */
+.admin-detail-form-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* RESERVATIONS LIST  */
+
+
+.reservations-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.reservations-side {
+    flex: 0 0 260px;
+}
+
+.reservations-main {
+    flex: 1;
+}
+
+/* varianta pro zákazníka – přes celou šířku */
+.reservations-main-full {
+    flex: 1;
+}
+
+.reservations-main h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+

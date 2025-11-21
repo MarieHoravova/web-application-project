@@ -1,0 +1,87 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Detail rezervace {{ reservation.code }}{% endblock %}
+
+{% block profile_content %}
+
+  <div class="admin-detail-header">
+    <h2>Rezervace {{ reservation.code }}</h2>
+  </div>
+
+  <div class="admin-detail">
+    <div class="admin-detail-grid">
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">ID</div>
+        <div class="admin-detail-value">{{ reservation.id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Uživatel (ID)</div>
+        <div class="admin-detail-value">{{ reservation.user_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Aktuální status (ID)</div>
+        <div class="admin-detail-value">{{ reservation.status_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Vytvořeno</div>
+        <div class="admin-detail-value">{{ reservation.created_at }}</div>
+      </div>
+    </div>
+
+    <div class="admin-detail-extra">
+      <h3>Další akce</h3>
+      <ul class="admin-detail-links">
+        <li>
+          <a href="{{ url_for('reservation_items_list', reservation_id=reservation.id) }}">
+            Zobrazit / upravit položky rezervace
+          </a>
+        </li>
+        {% if is_admin_or_receptionist %}
+          <li>
+            <a href="{{ url_for('payments_by_reservation', reservation_id=reservation.id) }}">
+              Zobrazit / upravit platby k této rezervaci
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    {% if is_admin_or_receptionist %}
+      <hr class="admin-detail-divider">
+
+      <form method="post"
+            action="{{ url_for('reservation_update_status', reservation_id=reservation.id) }}"
+            class="admin-detail-form">
+        <div class="admin-detail-form-grid">
+          <div class="admin-detail-form-item">
+            <label>
+              Nový status
+              <select name="new_status_id">
+                {% for s in statuses %}
+                  <option value="{{ s.id }}" {% if s.id == reservation.status_id %}selected{% endif %}>
+                    {{ s.id }} – {{ s.description }}
+                  </option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-detail-form-actions">
+          <button type="submit" class="btn btn-primary">
+            Uložit změnu statusu
+          </button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div class="admin-detail-back">
+      <a href="{{ url_for('reservations_list') }}" class="btn btn-tertiary">
+        Zpět na seznam rezervací
+      </a>
+    </div>
+  </div>
+
+{% endblock %}

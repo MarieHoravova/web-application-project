@@ -1,114 +1,121 @@
-from typing import List, Dict, Any
+from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from starlette import status
 
 from services.ReservationService import ReservationService
-from services.BookingService import BookingService
-from dependencies import reservation_service, booking_service
+from services.ReservationStatusService import ReservationStatusService
+from dependencies import reservation_service, reservation_status_service
+from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from auth_dependencies import get_current_user
-from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST
 
 router = APIRouter()
 
 
-@router.get("/booking/{booking_id}", name="reservations_by_booking")
-async def reservations_by_booking(
-    booking_id: int,
+def _profile_role_flags(current_user: dict) -> dict:
+    role_id = current_user["role_id"]
+    return {
+        "is_admin": role_id == ROLE_ADMIN,
+        "is_receptionist": role_id == ROLE_RECEPTIONIST,
+        "is_customer": role_id == ROLE_CUSTOMER,
+        "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+    }
+
+
+@router.get("/", name="reservations_list")
+async def reservations_list(
     request: Request,
-    res_svc: ReservationService = Depends(reservation_service),
-    booking_svc: BookingService = Depends(booking_service),
-    current_user=Depends(get_current_user),
+    user_id: Optional[int] = None,
+    svc: ReservationService = Depends(reservation_service),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = booking_svc.get_booking_by_id(booking_id)
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking nenalezen")
+    flags = _profile_role_flags(current_user)
+    current_user_id = current_user["id"]
 
-    try:
-        reservations: List[Dict[str, Any]] = res_svc.list_reservations_by_booking(
-            booking_id=booking_id,
-            current_user_id=current_user["id"],
-            current_user_role=current_user["role_id"],
-        )
-    except PermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e))
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    if flags["is_customer"]:
+        reservations: List[Dict[str, Any]] = svc.list_reservations_by_user(current_user_id)
+        filter_user_id = current_user_id
+    else:
+        if user_id is not None:
+            reservations = svc.list_reservations_by_user(user_id)
+            filter_user_id = user_id
+        else:
+            reservations = svc.list_reservations()
+            filter_user_id = None
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
-        "reservations/reservations_by_booking.html",
+        "reservations/reservation_items_list.html",  # <<< tady PLURAL složka
         {
             "request": request,
-            "title": f"Rezervace pro booking {booking['code']}",
-            "booking": booking,
+            "title": "Seznam rezervací",
             "reservations": reservations,
+            "filter_user_id": filter_user_id,
             "current_user": current_user,
-            "is_admin_or_receptionist": current_user["role_id"] in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+            **flags,
         },
     )
 
 
-@router.post("/booking/{booking_id}", name="reservations_create_for_booking")
-async def reservations_create_for_booking(
-    booking_id: int,
+@router.get("/{reservation_id}", name="reservation_detail")
+async def reservation_detail(
+    reservation_id: int,
     request: Request,
-    room_id: int = Form(...),
-    check_in: str = Form(...),
-    check_out: str = Form(...),
-    adults: int = Form(...),
-    children: int = Form(0),
-    res_svc: ReservationService = Depends(reservation_service),
-    booking_svc: BookingService = Depends(booking_service),
-    current_user=Depends(get_current_user),
+    svc: ReservationService = Depends(reservation_service),
+    status_svc: ReservationStatusService = Depends(reservation_status_service),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = booking_svc.get_booking_by_id(booking_id)
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking nenalezen")
+    reservation = svc.get_reservation_by_id(reservation_id)
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Rezervace nenalezena")
 
-    try:
-        res_svc.create_reservation(
-            room_id=room_id,
-            check_in=check_in,
-            check_out=check_out,
-            adults=adults,
-            children=children,
-            booking_id=booking_id,
-            current_user_id=current_user["id"],
-            current_user_role=current_user["role_id"],
-        )
-    except PermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e))
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    # zákazník vidí jen své rezervace
+    if current_user["role_id"] == ROLE_CUSTOMER and reservation["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Nemáte přístup k této rezervaci")
 
-    return RedirectResponse(
-        url=request.url_for("reservations_by_booking", booking_id=booking_id),
-        status_code=status.HTTP_303_SEE_OTHER,
+    statuses = status_svc.list_statuses()
+    flags = _profile_role_flags(current_user)
+
+    tpl = request.app.state.templates
+    return tpl.TemplateResponse(
+        "reservations/reservation_detail.html",
+        {
+            "request": request,
+            "title": f"Rezervace {reservation['code']}",
+            "reservation": reservation,
+            "statuses": statuses,
+            "current_user": current_user,
+            **flags,
+        },
     )
 
 
-@router.post("/booking/{booking_id}/delete/{reservation_id}", name="reservation_delete")
-async def reservation_delete(
-    booking_id: int,
+@router.post("/{reservation_id}/status", name="reservation_update_status")
+async def reservation_update_status(
     reservation_id: int,
     request: Request,
-    res_svc: ReservationService = Depends(reservation_service),
-    current_user=Depends(get_current_user),
+    new_status_id: int = Form(...),
+    svc: ReservationService = Depends(reservation_service),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    current_user_id = current_user["id"]
+    current_user_role = current_user["role_id"]
+
     try:
-        res_svc.delete_reservation(
+        svc.update_reservation_status(
             reservation_id=reservation_id,
-            current_user_role=current_user["role_id"],
+            new_status_id=new_status_id,
+            current_user_id=current_user_id,
+            current_user_role=current_user_role,
         )
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
@@ -116,6 +123,6 @@ async def reservation_delete(
         raise HTTPException(status_code=404, detail=str(e))
 
     return RedirectResponse(
-        url=request.url_for("reservations_by_booking", booking_id=booking_id),
+        url=request.url_for("reservation_detail", reservation_id=reservation_id),
         status_code=status.HTTP_303_SEE_OTHER,
     )

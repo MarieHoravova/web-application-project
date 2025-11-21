@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Kontakt{% endblock %}
+
+{% block content %}
+<section class="contact-page">
+  <div class="home-container">
+    {% if message_sent %}
+      <div class="home-alert">Děkujeme za zprávu, brzy se vám ozveme.</div>
+    {% endif %}
+
+    <h1>Kontakt</h1>
+    <p class="contact-intro">
+      Máte dotaz k rezervaci nebo pobytu? Ozvěte se nám telefonicky, e-mailem nebo využijte kontaktní formulář.
+      Hotel Aurora najdete v centru Prahy s dobrou dostupností MHD i autem.
+    </p>
+
+    <!-- 1. řádek: Kontaktní údaje + Adresa -->
+    <div class="home-row contact-top-row">
+      <div class="home-card contact-card">
+        <h2 class="home-card-title">Kontaktní údaje</h2>
+        <ul class="contact-list">
+          <li><strong>Telefon:</strong> +420 123 456 789</li>
+          <li><strong>E-mail:</strong> recepce@hotel-aurora.cz</li>
+          <li><strong>Recepce:</strong> denně 24/7</li>
+        </ul>
+      </div>
+
+      <div class="home-card contact-card-address">
+        <h2 class="home-card-title">Adresa</h2>
+          <ul class="contact-list">
+              <li>Hotel Aurora</li>
+              <li>Náměstí 1</li>
+              <li>110 00 Praha 1</li>
+              <li>Česká republika</li>
+          </ul>
+
+      </div>
+    </div>
+
+    <!-- 2. řádek: mapa + formulář (jako dřív) -->
+    <div class="home-row">
+      <div class="home-card home-map">
+        <h2 class="home-card-title">Kde nás najdete</h2>
+        <div class="contact-map-box">
+          Mapa hotelu – později sem vložíme mapu (např. Google Maps).
+        </div>
+      </div>
+
+      <div class="home-card home-contact">
+        <h2 class="home-card-title">Máte dotazy? Napište nám</h2>
+        <form class="home-contact-form" method="post" action="{{ url_for('contact_submit') }}">
+          <label>
+            Jméno
+            <input type="text" name="name" placeholder="Vaše jméno" required>
+          </label>
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="vas@email.cz" required>
+          </label>
+          <label>
+            Zpráva
+            <textarea name="message" rows="4" placeholder="Jak vám můžeme pomoci?" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary">Odeslat</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

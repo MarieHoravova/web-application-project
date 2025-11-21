@@ -4,16 +4,19 @@ from fastapi import Depends
 from database.database import open_connection
 
 from services.AuthService import AuthService
-from services.BookingService import BookingService
-from services.BookingStatusService import BookingStatusService
+from services.ReservationService import ReservationService
+from services.ReservationItemService import ReservationItemService
+from services.ReservationStatusService import ReservationStatusService
+
 from services.PaymentMethodService import PaymentMethodService
 from services.PaymentService import PaymentService
-from services.ReservationService import ReservationService
+
 from services.RoleService import RoleService
 from services.RoomService import RoomService
 from services.RoomStatusService import RoomStatusService
 from services.RoomTypeService import RoomTypeService
 from services.UserService import UserService
+from services.ContactMessageService import ContactMessageService
 
 
 def get_conn() -> Iterator[sqlite3.Connection]:
@@ -23,20 +26,25 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 def auth_service(conn: sqlite3.Connection = Depends(get_conn)) -> AuthService:
     return AuthService(conn)
 
-def booking_service(conn: sqlite3.Connection = Depends(get_conn)) -> BookingService:
-    return BookingService(conn)
 
-def booking_status_service(conn: sqlite3.Connection = Depends(get_conn)) -> BookingStatusService:
-    return BookingStatusService(conn)
+# 🔹 HLAVIČKY rezervací (ReservationService)
+def reservation_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationService:
+    return ReservationService(conn)
+
+
+# 🔹 POLOŽKY rezervace (konkrétní pokoje – ReservationItemService)
+def reservation_item_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationItemService:
+    return ReservationItemService(conn)
+
+
+def reservation_status_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationStatusService:
+    return ReservationStatusService(conn)
 
 def payment_method_service(conn: sqlite3.Connection = Depends(get_conn)) -> PaymentMethodService:
     return PaymentMethodService(conn)
 
 def payment_service(conn: sqlite3.Connection = Depends(get_conn)) -> PaymentService:
     return PaymentService(conn)
-
-def reservation_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationService:
-    return ReservationService(conn)
 
 def role_service(conn: sqlite3.Connection = Depends(get_conn)) -> RoleService:
     return RoleService(conn)
@@ -53,3 +61,5 @@ def room_type_service(conn: sqlite3.Connection = Depends(get_conn)) -> RoomTypeS
 def user_service(conn: sqlite3.Connection = Depends(get_conn)) -> UserService:
     return UserService(conn)
 
+def contact_message_service(conn: sqlite3.Connection = Depends(get_conn)) -> ContactMessageService:
+    return ContactMessageService(conn)

@@ -54,8 +54,10 @@ class AuthService:
 
         return True
 
+    # Kvůli právům k jednotlivým stránkám
     def get_current_user(self, user_id: int) -> Optional[Dict[str, Any]]:
         return get_user_by_id(self.conn, user_id)
+
 
 # TEST
 if __name__ == "__main__":
@@ -76,23 +78,23 @@ if __name__ == "__main__":
 
         print("\n=== TEST: register (new user) ===")
 
-        # nejdřív smažeme závislá data kvůli FOREIGN KEY constraintům
+        # nejdřív smažeme závislá data kvůli FOREIGN KEY constraintům – nový svět reservations/reservation_items/payments
+        conn.execute("""
+            DELETE FROM reservation_items
+            WHERE reservation_id IN (
+                SELECT id FROM reservations
+                WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
+            )
+        """)
         conn.execute("""
             DELETE FROM payments
-            WHERE booking_id IN (
-                SELECT id FROM bookings
+            WHERE reservation_id IN (
+                SELECT id FROM reservations
                 WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
             )
         """)
         conn.execute("""
             DELETE FROM reservations
-            WHERE booking_id IN (
-                SELECT id FROM bookings
-                WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
-            )
-        """)
-        conn.execute("""
-            DELETE FROM bookings
             WHERE user_id IN (SELECT id FROM users WHERE email = 'auth_test@example.com')
         """)
         conn.execute("DELETE FROM users WHERE email = 'auth_test@example.com'")

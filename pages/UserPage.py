@@ -4,12 +4,21 @@ from fastapi.responses import RedirectResponse
 
 from services.UserService import UserService
 from services.RoleService import RoleService
+
 from dependencies import user_service, role_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
-
 router = APIRouter()
+
+
+def _profile_role_flags(current_user: dict) -> Dict[str, bool]:
+    role_id = current_user["role_id"]
+    return {
+        "is_admin": role_id == ROLE_ADMIN,
+        "is_receptionist": role_id == ROLE_RECEPTIONIST,
+        "is_customer": role_id == ROLE_CUSTOMER,
+    }
 
 
 @router.get("/", name="users_list")
@@ -18,11 +27,12 @@ async def users_list(
     role_id: Optional[int] = None,
     user_svc: UserService = Depends(user_service),
     role_svc: RoleService = Depends(role_service),
-    current_user=Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     current_role = current_user["role_id"]
 
     users: List[Dict[str, Any]]
@@ -60,12 +70,9 @@ async def users_list(
             "roles": roles,
             "filter_role_id": filter_role_id,
             "current_user": current_user,
-            "is_admin": current_role == ROLE_ADMIN,
-            "is_receptionist": current_role == ROLE_RECEPTIONIST,
+            **flags,
         },
     )
-
-
 
 
 def _get_user_detail_for_view(target_user_id: int, current_user, user_svc: UserService):
@@ -86,35 +93,6 @@ def _get_user_detail_for_view(target_user_id: int, current_user, user_svc: UserS
     return user, is_owner, can_edit
 
 
-@router.get("/me", name="user_profile")
-async def user_profile(
-    request: Request,
-    user_svc: UserService = Depends(user_service),
-    role_svc: RoleService = Depends(role_service),
-    current_user = Depends(get_current_user),
-):
-    if isinstance(current_user, RedirectResponse):
-        return current_user
-
-    user, is_owner, can_edit = _get_user_detail_for_view(current_user["id"], current_user, user_svc)
-
-    roles = role_svc.list_roles() if current_user["role_id"] == ROLE_ADMIN else []
-
-    tpl = request.app.state.templates
-    return tpl.TemplateResponse(
-        "users/user_detail.html",
-        {
-            "request": request,
-            "title": "Můj profil",
-            "user": user,
-            "current_user": current_user,
-            "is_owner": is_owner,
-            "can_edit": can_edit,
-            "roles": roles,
-        },
-    )
-
-
 @router.get("/{user_id}", name="user_detail")
 async def user_detail(
     user_id: int,
@@ -126,6 +104,7 @@ async def user_detail(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     user, is_owner, can_edit = _get_user_detail_for_view(user_id, current_user, user_svc)
 
     role_id = current_user["role_id"]
@@ -133,7 +112,7 @@ async def user_detail(
     if role_id == ROLE_CUSTOMER and not is_owner:
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit tohoto uživatele")
 
-    roles = role_svc.list_roles() if role_id == ROLE_ADMIN else []
+    roles = role_svc.list_roles() if flags["is_admin"] else []
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
@@ -146,6 +125,7 @@ async def user_detail(
             "is_owner": is_owner,
             "can_edit": can_edit,
             "roles": roles,
+            **flags,
         },
     )
 
@@ -160,7 +140,7 @@ async def user_update(
     phone_number: Optional[str] = Form(None),
     user_svc: UserService = Depends(user_service),
     role_svc: RoleService = Depends(role_service),
-    current_user=Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
@@ -198,7 +178,7 @@ async def user_change_role(
     request: Request,
     role_id: int = Form(...),
     user_svc: UserService = Depends(user_service),
-    current_user=Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
@@ -218,6 +198,7 @@ async def user_change_role(
         status_code=303,
     )
 
+
 @router.get("/{user_id}/edit", name="user_edit")
 async def user_edit(
     user_id: int,
@@ -229,6 +210,7 @@ async def user_edit(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     current_role = current_user["role_id"]
     current_user_id = current_user["id"]
 
@@ -236,7 +218,6 @@ async def user_edit(
     if not user:
         raise HTTPException(status_code=404, detail="Uživatel neexistuje")
 
-    # práva: admin může editovat kohokoliv, ostatní jen sami sebe
     if current_role != ROLE_ADMIN and current_user_id != user_id:
         raise HTTPException(status_code=403, detail="Nemáte oprávnění upravovat tento profil")
 
@@ -250,7 +231,7 @@ async def user_edit(
             "title": f"Upravit uživatele {user['email']}",
             "user": user,
             "current_user": current_user,
-            "is_admin": current_role == ROLE_ADMIN,
             "roles": roles,
+            **flags,
         },
     )

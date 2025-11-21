@@ -10,7 +10,20 @@ from dependencies import room_service, room_type_service, room_status_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
+from repositories.ReservationItemRepository import (
+    find_conflicting_reservations as repo_find_conflicts,
+)
+
 router = APIRouter()
+
+def _profile_role_flags(current_user: dict) -> dict:
+    role_id = current_user["role_id"]
+    return {
+        "is_admin": role_id == ROLE_ADMIN,
+        "is_receptionist": role_id == ROLE_RECEPTIONIST,
+        "is_customer": role_id == ROLE_CUSTOMER,
+        "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+    }
 
 
 @router.get("/", name="rooms_list")
@@ -26,15 +39,14 @@ async def rooms_list(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     role_id = current_user["role_id"]
 
-    # backoffice stránka – jen admin a recepční
     if role_id not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit pokoje")
 
     rooms: List[Dict[str, Any]] = room_svc.list_rooms()
 
-    # pokud je kombinace filtrů, uděláme to jednoduše v Pythonu
     if status_id is not None:
         rooms = [r for r in rooms if r["room_status_id"] == status_id]
 
@@ -56,8 +68,7 @@ async def rooms_list(
             "filter_status_id": status_id,
             "filter_room_type_id": room_type_id,
             "current_user": current_user,
-            "is_admin": role_id == ROLE_ADMIN,
-            "is_receptionist": role_id == ROLE_RECEPTIONIST,
+            **flags,
         },
     )
 
@@ -112,6 +123,7 @@ async def room_detail(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     role_id = current_user["role_id"]
     if role_id not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit pokoje")
@@ -133,8 +145,7 @@ async def room_detail(
             "room_types": room_types,
             "statuses": statuses,
             "current_user": current_user,
-            "is_admin": role_id == ROLE_ADMIN,
-            "is_receptionist": role_id == ROLE_RECEPTIONIST,
+            **flags,
         },
     )
 
@@ -151,6 +162,7 @@ async def room_edit(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     role_id = current_user["role_id"]
     if role_id not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
         raise HTTPException(status_code=403, detail="Nemáte oprávnění upravovat pokoje")
@@ -172,8 +184,7 @@ async def room_edit(
             "room_types": room_types,
             "statuses": statuses,
             "current_user": current_user,
-            "is_admin": role_id == ROLE_ADMIN,
-            "is_receptionist": role_id == ROLE_RECEPTIONIST,
+            **flags,
         },
     )
 

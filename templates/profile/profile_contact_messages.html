@@ -1,0 +1,35 @@
+{# profile/profile_contact_messages.html #}
+{% extends "profile/profile_base.html" %}
+
+{% block title %}Přijaté zprávy{% endblock %}
+
+{% block profile_content %}
+  <h1>Přijaté zprávy z kontaktního formuláře</h1>
+
+  {% if contact_messages|length == 0 %}
+    <p>Žádné zprávy k zobrazení.</p>
+  {% else %}
+    <table class="data">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Jméno</th>
+          <th>E-mail</th>
+          <th>Zpráva</th>
+          <th>Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for msg in contact_messages %}
+          <tr>
+            <td>{{ msg.id }}</td>
+            <td>{{ msg.name }}</td>
+            <td>{{ msg.email }}</td>
+            <td>{{ msg.message }}</td>
+            <td>{{ msg.created_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}
