@@ -47,7 +47,6 @@ async def auth_login_post(
         )
 
     # ÚSPĚŠNÝ LOGIN:
-    # uložíme JWT do cookie a přesměrujeme třeba na seznam bookingů
     response = RedirectResponse(
         url=request.url_for("user_profile"),
         status_code=status.HTTP_303_SEE_OTHER,

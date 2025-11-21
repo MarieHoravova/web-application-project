@@ -90,7 +90,7 @@ class ReservationItemService:
         return True
 
     # ---- Přehled obsazenosti v období (položky) ----
-    def list_items_in_period(self, date_from: str, date_to: str) -> List[Dict[str, Any]]:
+    def list_reservation_items_in_period(self, date_from: str, date_to: str) -> List[Dict[str, Any]]:
         return repo_list_items_in_period(self.conn, date_from, date_to)
 
 

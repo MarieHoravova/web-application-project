@@ -11,19 +11,25 @@
     <section class="profile-block">
       <h2>Moje poslední rezervace</h2>
 
-      {% if last_booking %}
+      {% if last_reservation %}
         <div class="card">
-          <p><strong>Kód rezervace:</strong> {{ last_booking.code }}</p>
-          <p><strong>Stav:</strong> {{ last_booking.status_id }}</p>
-          <p><strong>Vytvořeno:</strong> {{ last_booking.created_at }}</p>
-          <p><a href="{{ url_for('booking_detail', booking_id=last_booking.id) }}">Detail rezervace</a></p>
+          <p><strong>Kód rezervace:</strong> {{ last_reservation.code }}</p>
+          <p><strong>Stav:</strong> {{ last_reservation.status_id }}</p>
+          <p><strong>Vytvořeno:</strong> {{ last_reservation.created_at }}</p>
+          <p>
+            <a href="{{ url_for('reservation_detail', reservation_id=last_reservation.id) }}">
+              Detail rezervace
+            </a>
+          </p>
         </div>
       {% else %}
         <p>Nemáte žádné rezervace.</p>
       {% endif %}
 
       <div class="profile-actions">
-        <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Nová rezervace</a>
+        <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
+          Nová rezervace
+        </a>
       </div>
     </section>
 
@@ -40,14 +46,14 @@
             <th>Datum příjezdu</th>
             <th>Datum odjezdu</th>
             <th>Pokoj</th>
-            <th>Booking ID</th>
+            <th>Rezervace ID</th>
           </tr>
           {% for r in upcoming_reservations %}
             <tr>
               <td>{{ r.check_in }}</td>
               <td>{{ r.check_out }}</td>
               <td>{{ r.room_id }}</td>
-              <td>{{ r.booking_id }}</td>
+              <td>{{ r.reservation_id }}</td>
             </tr>
           {% endfor %}
         </table>
@@ -67,14 +73,14 @@
             <th>Datum příjezdu</th>
             <th>Datum odjezdu</th>
             <th>Pokoj</th>
-            <th>Booking ID</th>
+            <th>Rezervace ID</th>
           </tr>
           {% for r in upcoming_reservations %}
             <tr>
               <td>{{ r.check_in }}</td>
               <td>{{ r.check_out }}</td>
               <td>{{ r.room_id }}</td>
-              <td>{{ r.booking_id }}</td>
+              <td>{{ r.reservation_id }}</td>
             </tr>
           {% endfor %}
         </table>

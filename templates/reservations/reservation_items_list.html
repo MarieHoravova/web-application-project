@@ -1,32 +1,33 @@
-{# templates/bookings/bookings_list.html #}
 {% extends "profile/profile_base.html" %}
 
 {% block title %}Rezervace{% endblock %}
 
 {% block profile_content %}
-  <section class="bookings-page">
-    <div class="bookings-layout">
+  <section class="reservations-page">
+    <div class="reservations-layout">
 
       {# ADMIN / RECEPCE – plná tabulka + filtr #}
       {% if is_admin_or_receptionist %}
-        <div class="bookings-side">
+        <div class="reservations-side">
 
-         <form method="get" action="{{ url_for('bookings_list') }}" class="admin-form admin-form-inline">
+          <form method="get"
+                action="{{ url_for('reservations_list') }}"
+                class="admin-form admin-form-inline">
             <label>
               ID uživatele
               <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
             </label>
             <div class="admin-filter-actions">
               <button type="submit" class="btn btn-secondary">Filtrovat</button>
-              <a href="{{ url_for('bookings_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
+              <a href="{{ url_for('reservations_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
             </div>
           </form>
         </div>
 
-        <div class="bookings-main">
+        <div class="reservations-main">
           <h3>Rezervace</h3>
-          {% if bookings|length == 0 %}
-            <p>Žádné bookingy k zobrazení.</p>
+          {% if reservations|length == 0 %}
+            <p>Žádné rezervace k zobrazení.</p>
           {% else %}
             <table class="data">
               <thead>
@@ -39,13 +40,13 @@
                 </tr>
               </thead>
               <tbody>
-                {% for b in bookings %}
+                {% for r in reservations %}
                   <tr>
-                    <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}" class="table-id-link">{{ b.id }}</a></td>
-                    <td>{{ b.code }}</td>
-                    <td>{{ b.user_id }}</td>
-                    <td>{{ b.status_id }}</td>
-                    <td>{{ b.created_at }}</td>
+                    <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
+                    <td>{{ r.code }}</td>
+                    <td>{{ r.user_id }}</td>
+                    <td>{{ r.status_id }}</td>
+                    <td>{{ r.created_at }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -53,10 +54,10 @@
           {% endif %}
         </div>
 
-      {# CUSTOMER – jen moje bookingy + tlačítko Nová rezervace #}
+      {# CUSTOMER – jen moje rezervace + tlačítko Nová rezervace #}
       {% else %}
-        <div class="bookings-main bookings-main-full">
-          <h3>Moje bookingy</h3>
+        <div class="reservations-main reservations-main-full">
+          <h3>Moje rezervace</h3>
 
           <div class="profile-actions" style="margin-bottom: 16px;">
             <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
@@ -64,8 +65,8 @@
             </a>
           </div>
 
-          {% if bookings|length == 0 %}
-            <p>Nemáte žádné bookingy.</p>
+          {% if reservations|length == 0 %}
+            <p>Nemáte žádné rezervace.</p>
           {% else %}
             <table class="data">
               <thead>
@@ -77,12 +78,12 @@
                 </tr>
               </thead>
               <tbody>
-                {% for b in bookings %}
+                {% for r in reservations %}
                   <tr>
-                    <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}" class="table-id-link">{{ b.id }}</a></td>
-                    <td>{{ b.code }}</td>
-                    <td>{{ b.status_id }}</td>
-                    <td>{{ b.created_at }}</td>
+                    <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
+                    <td>{{ r.code }}</td>
+                    <td>{{ r.status_id }}</td>
+                    <td>{{ r.created_at }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

@@ -10,7 +10,7 @@
     <table class="data">
       <tr>
         <th>ID</th>
-        <th>Booking ID</th>
+        <th>Rezervace ID</th>
         <th>Částka</th>
         <th>Metoda</th>
         <th>Zaplaceno kdy</th>
@@ -19,12 +19,14 @@
       {% for p in payments %}
         <tr>
           <td>{{ p.id }}</td>
-          <td>{{ p.booking_id }}</td>
+          <td>{{ p.reservation_id }}</td>
           <td>{{ "%.2f"|format(p.amount) }} Kč</td>
           <td>{{ method_map.get(p.method_id, p.method_id) }}</td>
           <td>{{ p.paid_at }}</td>
           <td>
-            <a href="{{ url_for('payments_by_booking', booking_id=p.booking_id) }}">Detail / úprava</a>
+            <a href="{{ url_for('payments_by_reservation', reservation_id=p.reservation_id) }}">
+              Detail / úprava
+            </a>
           </td>
         </tr>
       {% endfor %}

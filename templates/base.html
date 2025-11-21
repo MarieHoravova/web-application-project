@@ -33,7 +33,7 @@
          <a href="/profile" class="btn btn-secondary">Můj účet</a>
             <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
           {% else %}
-            <a href="{{ url_for('bookings_list') }}" class="btn btn-primary">Rezervace</a>
+            <a href="{{ url_for('reservations_list') }}" class="btn btn-primary">Rezervace</a>
             <a href="{{ url_for('auth_login') }}" class="btn btn-secondary">Přihlásit se</a>
           {% endif %}
         </div>

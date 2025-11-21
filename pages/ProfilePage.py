@@ -8,7 +8,7 @@ from services.ReservationService import ReservationService
 from services.ReservationItemService import ReservationItemService
 from services.ContactMessageService import ContactMessageService
 
-from dependencies import booking_service, reservation_service, contact_message_service
+from dependencies import reservation_service, reservation_item_service, contact_message_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
@@ -28,8 +28,8 @@ def _profile_role_flags(current_user: dict) -> dict:
 @router.get("/profile", name="user_profile")
 async def user_profile(
     request: Request,
-    booking_svc: ReservationItemService = Depends(booking_service),
-    res_svc: ReservationItemService = Depends(reservation_service),
+    reservation_svc: ReservationService = Depends(reservation_service),
+    reservation_item_svc: ReservationItemService = Depends(reservation_item_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
@@ -39,20 +39,22 @@ async def user_profile(
     role_id = current_user["role_id"]
     user_id = current_user["id"]
 
-    # ---- data pro hosta (customer) ----
-    customer_bookings: List[Dict[str, Any]] = []
-    last_booking: Dict[str, Any] | None = None
+    # ---- data pro hosta (customer) – hlavičky rezervací ----
+    customer_reservations: List[Dict[str, Any]] = []
+    last_reservation: Dict[str, Any] | None = None
     if flags["is_customer"]:
-        customer_bookings = booking_svc.list_reservations_by_user(user_id)
-        last_booking = customer_bookings[0] if customer_bookings else None
+        customer_reservations = reservation_svc.list_reservations_by_user(user_id)
+        last_reservation = customer_reservations[0] if customer_reservations else None
 
-    # ---- data pro recepci a admina – nejbližší rezervace ----
+    # ---- data pro recepci a admina – nadcházející pobyty (items) ----
     upcoming_reservations: List[Dict[str, Any]] = []
     if flags["is_receptionist"] or flags["is_admin"]:
         today = date.today()
         date_from = today.isoformat()
         date_to = (today + timedelta(days=7)).isoformat()
-        upcoming_reservations = res_svc.list_reservations_in_period(date_from, date_to)
+        upcoming_reservations = reservation_item_svc.list_reservation_items_in_period(
+            date_from, date_to
+        )
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
@@ -61,8 +63,8 @@ async def user_profile(
             "request": request,
             "title": "Můj profil",
             "current_user": current_user,
-            "customer_bookings": customer_bookings,
-            "last_booking": last_booking,
+            "customer_reservations": customer_reservations,
+            "last_reservation": last_reservation,
             "upcoming_reservations": upcoming_reservations,
             **flags,
         },
@@ -97,7 +99,6 @@ async def contact_messages_list(
             **flags,
         },
     )
-
 
 
 @router.get("/profile/terms", name="profile_terms")

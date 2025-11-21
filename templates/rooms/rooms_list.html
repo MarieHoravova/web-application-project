@@ -2,88 +2,91 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
-  <h2>{{ title }}</h2>
-
-  <section class="bookings-page">
-    <div class="bookings-layout">
-
-      <div class="bookings-side">
-        <form method="get" action="{{ url_for('rooms_list') }}" class="admin-form">
-          <label>
-            Stav pokoje
-            <select name="status_id">
-              <option value="">-- všechny --</option>
-              {% for st in statuses %}
-                <option value="{{ st.id }}" {% if filter_status_id == st.id %}selected{% endif %}>
-                  {{ st.id }} – {{ st.name if st.name is defined else st.description if st.description is defined else st.id }}
-                </option>
-              {% endfor %}
-            </select>
-          </label>
-
-          <label>
-            Typ pokoje
-            <select name="room_type_id">
-              <option value="">-- všechny --</option>
-              {% for rt in room_types %}
-                <option value="{{ rt.id }}" {% if filter_room_type_id == rt.id %}selected{% endif %}>
-                  {{ rt.id }} – {{ rt.name }}
-                </option>
-              {% endfor %}
-            </select>
-          </label>
-
-          <div class="admin-filter-actions">
-            <button type="submit" class="btn btn-secondary">Filtrovat</button>
-            <a href="{{ url_for('rooms_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
-          </div>
-        </form>
-
-        {% if is_admin %}
-          <h3>Přidat pokoj</h3>
-          <form method="post" action="{{ url_for('rooms_create') }}" class="admin-form">
+  <section class="rooms-page">
+    <div class="reservations-layout">
+      {# LEVÝ FILTR – jen admin / recepce #}
+      {% if is_admin_or_receptionist %}
+        <div class="reservations-side">
+          <form method="get" action="{{ url_for('rooms_list') }}" class="admin-form admin-form-inline">
             <label>
-              Číslo pokoje
-              <input type="number" name="number" required>
-            </label>
-
-            <label>
-              Typ pokoje
-              <select name="room_type_id" required>
-                {% for rt in room_types %}
-                  <option value="{{ rt.id }}">{{ rt.id }} – {{ rt.name }}</option>
-                {% endfor %}
-              </select>
-            </label>
-
-            <label>
-              Stav pokoje
-              <select name="room_status_id" required>
-                {% for st in statuses %}
-                  <option value="{{ st.id }}">
-                    {{ st.id }} – {{ st.name if st.name is defined else st.description if st.description is defined else st.id }}
+              Status pokoje
+              <select name="status_id">
+                <option value="">— všichni —</option>
+                {% for s in statuses %}
+                  <option value="{{ s.id }}" {% if filter_status_id is not none and filter_status_id == s.id %}selected{% endif %}>
+                    {{ s.id }} – {{ s.description }}
                   </option>
                 {% endfor %}
               </select>
             </label>
 
             <label>
-              Obrázek (cesta)
-              <input type="text" name="image_path" value="room.jpg">
+              Typ pokoje
+              <select name="room_type_id">
+                <option value="">— všechny —</option>
+                {% for rt in room_types %}
+                  <option value="{{ rt.id }}" {% if filter_room_type_id is not none and filter_room_type_id == rt.id %}selected{% endif %}>
+                    {{ rt.id }} – {{ rt.name }}
+                  </option>
+                {% endfor %}
+              </select>
             </label>
 
-            <label>
-              Patro
-              <input type="number" name="floor" required>
-            </label>
-
-            <button type="submit" class="btn btn-primary admin-submit">Vytvořit pokoj</button>
+            <div class="admin-filter-actions">
+              <button type="submit" class="btn btn-secondary">Filtrovat</button>
+              <a href="{{ url_for('rooms_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
+            </div>
           </form>
-        {% endif %}
-      </div>
 
-      <div class="bookings-main">
-        <h3>Seznam pokojů</h3>
+          {% if is_admin %}
+            <hr>
+            <h3>Nový pokoj</h3>
+            <form method="post" action="{{ url_for('rooms_create') }}" class="admin-form">
+              <label>
+                Číslo pokoje
+                <input type="number" name="number" required>
+              </label>
+
+              <label>
+                Typ pokoje
+                <select name="room_type_id" required>
+                  {% for rt in room_types %}
+                    <option value="{{ rt.id }}">{{ rt.id }} – {{ rt.name }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+
+              <label>
+                Status
+                <select name="room_status_id" required>
+                  {% for s in statuses %}
+                    <option value="{{ s.id }}">{{ s.id }} – {{ s.description }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+
+              <label>
+                Patro
+                <input type="number" name="floor" value="1" required>
+              </label>
+
+              <label>
+                Cesta k obrázku
+                <input type="text" name="image_path" value="default.jpg" required>
+              </label>
+
+              <div class="admin-filter-actions">
+                <button type="submit" class="btn btn-primary">Vytvořit pokoj</button>
+              </div>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {# HLAVNÍ TABULKA POKOJŮ #}
+      <div class="reservations-main  {% if not is_admin_or_receptionist %}reservations-main-full{% endif %}">
+        <h3>Pokoje</h3>
+
         {% if rooms|length == 0 %}
           <p>Žádné pokoje k zobrazení.</p>
         {% else %}
@@ -92,26 +95,29 @@
               <tr>
                 <th>ID</th>
                 <th>Číslo</th>
-                <th>Typ</th>
-                <th>Stav</th>
                 <th>Patro</th>
+                <th>Typ</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {% for r in rooms %}
+              {% for room in rooms %}
                 <tr>
-                  <td><a href="{{ url_for('room_detail', room_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
-                  <td>{{ r.number }}</td>
-                  <td>{{ r.room_type_id }}</td>
-                  <td>{{ r.room_status_id }}</td>
-                  <td>{{ r.floor }}</td>
+                  <td>
+                    <a href="{{ url_for('room_detail', room_id=room.id) }}" class="table-id-link">
+                      {{ room.id }}
+                    </a>
+                  </td>
+                  <td>{{ room.number }}</td>
+                  <td>{{ room.floor }}</td>
+                  <td>{{ room.room_type_id }}</td>
+                  <td>{{ room.room_status_id }}</td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
         {% endif %}
       </div>
-
     </div>
   </section>
 {% endblock %}

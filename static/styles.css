@@ -1002,3 +1002,31 @@ table.data tbody tr:hover {
     gap: 12px;
     align-items: center;
 }
+
+/* RESERVATIONS LIST  */
+
+
+.reservations-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.reservations-side {
+    flex: 0 0 260px;
+}
+
+.reservations-main {
+    flex: 1;
+}
+
+/* varianta pro zákazníka – přes celou šířku */
+.reservations-main-full {
+    flex: 1;
+}
+
+.reservations-main h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+

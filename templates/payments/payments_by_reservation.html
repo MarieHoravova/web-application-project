@@ -4,17 +4,17 @@
 {% block content %}
   <h2>{{ title }}</h2>
 
-  <h3>Booking</h3>
+  <h3>Rezervace</h3>
   <dl>
-    <dt>ID</dt><dd>{{ booking.id }}</dd>
-    <dt>Kód</dt><dd>{{ booking.code }}</dd>
-    <dt>Uživatel</dt><dd>{{ booking.user_id }}</dd>
-    <dt>Status</dt><dd>{{ booking.status_id }}</dd>
+    <dt>ID</dt><dd>{{ reservation.id }}</dd>
+    <dt>Kód</dt><dd>{{ reservation.code }}</dd>
+    <dt>Uživatel</dt><dd>{{ reservation.user_id }}</dd>
+    <dt>Status</dt><dd>{{ reservation.status_id }}</dd>
   </dl>
 
   {% if is_admin_or_receptionist %}
     <h3>Nová platba</h3>
-    <form method="post" action="{{ url_for('payments_create_for_booking', booking_id=booking.id) }}">
+    <form method="post" action="{{ url_for('payments_create_for_reservation', reservation_id=reservation.id) }}">
       <label>Částka:<br>
         <input type="number" name="amount" step="0.01" min="0" required>
       </label><br>
@@ -51,7 +51,7 @@
           <td>{{ p.paid_at }}</td>
           {% if is_admin %}
             <td>
-              <form method="post" action="{{ url_for('payment_delete', booking_id=booking.id, payment_id=p.id) }}" style="display:inline">
+              <form method="post" action="{{ url_for('payment_delete', reservation_id=reservation.id, payment_id=p.id) }}" style="display:inline">
                 <button type="submit" onclick="return confirm('Opravdu smazat platbu?');">Smazat</button>
               </form>
             </td>
@@ -61,5 +61,5 @@
     </table>
   {% endif %}
 
-  <p><a href="{{ url_for('booking_detail', booking_id=booking.id) }}">← Zpět na detail bookingu</a></p>
+  <p><a href="{{ url_for('reservation_detail', reservation_id=reservation.id) }}">← Zpět na detail rezervace</a></p>
 {% endblock %}
