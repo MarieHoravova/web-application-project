@@ -2,25 +2,56 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
-  <h2>{{ title }}</h2>
 
-  <h3>Základní údaje</h3>
-  <dl>
-    <dt>ID</dt><dd>{{ user.id }}</dd>
-    <dt>Email</dt><dd>{{ user.email }}</dd>
-    <dt>Jméno</dt><dd>{{ user.first_name }}</dd>
-    <dt>Příjmení</dt><dd>{{ user.last_name }}</dd>
-    <dt>Telefon</dt><dd>{{ user.phone_number }}</dd>
-    <dt>Role ID</dt><dd>{{ user.role_id }}</dd>
-  </dl>
+  <div class="admin-detail-header">
+    <h2>Detail uživatele {{ user.first_name + "  " + user.last_name }} </h2>
 
-  {% if can_edit %}
-    <p>
-      <a href="{{ url_for('user_edit', user_id=user.id) }}">Upravit profil</a>
-    </p>
-  {% else %}
-    <p>Nemáte oprávnění upravovat tento profil.</p>
-  {% endif %}
+    {% if can_edit %}
+      <a href="{{ url_for('user_edit', user_id=user.id) }}"
+         class="btn btn-secondary">
+        Upravit profil
+      </a>
+    {% endif %}
+  </div>
 
-  <p><a href="{{ url_for('users_list') }}">← Zpět na seznam uživatelů</a></p>
+  <div class="admin-detail">
+    <div class="admin-detail-grid">
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">ID</div>
+        <div class="admin-detail-value">{{ user.id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">E-mail</div>
+        <div class="admin-detail-value">{{ user.email }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Jméno</div>
+        <div class="admin-detail-value">{{ user.first_name }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Příjmení</div>
+        <div class="admin-detail-value">{{ user.last_name }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Telefon</div>
+        <div class="admin-detail-value">{{ user.phone_number }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Role ID</div>
+        <div class="admin-detail-value">{{ user.role_id }}</div>
+      </div>
+    </div>
+
+    <div class="admin-detail-back">
+      <a href="{{ url_for('users_list') }}" class="btn btn-tertiary">
+        Zpět na seznam uživatelů
+      </a>
+    </div>
+  </div>
+
 {% endblock %}

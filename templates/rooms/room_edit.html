@@ -2,43 +2,69 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
-  <h2>{{ title }}</h2>
 
-  <form method="post" action="{{ url_for('room_update', room_id=room.id) }}">
-    <label>Číslo pokoje:<br>
-      <input type="number" name="number" value="{{ room.number }}" required>
-    </label><br>
+  <div class="admin-detail-header">
+    <h2>{{ title }}</h2>
 
-    <label>Typ pokoje:<br>
-      <select name="room_type_id" required>
-        {% for rt in room_types %}
-          <option value="{{ rt.id }}" {% if rt.id == room.room_type_id %}selected{% endif %}>
-            {{ rt.id }} – {{ rt.name }}
-          </option>
-        {% endfor %}
-      </select>
-    </label><br>
+    {% if is_admin %}
+      <form method="post" action="{{ url_for('room_delete', room_id=room.id) }}" class="admin-detail-delete-form" onsubmit="return confirm('Opravdu smazat tento pokoj?');">
+        <button type="submit" class="btn btn-danger">Smazat pokoj</button>
+      </form>
+    {% endif %}
+  </div>
 
-    <label>Stav pokoje:<br>
-      <select name="room_status_id" required>
-        {% for st in statuses %}
-          <option value="{{ st.id }}" {% if st.id == room.room_status_id %}selected{% endif %}>
-            {{ st.id }} – {{ st.name if st.name is defined else st.description if st.description is defined else st.id }}
-          </option>
-        {% endfor %}
-      </select>
-    </label><br>
+  <div class="admin-detail">
+    <form method="post" action="{{ url_for('room_update', room_id=room.id) }}" class="admin-detail-form">
+      <div class="admin-detail-form-grid">
+        <div class="admin-detail-form-item">
+          <label>
+            Číslo pokoje
+            <input type="number" name="number" value="{{ room.number }}" required>
+          </label>
+        </div>
 
-    <label>Patro:<br>
-      <input type="number" name="floor" value="{{ room.floor }}" required>
-    </label><br>
+        <div class="admin-detail-form-item">
+          <label>
+            Typ pokoje
+            <select name="room_type_id" required>
+              {% for rt in room_types %}
+                <option value="{{ rt.id }}" {% if rt.id == room.room_type_id %}selected{% endif %}>{{ rt.id }} – {{ rt.name }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
 
-    <label>Obrázek (cesta):<br>
-      <input type="text" name="image_path" value="{{ room.image_path }}">
-    </label><br>
+        <div class="admin-detail-form-item">
+          <label>
+            Stav pokoje
+            <select name="room_status_id" required>
+              {% for st in statuses %}
+                <option value="{{ st.id }}" {% if st.id == room.room_status_id %}selected{% endif %}>{{ st.id }} – {{ st.name if st.name is defined else st.description if st.description is defined else st.id }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
 
-    <button type="submit">Uložit změny</button>
-  </form>
+        <div class="admin-detail-form-item">
+          <label>
+            Patro
+            <input type="number" name="floor" value="{{ room.floor }}" required>
+          </label>
+        </div>
 
-  <p><a href="{{ url_for('room_detail', room_id=room.id) }}">← Zpět na detail pokoje</a></p>
+        <div class="admin-detail-form-item">
+          <label>
+            Obrázek (cesta)
+            <input type="text" name="image_path" value="{{ room.image_path }}">
+          </label>
+        </div>
+      </div>
+
+      <div class="admin-detail-form-actions">
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+        <a href="{{ url_for('room_detail', room_id=room.id) }}" class="btn btn-tertiary">Zrušit a zpět na detail</a>
+      </div>
+    </form>
+  </div>
+
 {% endblock %}

@@ -1,39 +1,30 @@
 {# templates/bookings/bookings_list.html #}
 {% extends "profile/profile_base.html" %}
 
-{% block title %}Seznam bookingů{% endblock %}
+{% block title %}Rezervace{% endblock %}
 
 {% block profile_content %}
   <section class="bookings-page">
     <div class="bookings-layout">
 
-      {# ADMIN / RECEPCE – plná tabulka + filtr + nový booking #}
+      {# ADMIN / RECEPCE – plná tabulka + filtr #}
       {% if is_admin_or_receptionist %}
         <div class="bookings-side">
-          <h3>Nový booking</h3>
-          <form method="post" action="{{ url_for('bookings_create') }}" class="bookings-form">
-            <label>
-              ID uživatele
-              <input type="number" name="user_id" required>
-            </label>
-            <button type="submit" class="btn btn-primary bookings-submit">Vytvořit booking</button>
-          </form>
 
-          <h4>Filtrovat podle uživatele</h4>
-          <form method="get" action="{{ url_for('bookings_list') }}" class="bookings-form">
+         <form method="get" action="{{ url_for('bookings_list') }}" class="admin-form admin-form-inline">
             <label>
               ID uživatele
               <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
             </label>
-            <div class="bookings-filter-actions">
+            <div class="admin-filter-actions">
               <button type="submit" class="btn btn-secondary">Filtrovat</button>
-              <a href="{{ url_for('bookings_list') }}" class="link-reset-filter">Zrušit filtr</a>
+              <a href="{{ url_for('bookings_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
             </div>
           </form>
         </div>
 
         <div class="bookings-main">
-          <h3>Seznam bookingů</h3>
+          <h3>Rezervace</h3>
           {% if bookings|length == 0 %}
             <p>Žádné bookingy k zobrazení.</p>
           {% else %}

@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 
 from repositories.RoomTypeRepository import (
     get_room_type_by_id as repo_get_by_id,
-    list_room_types as repo_list,
+    list_room_types as repo_list_room_types,
     create_room_type as repo_create,
     update_room_type as repo_update,
     delete_room_type as repo_delete
@@ -20,7 +20,7 @@ class RoomTypeService:
         return repo_get_by_id(self.conn, room_type_id)
 
     def list_room_types(self):
-        return repo_list(self.conn)
+        return repo_list_room_types(self.conn)
 
     # ---- CREATE ----
     def create_room_type(

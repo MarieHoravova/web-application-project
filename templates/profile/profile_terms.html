@@ -1,0 +1,169 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Podmínky a souhlasy{% endblock %}
+
+{% block profile_content %}
+  <h1>Podmínky a souhlasy</h1>
+
+  <p>
+    Na této stránce najdete základní informace o podmínkách ubytování v Hotelu Aurora
+    a o tom, jak pracujeme s vašimi osobními údaji. Stránka je společná pro všechny
+    přihlášené uživatele – hosty, recepci i administrátory.
+  </p>
+
+  <hr>
+
+  <h2>1. Všeobecné podmínky ubytování</h2>
+
+  <h3>1.1 Check-in a check-out</h3>
+  <ul>
+    <li>Check-in: standardně od 14:00.</li>
+    <li>Check-out: nejpozději do 10:00.</li>
+    <li>Pozdní check-out je možný pouze po domluvě s recepcí a může být zpoplatněn.</li>
+  </ul>
+
+  <h3>1.2 Rezervace a storno podmínky</h3>
+  <ul>
+    <li>Rezervace je platná po jejím potvrzení e-mailem nebo prostřednictvím našeho systému.</li>
+    <li>Bezplatné storno je obvykle možné do 24–48 hodin před příjezdem (konkrétní podmínky mohou být součástí nabídky).</li>
+    <li>Pozdní storno nebo nedojezd (no-show) může být zpoplatněn až do výše 100 % ceny první noci.</li>
+  </ul>
+
+  <h3>1.3 Platby</h3>
+  <ul>
+    <li>Akceptujeme běžné platební karty a hotovost v CZK.</li>
+    <li>U vybraných sazeb může být platba požadována předem (např. nevratná rezervace).</li>
+    <li>V případě škody na zařízení hotelu jsme oprávněni naúčtovat náklady na opravu nebo náhradu.</li>
+  </ul>
+
+  <h3>1.4 Chování v hotelu</h3>
+  <ul>
+    <li>Hotel je nekuřácký – kouření na pokojích není dovoleno.</li>
+    <li>Noční klid je od 22:00 do 6:00.</li>
+    <li>Domácí mazlíčci jsou vítáni jen v některých typech pokojů a mohou být zpoplatněni.</li>
+  </ul>
+
+  <hr>
+
+  <h2>2. Zpracování osobních údajů</h2>
+
+  <p>
+    Správcem vašich osobních údajů je Hotel Aurora (fiktivní subjekt pro účely této aplikace).
+    Osobní údaje zpracováváme v souladu s platnými právními předpisy, zejména GDPR.
+  </p>
+
+  <h3>2.1 Jaké údaje zpracováváme</h3>
+  <ul>
+    <li>Identifikační údaje: jméno, příjmení, případně titul.</li>
+    <li>Kontaktní údaje: e-mail, telefon.</li>
+    <li>Údaje o rezervaci a pobytu: termíny pobytu, typ pokoje, speciální požadavky.</li>
+    <li>Údaje o komunikaci: zprávy z kontaktního formuláře, e-mailová komunikace.</li>
+  </ul>
+
+  <h3>2.2 Účely zpracování</h3>
+  <ul>
+    <li>Vytvoření a správa rezervace ubytování.</li>
+    <li>Komunikace před pobytem, během pobytu a po pobytu.</li>
+    <li>Plnění zákonných povinností (např. vedení účetních dokladů).</li>
+    <li>Marketingová komunikace (pouze na základě vašeho souhlasu).</li>
+  </ul>
+
+  <h3>2.3 Právní základ zpracování</h3>
+  <ul>
+    <li>Plnění smlouvy (rezervace a pobyt).</li>
+    <li>Plnění právních povinností (např. účetní a daňové předpisy).</li>
+    <li>Oprávněný zájem správce (základní přímá komunikace se stávajícími hosty).</li>
+    <li>Souhlas (např. zasílání newsletteru a marketingových nabídek).</li>
+  </ul>
+
+  <h3>2.4 Doba uchování údajů</h3>
+  <ul>
+    <li>Po dobu trvání smluvního vztahu a následně po dobu nutnou dle právních předpisů.</li>
+    <li>Údaje zpracované na základě souhlasu uchováváme do doby, než souhlas odvoláte.</li>
+  </ul>
+
+  <h3>2.5 Vaše práva</h3>
+  <ul>
+    <li>Právo na přístup k osobním údajům a jejich opravu.</li>
+    <li>Právo na výmaz („být zapomenut“), pokud už neexistuje důvod pro další zpracování.</li>
+    <li>Právo na omezení zpracování a námitku proti zpracování.</li>
+    <li>Právo odvolat souhlas kdykoli, aniž by to mělo vliv na zákonnost dřívějšího zpracování.</li>
+  </ul>
+
+  <hr>
+
+  <h2>3. Souhlasy, které můžete udělit</h2>
+
+  <p>
+    Níže najdete přehled typických souhlasů, které od vás můžeme v rámci aplikace nebo formulářů žádat.
+    Tato stránka má informativní charakter – samotné souhlasy dáváte přímo v konkrétních formulářích
+    (registrace, rezervace apod.).
+  </p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Souhlas</th>
+        <th>Co to znamená</th>
+        <th>Jak ho můžete odvolat</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Newsletter a speciální nabídky e-mailem</td>
+        <td>
+          Můžeme vám občas poslat e-mail s informacemi o novinkách, akcích a zvýhodněných pobytech
+          v hotelu.
+        </td>
+        <td>
+          Kdykoli kliknutím na odkaz „Odhlásit odběr“ v e-mailu nebo napsáním na recepce@hotel-aurora.cz.
+        </td>
+      </tr>
+      <tr>
+        <td>Marketingové SMS</td>
+        <td>
+          Občasné SMS se speciálními nabídkami nebo připomínkou blížícího se pobytu.
+        </td>
+        <td>
+          Odpovědí na SMS nebo požadavkem na recepci, případně v nastavení profilu (do budoucna).
+        </td>
+      </tr>
+      <tr>
+        <td>Vyhodnocování spokojenosti hostů</td>
+        <td>
+          Po vašem pobytu vám můžeme zaslat dotazník spokojenosti a využít odpovědi k vylepšení služeb.
+        </td>
+        <td>
+          Odmítnutím dotazníku nebo napsáním, že si dotazníky nepřejete dostávat.
+        </td>
+      </tr>
+      <tr>
+        <td>Profilování a personalizované nabídky</td>
+        <td>
+          Můžeme analyzovat vaše předchozí pobyty a preference (např. oblíbený typ pokoje)
+          a podle toho vám doporučovat pobyty na míru.
+        </td>
+        <td>
+          Odvoláním souhlasu – např. e-mailem nebo v nastavení profilu (pokud bude k dispozici).
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>4. Jak souhlasy změnit nebo odvolat</h2>
+
+  <p>
+    Pokud chcete některý souhlas upravit nebo odvolat, můžete:
+  </p>
+  <ul>
+    <li>kontaktovat recepci e-mailem na <strong>recepce@hotel-aurora.cz</strong>,</li>
+    <li>uvést svůj požadavek v poznámce k rezervaci,</li>
+    <li>v budoucnu využít nastavení v uživatelském profilu (po doplnění této funkce v aplikaci).</li>
+  </ul>
+
+  <p>
+    Tato stránka slouží jako přehled – detaily se mohou lišit podle konkrétní nabídky nebo rezervačních
+    podmínek, které jsou uvedeny přímo u té které služby.
+  </p>
+{% endblock %}

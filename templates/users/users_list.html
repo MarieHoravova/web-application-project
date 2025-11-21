@@ -4,10 +4,11 @@
 {% block profile_content %}
   <h2>{{ title }}</h2>
 
-  {% if is_admin %}
-    <h3>Filtrovat podle role</h3>
-    <form method="get" action="{{ url_for('users_list') }}">
-      <label>Role:
+  {% if is_admin or is_receptionist %}
+    <form method="get" action="{{ url_for('users_list') }}" class="admin-form admin-form-inline">
+
+      <label>
+        Role
         <select name="role_id">
           <option value="">-- všechny role --</option>
           {% for r in roles %}
@@ -17,8 +18,10 @@
           {% endfor %}
         </select>
       </label>
-      <button type="submit">Filtrovat</button>
-      <a href="{{ url_for('users_list') }}">Zrušit filtr</a>
+      <div class="admin-filter-actions">
+        <button type="submit" class="btn btn-secondary">Filtrovat</button>
+        <a href="{{ url_for('users_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
+      </div>
     </form>
   {% endif %}
 
@@ -26,26 +29,32 @@
     <p>Žádní uživatelé k zobrazení.</p>
   {% else %}
     <table class="data">
-      <tr>
-        <th>ID</th>
-        <th>Email</th>
-        <th>Jméno</th>
-        <th>Příjmení</th>
-        <th>Telefon</th>
-        <th>Role ID</th>
-        <th>Detail</th>
-      </tr>
-      {% for u in users %}
+      <thead>
         <tr>
-          <td>{{ u.id }}</td>
-          <td>{{ u.email }}</td>
-          <td>{{ u.first_name }}</td>
-          <td>{{ u.last_name }}</td>
-          <td>{{ u.phone_number }}</td>
-          <td>{{ u.role_id }}</td>
-          <td><a href="{{ url_for('user_detail', user_id=u.id) }}">Detail</a></td>
+          <th>ID</th>
+          <th>E-mail</th>
+          <th>Jméno</th>
+          <th>Příjmení</th>
+          <th>Telefon</th>
+          <th>Role ID</th>
         </tr>
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>
+              <a href="{{ url_for('user_detail', user_id=u.id) }}" class="table-id-link">
+                {{ u.id }}
+              </a>
+            </td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.first_name }}</td>
+            <td>{{ u.last_name }}</td>
+            <td>{{ u.phone_number }}</td>
+            <td>{{ u.role_id }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   {% endif %}
 {% endblock %}

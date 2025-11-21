@@ -97,3 +97,26 @@ async def contact_messages_list(
             **flags,
         },
     )
+
+
+
+@router.get("/profile/terms", name="profile_terms")
+async def profile_terms(
+    request: Request,
+    current_user = Depends(get_current_user),
+):
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    flags = _profile_role_flags(current_user)
+
+    tpl = request.app.state.templates
+    return tpl.TemplateResponse(
+        "profile/profile_terms.html",
+        {
+            "request": request,
+            "title": "Podmínky a souhlasy",
+            "current_user": current_user,
+            **flags,
+        },
+    )

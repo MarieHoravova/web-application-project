@@ -1,47 +1,87 @@
-{% extends "base.html" %}
+{% extends "profile/profile_base.html" %}
 {% block title %}Detail bookingu {{ booking.code }}{% endblock %}
 
-{% block content %}
-  <h2>Booking {{ booking.code }}</h2>
+{% block profile_content %}
 
-  <dl>
-    <dt>ID</dt><dd>{{ booking.id }}</dd>
-    <dt>Uživatel</dt><dd>{{ booking.user_id }}</dd>
-    <dt>Aktuální status (ID)</dt><dd>{{ booking.status_id }}</dd>
-    <dt>Vytvořeno</dt><dd>{{ booking.created_at }}</dd>
-  </dl>
+  <div class="admin-detail-header">
+    <h2>Booking {{ booking.code }}</h2>
+  </div>
 
-  <h3>Další akce</h3>
-  <ul>
-    <li>
-      <a href="{{ url_for('reservations_by_booking', booking_id=booking.id) }}">
-        Zobrazit / upravit rezervace k tomuto bookingu
-      </a>
-    </li>
+  <div class="admin-detail">
+    <div class="admin-detail-grid">
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">ID</div>
+        <div class="admin-detail-value">{{ booking.id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Uživatel (ID)</div>
+        <div class="admin-detail-value">{{ booking.user_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Aktuální status (ID)</div>
+        <div class="admin-detail-value">{{ booking.status_id }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Vytvořeno</div>
+        <div class="admin-detail-value">{{ booking.created_at }}</div>
+      </div>
+    </div>
+
+    <div class="admin-detail-extra">
+      <h3>Další akce</h3>
+      <ul class="admin-detail-links">
+        <li>
+          <a href="{{ url_for('reservations_by_booking', booking_id=booking.id) }}">
+            Zobrazit / upravit rezervace k tomuto bookingu
+          </a>
+        </li>
+        {% if is_admin_or_receptionist %}
+          <li>
+            <a href="{{ url_for('payments_by_booking', booking_id=booking.id) }}">
+              Zobrazit / upravit platby k tomuto bookingu
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
     {% if is_admin_or_receptionist %}
-      <li>
-        <a href="{{ url_for('payments_by_booking', booking_id=booking.id) }}">
-          Zobrazit / upravit platby k tomuto bookingu
-        </a>
-      </li>
+      <hr class="admin-detail-divider">
+
+      <form method="post"
+            action="{{ url_for('booking_update_status', booking_id=booking.id) }}"
+            class="admin-detail-form">
+        <div class="admin-detail-form-grid">
+          <div class="admin-detail-form-item">
+            <label>
+              Nový status
+              <select name="new_status_id">
+                {% for s in statuses %}
+                  <option value="{{ s.id }}" {% if s.id == booking.status_id %}selected{% endif %}>
+                    {{ s.id }} – {{ s.description }}
+                  </option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-detail-form-actions">
+          <button type="submit" class="btn btn-primary">
+            Uložit změnu statusu
+          </button>
+        </div>
+      </form>
     {% endif %}
-  </ul>
 
-  {% if is_admin_or_receptionist %}
-    <h3>Změnit status</h3>
-    <form method="post" action="{{ url_for('booking_update_status', booking_id=booking.id) }}">
-      <label>Nový status:
-        <select name="new_status_id">
-          {% for s in statuses %}
-            <option value="{{ s.id }}" {% if s.id == booking.status_id %}selected{% endif %}>
-              {{ s.id }} – {{ s.description }}
-            </option>
-          {% endfor %}
-        </select>
-      </label>
-      <button type="submit">Uložit</button>
-    </form>
-  {% endif %}
+    <div class="admin-detail-back">
+      <a href="{{ url_for('bookings_list') }}" class="btn btn-tertiary">
+        Zpět na seznam bookingů
+      </a>
+    </div>
+  </div>
 
-  <p><a href="{{ url_for('bookings_list') }}">← Zpět na seznam bookingů</a></p>
 {% endblock %}

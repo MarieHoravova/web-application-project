@@ -1,0 +1,52 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Upravit typ pokoje{% endblock %}
+
+{% block profile_content %}
+
+  <div class="admin-detail-header">
+    <h2>Upravit typ pokoje</h2>
+  </div>
+
+  <div class="admin-detail">
+    <form method="post"
+          action="{{ url_for('room_type_update', room_type_id=room_type.id) }}"
+          class="admin-detail-form">
+
+      <div class="admin-detail-form-grid">
+        <div class="admin-detail-form-item">
+          <label>
+            Název typu
+            <input type="text" name="name" value="{{ room_type.name }}" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item">
+          <label>
+            Kapacita (osoby)
+            <input type="number" name="capacity" min="1" step="1" value="{{ room_type.capacity }}" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item">
+          <label>
+            Cena od (Kč / noc)
+            <input type="number" name="base_price" step="0.01" min="0" value="{{ room_type.base_price }}" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item admin-detail-form-item-full">
+          <label>
+            Popis
+            <textarea name="description" rows="3" placeholder="Krátký popis typu pokoje">{{ room_type.description or '' }}</textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="admin-detail-form-actions">
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+        <a href="{{ url_for('room_types_list') }}" class="btn btn-tertiary">Zpět na typy pokojů</a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

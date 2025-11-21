@@ -14,8 +14,8 @@ from repositories.ReservationRepository import (
     find_conflicting_reservations as repo_find_conflicts,
 )
 
-
 router = APIRouter()
+
 def _profile_role_flags(current_user: dict) -> dict:
     role_id = current_user["role_id"]
     return {
@@ -42,13 +42,11 @@ async def rooms_list(
     flags = _profile_role_flags(current_user)
     role_id = current_user["role_id"]
 
-    # backoffice stránka – jen admin a recepční
     if role_id not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit pokoje")
 
     rooms: List[Dict[str, Any]] = room_svc.list_rooms()
 
-    # pokud je kombinace filtrů, uděláme to jednoduše v Pythonu
     if status_id is not None:
         rooms = [r for r in rooms if r["room_status_id"] == status_id]
 

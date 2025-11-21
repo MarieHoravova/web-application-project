@@ -59,29 +59,6 @@ async def bookings_list(
         },
     )
 
-
-@router.post("/", name="bookings_create")
-async def bookings_create(
-    request: Request,
-    user_id: int = Form(...),
-    svc: BookingService = Depends(booking_service),
-    current_user = Depends(get_current_user),
-):
-    if isinstance(current_user, RedirectResponse):
-        return current_user
-
-    # vytvoření bookingu jen ADMIN/RECEPCE (klidně si to časem změň)
-    if current_user["role_id"] not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
-        raise HTTPException(status_code=403, detail="Nemáte oprávnění vytvářet bookingy")
-
-    svc.create_booking(user_id=user_id)
-
-    return RedirectResponse(
-        url=request.url_for("bookings_list"),
-        status_code=status.HTTP_303_SEE_OTHER,
-    )
-
-
 @router.get("/{booking_id}", name="booking_detail")
 async def booking_detail(
     booking_id: int,

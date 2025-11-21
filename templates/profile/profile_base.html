@@ -14,14 +14,15 @@
         {% if is_customer %}
           <li><a href="{{ url_for('bookings_list') }}">Moje rezervace</a></li>
         {% elif is_receptionist %}
+          <li><a href="{{ url_for('users_list') }}">Uživatelé</a></li>
           <li><a href="{{ url_for('contact_messages_list') }}">Přijaté zprávy</a></li>
           <li><a href="{{ url_for('bookings_list') }}">Rezervace hostů</a></li>
           <li><a href="#">Kalendář obsazenosti</a></li>
         {% elif is_admin %}
-          <li><a href="{{ url_for('users_list') }}">Uživatelé a role</a></li>
+          <li><a href="{{ url_for('users_list') }}">Uživatelé</a></li>
           <li><a href="{{ url_for('bookings_list') }}">Rezervace</a></li>
           <li><a href="{{ url_for('rooms_list') }}">Pokoje</a></li>
-          <li><a href="#">Typy pokojů</a></li>
+          <li><a href="{{ url_for('room_types_list') }}">Typy pokojů</a></li>
           <li><a href="{{ url_for('contact_messages_list') }}">Přijaté zprávy</a></li>
           <li><a href="#">Reporty</a></li>
         {% endif %}
@@ -30,7 +31,7 @@
       <h3>Osobní údaje</h3>
       <ul>
         <li><a href="{{ url_for('user_detail', user_id=current_user.id) }}">Správa údajů</a></li>
-        <li><a href="#">Podmínky / souhlasy</a></li>
+        <li><a href="{{ url_for('profile_terms') }}">Podmínky / souhlasy</a></li>
       </ul>
     </nav>
   </div>

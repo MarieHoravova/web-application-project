@@ -1,0 +1,57 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Typy pokojů{% endblock %}
+
+{% block profile_content %}
+
+  <div class="admin-detail-header">
+    <h2>Typy pokojů</h2>
+
+    <a href="{{ url_for('room_type_new') }}" class="btn btn-primary">
+      Nový typ pokoje
+    </a>
+  </div>
+
+  {% if room_types|length == 0 %}
+    <p>Žádné typy pokojů zatím nejsou.</p>
+  {% else %}
+    <table class="data">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Název</th>
+          <th>Kapacita</th>
+          <th>Cena od</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rt in room_types %}
+          <tr>
+            <td>
+              <a href="{{ url_for('room_type_detail', room_type_id=rt.id) }}"
+                 class="table-id-link">
+                {{ rt.id }}
+              </a>
+            </td>
+            <td>{{ rt.name }}</td>
+            <td>
+              {% if rt.capacity is not none %}
+                {{ rt.capacity }}&nbsp;os.
+              {% else %}
+                –
+              {% endif %}
+            </td>
+            <td>
+              {% if rt.base_price is not none %}
+                {{ rt.base_price }}&nbsp;Kč
+              {% else %}
+                –
+              {% endif %}
+            </td>
+
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Nový typ pokoje{% endblock %}
+
+{% block profile_content %}
+
+  <div class="admin-detail-header">
+    <h2>Nový typ pokoje</h2>
+  </div>
+
+  <div class="admin-detail">
+    <form method="post"
+          action="{{ url_for('room_types_create') }}"
+          class="admin-detail-form">
+
+      <div class="admin-detail-form-grid">
+        <div class="admin-detail-form-item">
+          <label>
+            Název typu
+            <input type="text" name="name" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item">
+          <label>
+            Kapacita (osoby)
+            <input type="number" name="capacity" min="1" step="1" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item">
+          <label>
+            Cena od (Kč / noc)
+            <input type="number" name="base_price" step="0.01" min="0" required>
+          </label>
+        </div>
+
+        <div class="admin-detail-form-item admin-detail-form-item-full">
+          <label>
+            Popis
+            <textarea name="description" rows="3" placeholder="Krátký popis typu pokoje"></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="admin-detail-form-actions">
+        <button type="submit" class="btn btn-primary">Uložit typ pokoje</button>
+        <a href="{{ url_for('room_types_list') }}" class="btn btn-tertiary">Zpět na typy pokojů</a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
