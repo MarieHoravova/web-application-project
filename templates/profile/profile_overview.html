@@ -1,119 +1,84 @@
-{% extends "base.html" %}
+{# profile/profile_overview.html #}
+{% extends "profile/profile_base.html" %}
+
 {% block title %}Můj profil{% endblock %}
 
-{% block content %}
-<section class="profile-layout">
-  <div class="profile-sidebar">
-    <h2>Profil</h2>
+{% block profile_content %}
+  <h1>Přehled</h1>
 
-    <nav class="profile-menu">
-      <h3>Přehled</h3>
-      <ul>
-        {% if is_customer %}
-          <li><a href="{{ url_for('bookings_list') }}">Moje rezervace</a></li>
-        {% elif is_receptionist %}
-          <li><a href="{{ url_for('bookings_list') }}">Rezervace hostů</a></li>
-          <li><a href="#">Kalendář obsazenosti</a></li>
-        {% elif is_admin %}
-          <li><a href="#">Uživatelé a role</a></li>
-          <li><a href="{{ url_for('bookings_list') }}">Rezervace</a></li>
-          <li><a href="{{ url_for('rooms_list') }}">Pokoje</a></li>
-          <li><a href="#">Typy pokojů</a></li>
-          <li><a href="#">Reporty</a></li>
-        {% endif %}
-      </ul>
+  {# HOST / CUSTOMER #}
+  {% if is_customer %}
+    <section class="profile-block">
+      <h2>Moje poslední rezervace</h2>
 
-      <h3>Osobní údaje</h3>
-      <ul>
-        <li><a href="{{ url_for('user_detail', user_id=current_user.id) }}">Osobní údaje</a></li>
-        <li><a href="#">Podmínky / souhlasy</a></li>
-      </ul>
-    </nav>
-  </div>
-
-  <div class="profile-main">
-    <h1>Přehled</h1>
-
-    {# ---- HOST / CUSTOMER ---- #}
-    {% if is_customer %}
-      <section class="profile-block">
-        <h2>Moje poslední rezervace</h2>
-
-        {% if last_booking %}
-          <div class="card">
-            <p><strong>Kód rezervace:</strong> {{ last_booking.code }}</p>
-            <p><strong>Stav:</strong> {{ last_booking.status_id }}</p>
-            <p><strong>Vytvořeno:</strong> {{ last_booking.created_at }}</p>
-            <p><a href="{{ url_for('booking_detail', booking_id=last_booking.id) }}">Detail rezervace</a></p>
-          </div>
-        {% else %}
-          <p>Nemáte žádné rezervace.</p>
-        {% endif %}
-
-        <div class="profile-actions">
-          <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Nová rezervace</a>
+      {% if last_booking %}
+        <div class="card">
+          <p><strong>Kód rezervace:</strong> {{ last_booking.code }}</p>
+          <p><strong>Stav:</strong> {{ last_booking.status_id }}</p>
+          <p><strong>Vytvořeno:</strong> {{ last_booking.created_at }}</p>
+          <p><a href="{{ url_for('booking_detail', booking_id=last_booking.id) }}">Detail rezervace</a></p>
         </div>
-      </section>
+      {% else %}
+        <p>Nemáte žádné rezervace.</p>
+      {% endif %}
 
-    {# ---- RECEPCE ---- #}
-    {% elif is_receptionist %}
-      <section class="profile-block">
-        <h2>Nadcházející rezervace (příštích 7 dní)</h2>
+      <div class="profile-actions">
+        <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Nová rezervace</a>
+      </div>
+    </section>
 
-        {% if upcoming_reservations|length == 0 %}
-          <p>Žádné rezervace v nejbližších dnech.</p>
-        {% else %}
-          <table class="data">
+  {# RECEPCE #}
+  {% elif is_receptionist %}
+    <section class="profile-block">
+      <h2>Nadcházející rezervace (příštích 7 dní)</h2>
+
+      {% if upcoming_reservations|length == 0 %}
+        <p>Žádné rezervace v nejbližších dnech.</p>
+      {% else %}
+        <table class="data">
+          <tr>
+            <th>Datum příjezdu</th>
+            <th>Datum odjezdu</th>
+            <th>Pokoj</th>
+            <th>Booking ID</th>
+          </tr>
+          {% for r in upcoming_reservations %}
             <tr>
-              <th>Datum příjezdu</th>
-              <th>Datum odjezdu</th>
-              <th>Pokoj</th>
-              <th>Booking ID</th>
+              <td>{{ r.check_in }}</td>
+              <td>{{ r.check_out }}</td>
+              <td>{{ r.room_id }}</td>
+              <td>{{ r.booking_id }}</td>
             </tr>
-            {% for r in upcoming_reservations %}
-              <tr>
-                <td>{{ r.check_in }}</td>
-                <td>{{ r.check_out }}</td>
-                <td>{{ r.room_id }}</td>
-                <td>{{ r.booking_id }}</td>
-              </tr>
-            {% endfor %}
-          </table>
-        {% endif %}
+          {% endfor %}
+        </table>
+      {% endif %}
+    </section>
 
-        {# filtr podle data můžeš doplnit později jako form #}
-      </section>
+  {# ADMIN #}
+  {% elif is_admin %}
+    <section class="profile-block">
+      <h2>Přehled rezervací / obsazenosti</h2>
 
-    {# ---- ADMIN ---- #}
-    {% elif is_admin %}
-      <section class="profile-block">
-        <h2>Přehled rezervací / obsazenosti</h2>
-
-        {# pro začátek použijeme stejná data jako recepce #}
-        {% if upcoming_reservations|length == 0 %}
-          <p>Žádné rezervace v nejbližších dnech.</p>
-        {% else %}
-          <table class="data">
+      {% if upcoming_reservations|length == 0 %}
+        <p>Žádné rezervace v nejbližších dnech.</p>
+      {% else %}
+        <table class="data">
+          <tr>
+            <th>Datum příjezdu</th>
+            <th>Datum odjezdu</th>
+            <th>Pokoj</th>
+            <th>Booking ID</th>
+          </tr>
+          {% for r in upcoming_reservations %}
             <tr>
-              <th>Datum příjezdu</th>
-              <th>Datum odjezdu</th>
-              <th>Pokoj</th>
-              <th>Booking ID</th>
+              <td>{{ r.check_in }}</td>
+              <td>{{ r.check_out }}</td>
+              <td>{{ r.room_id }}</td>
+              <td>{{ r.booking_id }}</td>
             </tr>
-            {% for r in upcoming_reservations %}
-              <tr>
-                <td>{{ r.check_in }}</td>
-                <td>{{ r.check_out }}</td>
-                <td>{{ r.room_id }}</td>
-                <td>{{ r.booking_id }}</td>
-              </tr>
-            {% endfor %}
-          </table>
-        {% endif %}
-
-        {# později sem můžeš přidat dlaždice „Přehled obsazenosti“, „Tržby za období“ atd. #}
-      </section>
-    {% endif %}
-  </div>
-</section>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </section>
+  {% endif %}
 {% endblock %}

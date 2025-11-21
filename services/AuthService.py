@@ -54,6 +54,7 @@ class AuthService:
 
         return True
 
+    # Kvůli právům k jednotlivýcm stránkám
     def get_current_user(self, user_id: int) -> Optional[Dict[str, Any]]:
         return get_user_by_id(self.conn, user_id)
 

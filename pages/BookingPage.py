@@ -11,6 +11,15 @@ from auth_dependencies import get_current_user
 
 router = APIRouter()
 
+def _profile_role_flags(current_user: dict) -> dict:
+    role_id = current_user["role_id"]
+    return {
+        "is_admin": role_id == ROLE_ADMIN,
+        "is_receptionist": role_id == ROLE_RECEPTIONIST,
+        "is_customer": role_id == ROLE_CUSTOMER,
+        "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
+    }
+
 
 @router.get("/", name="bookings_list")
 async def bookings_list(
@@ -22,10 +31,11 @@ async def bookings_list(
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = _profile_role_flags(current_user)
     role_id = current_user["role_id"]
     current_user_id = current_user["id"]
 
-    if role_id == ROLE_CUSTOMER:
+    if flags["is_customer"]:
         bookings: List[Dict[str, Any]] = svc.list_bookings_by_user(current_user_id)
         filter_user_id = current_user_id
     else:
@@ -45,8 +55,7 @@ async def bookings_list(
             "bookings": bookings,
             "filter_user_id": filter_user_id,
             "current_user": current_user,
-            "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
-            "is_customer": role_id == ROLE_CUSTOMER,
+            **flags,  # ← tady pošleme is_admin, is_receptionist, is_customer, is_admin_or_receptionist
         },
     )
 

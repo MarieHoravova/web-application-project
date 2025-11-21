@@ -13,6 +13,7 @@ from pages.PublicRoomsPage import router as public_rooms_router
 from pages.ProfilePage import router as profile_router
 from pages.GalleryPage import router as gallery_router
 from pages.ContactPage import router as contact_router
+from pages.ContactAdminPage import router as contact_admin_router
 
 
 def create_app() -> FastAPI:
@@ -32,8 +33,12 @@ def create_app() -> FastAPI:
     app.include_router(profile_router)
     app.include_router(gallery_router)
     app.include_router(contact_router)
+    app.include_router(contact_admin_router)
     return app
 
 
+
+# request v kontextu šablony → Jinja potřebuje request, aby mohla pracovat s URL, query parametry atd.
+# request.url_for("contact_page") → podle názvu routy složí správnou URL.
 
 app = create_app()

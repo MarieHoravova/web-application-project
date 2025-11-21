@@ -1,81 +1,105 @@
-{% extends "base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{# templates/bookings/bookings_list.html #}
+{% extends "profile/profile_base.html" %}
 
-{% block content %}
-  <h2>{{ title }}</h2>
+{% block title %}Seznam bookingů{% endblock %}
 
-  {% if is_admin_or_receptionist %}
-    <section class="grid">
-      <div>
-        <h3>Nový booking</h3>
-        <form method="post" action="{{ url_for('bookings_create') }}">
-          <label>ID uživatele:<br>
-            <input type="number" name="user_id" required>
-          </label><br>
-          <button type="submit">Vytvořit booking</button>
-        </form>
+{% block profile_content %}
+  <section class="bookings-page">
+    <div class="bookings-layout">
 
-        <h4>Filtrovat podle uživatele</h4>
-        <form method="get" action="{{ url_for('bookings_list') }}">
-          <label>ID uživatele:<br>
-            <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
-          </label><br>
-          <button type="submit">Filtrovat</button>
-          <a href="{{ url_for('bookings_list') }}">Zrušit filtr</a>
-        </form>
-      </div>
+      {# ADMIN / RECEPCE – plná tabulka + filtr + nový booking #}
+      {% if is_admin_or_receptionist %}
+        <div class="bookings-side">
+          <h3>Nový booking</h3>
+          <form method="post" action="{{ url_for('bookings_create') }}" class="bookings-form">
+            <label>
+              ID uživatele
+              <input type="number" name="user_id" required>
+            </label>
+            <button type="submit" class="btn btn-primary bookings-submit">Vytvořit booking</button>
+          </form>
 
-      <div>
-        <h3>Seznam bookingů</h3>
-        {% if bookings|length == 0 %}
-          <p>Žádné bookingy k zobrazení.</p>
-        {% else %}
-          <table class="data">
-            <tr>
-              <th>ID</th>
-              <th>Kód</th>
-              <th>Uživatel</th>
-              <th>Status</th>
-              <th>Vytvořeno</th>
-              <th>Detail</th>
-            </tr>
-            {% for b in bookings %}
-              <tr>
-                <td>{{ b.id }}</td>
-                <td>{{ b.code }}</td>
-                <td>{{ b.user_id }}</td>
-                <td>{{ b.status_id }}</td>
-                <td>{{ b.created_at }}</td>
-                <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}">Detail</a></td>
-              </tr>
-            {% endfor %}
-          </table>
-        {% endif %}
-      </div>
-    </section>
-  {% else %}
-    <h3>Moje bookingy</h3>
-    {% if bookings|length == 0 %}
-      <p>Nemáte žádné bookingy.</p>
-    {% else %}
-      <table class="data">
-        <tr>
-          <th>ID</th>
-          <th>Kód</th>
-          <th>Status</th>
-          <th>Vytvořeno</th>
-          <th>Detail</th>
-        </tr>
-        {% for b in bookings %}
-          <tr>
-            <td>{{ b.id }}</td>
-            <td>{{ b.code }}</td>
-            <td>{{ b.status_id }}</td>
-            <td>{{ b.created_at }}</td>
-            <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}">Detail</a></td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-  {% endif %}
+          <h4>Filtrovat podle uživatele</h4>
+          <form method="get" action="{{ url_for('bookings_list') }}" class="bookings-form">
+            <label>
+              ID uživatele
+              <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
+            </label>
+            <div class="bookings-filter-actions">
+              <button type="submit" class="btn btn-secondary">Filtrovat</button>
+              <a href="{{ url_for('bookings_list') }}" class="link-reset-filter">Zrušit filtr</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="bookings-main">
+          <h3>Seznam bookingů</h3>
+          {% if bookings|length == 0 %}
+            <p>Žádné bookingy k zobrazení.</p>
+          {% else %}
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Kód</th>
+                  <th>Uživatel</th>
+                  <th>Status</th>
+                  <th>Vytvořeno</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in bookings %}
+                  <tr>
+                    <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}" class="table-id-link">{{ b.id }}</a></td>
+                    <td>{{ b.code }}</td>
+                    <td>{{ b.user_id }}</td>
+                    <td>{{ b.status_id }}</td>
+                    <td>{{ b.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+        </div>
+
+      {# CUSTOMER – jen moje bookingy + tlačítko Nová rezervace #}
+      {% else %}
+        <div class="bookings-main bookings-main-full">
+          <h3>Moje bookingy</h3>
+
+          <div class="profile-actions" style="margin-bottom: 16px;">
+            <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
+              Nová rezervace
+            </a>
+          </div>
+
+          {% if bookings|length == 0 %}
+            <p>Nemáte žádné bookingy.</p>
+          {% else %}
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Kód</th>
+                  <th>Status</th>
+                  <th>Vytvořeno</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in bookings %}
+                  <tr>
+                    <td><a href="{{ url_for('booking_detail', booking_id=b.id) }}" class="table-id-link">{{ b.id }}</a></td>
+                    <td>{{ b.code }}</td>
+                    <td>{{ b.status_id }}</td>
+                    <td>{{ b.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </section>
 {% endblock %}

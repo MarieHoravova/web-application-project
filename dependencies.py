@@ -14,6 +14,7 @@ from services.RoomService import RoomService
 from services.RoomStatusService import RoomStatusService
 from services.RoomTypeService import RoomTypeService
 from services.UserService import UserService
+from services.ContactMessageService import ContactMessageService
 
 
 def get_conn() -> Iterator[sqlite3.Connection]:
@@ -52,4 +53,7 @@ def room_type_service(conn: sqlite3.Connection = Depends(get_conn)) -> RoomTypeS
 
 def user_service(conn: sqlite3.Connection = Depends(get_conn)) -> UserService:
     return UserService(conn)
+
+def contact_message_service(conn: sqlite3.Connection = Depends(get_conn)) -> ContactMessageService:
+    return ContactMessageService(conn)
 
