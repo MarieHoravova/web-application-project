@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class BookingStatus(BaseModel):
+class ReservationStatus(BaseModel):
     id: int
     description: str
 
