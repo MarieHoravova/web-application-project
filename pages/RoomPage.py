@@ -71,6 +71,35 @@ async def rooms_list(
             **flags,
         },
     )
+@router.get("/new", name="room_new")
+async def room_new(
+    request: Request,
+    room_type_svc: RoomTypeService = Depends(room_type_service),
+    room_status_svc: RoomStatusService = Depends(room_status_service),
+    current_user = Depends(get_current_user),
+):
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    role_id = current_user["role_id"]
+    if role_id != ROLE_ADMIN:
+        raise HTTPException(status_code=403, detail="Pouze admin může vytvářet pokoje")
+
+    room_types = room_type_svc.list_room_types()
+    statuses = room_status_svc.list_statuses()
+
+    tpl = request.app.state.templates
+    return tpl.TemplateResponse(
+        "rooms/room_new.html",
+        {
+            "request": request,
+            "title": "Nový pokoj",
+            "room_types": room_types,
+            "statuses": statuses,
+            "current_user": current_user,
+            **_profile_role_flags(current_user),
+        },
+    )
 
 
 @router.post("/", name="rooms_create")
