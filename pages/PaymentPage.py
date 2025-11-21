@@ -5,7 +5,7 @@ from starlette import status
 
 from services.PaymentService import PaymentService
 from services.PaymentMethodService import PaymentMethodService
-from services.BookingService import BookingService
+from services.ReservationService import ReservationService
 from dependencies import payment_service, payment_method_service, booking_service
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from auth_dependencies import get_current_user
@@ -58,13 +58,13 @@ async def payments_by_booking(
     request: Request,
     pay_svc: PaymentService = Depends(payment_service),
     method_svc: PaymentMethodService = Depends(payment_method_service),
-    booking_svc: BookingService = Depends(booking_service),
+    booking_svc: ReservationService = Depends(booking_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = booking_svc.get_booking_by_id(booking_id)
+    booking = booking_svc.get_reservation_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
 
@@ -110,14 +110,14 @@ async def payments_create_for_booking(
     amount: float = Form(...),
     method_id: int = Form(...),
     pay_svc: PaymentService = Depends(payment_service),
-    booking_svc: BookingService = Depends(booking_service),
+    booking_svc: ReservationService = Depends(booking_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
     # kontrola existence bookingu
-    booking = booking_svc.get_booking_by_id(booking_id)
+    booking = booking_svc.get_reservation_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
 

@@ -9,8 +9,8 @@ from repositories.PaymentRepository import (
     create_payment as repo_create_payment,
     delete_payment as repo_delete_payment,
 )
-from repositories.BookingRepository import (
-    get_booking_by_id as repo_get_booking_by_id,
+from repositories.ReservationRepository import (
+    get_reservation_by_id as repo_get_booking_by_id,
 )
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 

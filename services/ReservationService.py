@@ -1,187 +1,260 @@
 import sqlite3
+import random
+import string
 from typing import List, Dict, Any, Optional
 
 from repositories.ReservationRepository import (
     get_reservation_by_id as repo_get_by_id,
-    list_reservations_by_booking as repo_list_by_booking,
-    list_reservations_by_room as repo_list_by_room,
+    get_reservation_by_code as repo_get_by_code,
+    list_reservations as repo_list_reservations,
+    list_reservations_by_user as repo_list_reservations_by_user,
     create_reservation as repo_create_reservation,
+    update_reservation_status as repo_update_reservation_status,
+    update_reservation as repo_update_reservation,
     delete_reservation as repo_delete_reservation,
-    find_conflicting_reservations as repo_find_conflicts,
-    list_reservations_in_period as repo_list_in_period,
 )
 
-from repositories.BookingRepository import (
-    get_booking_by_id as repo_get_booking_by_id,
+from domain.constants import (
+    ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER,
+    RESERVATION_STATUS_PENDING, RESERVATION_STATUS_CANCELLED
 )
-
-from repositories.RoomRepository import (
-    get_room_by_id as repo_get_room_by_id,
-)
-
-from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
 
 class ReservationService:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
 
-    def get_reservation_by_id(self, reservation_id: int):
+    # ---- interní pomocná funkce na generování unikátního kódu ----
+    def _generate_unique_code(self, length: int = 8) -> str:
+        alphabet = string.ascii_uppercase + string.digits
+
+        while True:
+            code = "".join(random.choices(alphabet, k=length))
+            existing = repo_get_by_code(self.conn, code)
+            if not existing:
+                return code
+
+    # ---- CREATE (hlavička rezervace) ----
+    def create_reservation(self, user_id: int) -> Dict[str, Any]:
+        code = self._generate_unique_code()
+        reservation = repo_create_reservation(
+            self.conn,
+            user_id=user_id,
+            code=code,
+            status_id=RESERVATION_STATUS_PENDING,
+        )
+        return reservation
+
+    # ---- READ / LIST ----
+    def list_reservations(self) -> List[Dict[str, Any]]:
+        return repo_list_reservations(self.conn)
+
+    def list_reservations_by_user(self, user_id: int) -> List[Dict[str, Any]]:
+        return repo_list_reservations_by_user(self.conn, user_id)
+
+    def get_reservation_by_id(self, reservation_id: int) -> Optional[Dict[str, Any]]:
         return repo_get_by_id(self.conn, reservation_id)
 
-    # ---- LIST ----
-    def list_reservations_by_booking(self, booking_id: int, current_user_id: int, current_user_role: int):
-        booking = repo_get_booking_by_id(self.conn, booking_id)
-        if not booking:
-            raise ValueError("Booking neexistuje")
+    # ---- STATUS CHANGE ----
+    def update_reservation_status(
+        self,
+        reservation_id: int,
+        new_status_id: int,
+        current_user_id: int,
+        current_user_role: int,
+    ) -> Dict[str, Any]:
+        """
+        Změna statusu reservation s jednoduchými pravidly:
+        - ADMIN/RECEPTIONIST: může nastavit jakýkoliv status
+        - CUSTOMER:
+            - může měnit pouze své vlastní reservation
+            - může pouze CANCEL (např. status_id = RESERVATION_STATUS_CANCELLED)
+        """
+        reservation = repo_get_by_id(self.conn, reservation_id)
+        if not reservation:
+            raise ValueError("Reservation neexistuje")
 
-        if current_user_role == ROLE_CUSTOMER and booking["user_id"] != current_user_id:
-            raise PermissionError("Nemůžete zobrazit rezervace jiného uživatele")
+        # Customer – smí jen své a jen cancel
+        if current_user_role == ROLE_CUSTOMER:
+            if reservation["user_id"] != current_user_id:
+                raise PermissionError("Nemůžete měnit cizí rezervaci")
+            if new_status_id != RESERVATION_STATUS_CANCELLED:
+                raise PermissionError("Zákazník může změnit stav jen na 'cancelled'")
 
-        return repo_list_by_booking(self.conn, booking_id)
+        # Admin / recepce – bez omezení (logiku můžeš zpřísnit později)
+        updated = repo_update_reservation_status(self.conn, reservation_id, new_status_id)
+        return updated
 
-    def list_reservations_by_room(self, room_id: int, current_user_role: int):
+    # ---- ADMIN ONLY: update (uživatel / kód) ----
+    def admin_update_reservation(
+        self,
+        reservation_id: int,
+        current_user_role: int,
+        user_id: Optional[int] = None,
+        code: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Speciální update reservation – jen pro admina nebo recepci.
+        Umožňuje opravit user_id nebo code (např. chyba při zápisu).
+        """
         if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
-            raise PermissionError("Pouze admin nebo recepce může zobrazit rezervace podle pokoje")
-
-        return repo_list_by_room(self.conn, room_id)
-
-    # ---- CREATE ----
-    def create_reservation(self, room_id: int, check_in: str, check_out: str, adults: int, children: int, booking_id: int, current_user_id: int, current_user_role: int):
-        room = repo_get_room_by_id(self.conn, room_id)
-        if not room:
-            raise ValueError("Pokoj neexistuje")
-
-        booking = repo_get_booking_by_id(self.conn, booking_id)
-        if not booking:
-            raise ValueError("Booking neexistuje")
-
-        if current_user_role == ROLE_CUSTOMER and booking["user_id"] != current_user_id:
-            raise PermissionError("Nemůžete vytvořit rezervaci do cizího booking")
-
-        # --- OVĚŘÍM, ZDA NEEXISTUJÍ KONFLIKTY --- #
-        conflicts = repo_find_conflicts(self.conn, room_id, check_in, check_out)
-        if conflicts:
-            raise ValueError("Termín se překrývá s jinou rezervací")
-
-        return repo_create_reservation(self.conn, room_id, check_in, check_out, adults, children, booking_id)
-
-    # ---- DELETE ----
-    def delete_reservation(self, reservation_id: int, current_user_role: int):
-        if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
-            raise PermissionError("Pouze admin nebo recepce může mazat rezervace")
+            raise PermissionError("Nemáte oprávnění upravovat reservation")
 
         reservation = repo_get_by_id(self.conn, reservation_id)
         if not reservation:
-            raise ValueError("Rezervace neexistuje")
+            raise ValueError("Reservation neexistuje")
+
+        updated = repo_update_reservation(self.conn, reservation_id, user_id=user_id, code=code)
+        return updated
+
+    # ---- DELETE jen ADMIN, RECEPČNÍ ----
+    def delete_reservation(self, reservation_id: int, current_user_role: int) -> bool:
+        if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
+            raise PermissionError("Nemáte oprávnění mazat rezervace")
+
+        if not repo_get_by_id(self.conn, reservation_id):
+            raise ValueError("Reservation neexistuje")
 
         repo_delete_reservation(self.conn, reservation_id)
         return True
 
-    def list_reservations_in_period(self, date_from: str, date_to: str):
-        return repo_list_in_period(self.conn, date_from, date_to)
 
+# TEST
 if __name__ == "__main__":
     from database.database import open_connection
 
     with open_connection() as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
         service = ReservationService(conn)
 
-        print("\n=== PREP: cleaning old reservations, bookings and users ===")
+        # --- PREP: smažu staré testovací RESERVATIONS a USERS korektně přes FK ---
+        print("\n=== PREP: clean old test users & reservations ===")
+        user_rows = conn.execute(
+            "SELECT id FROM users WHERE email LIKE 'reservations_test_%'"
+        ).fetchall()
 
-        old_users = conn.execute("SELECT id FROM users WHERE email LIKE 'res_test_%'").fetchall()
-        for u in old_users:
+        for u in user_rows:
             uid = u["id"]
 
+            # nejdřív smažu položky z reservation_items navázané na reservation header daného usera
             conn.execute("""
-                         DELETE
-                         FROM reservations
-                         WHERE booking_id IN (SELECT id FROM bookings WHERE user_id = ?)
-                         """, (uid,))
+                DELETE FROM reservation_items
+                WHERE reservation_id IN (
+                    SELECT id FROM reservations WHERE user_id = ?
+                )
+            """, (uid,))
 
-            conn.execute("DELETE FROM bookings WHERE user_id = ?", (uid,))
+            # smažu payments (i kdyby tam bylo ON DELETE CASCADE, nevadí)
+            conn.execute("""
+                DELETE FROM payments
+                WHERE reservation_id IN (
+                    SELECT id FROM reservations WHERE user_id = ?
+                )
+            """, (uid,))
+
+            # smažu samotné reservations (hlavičky)
+            conn.execute("DELETE FROM reservations WHERE user_id = ?", (uid,))
+
+            # teprve pak smažu usera
             conn.execute("DELETE FROM users WHERE id = ?", (uid,))
 
-        # Mazání test pokoje
-        conn.execute("DELETE FROM rooms WHERE number = 777")
+        conn.commit()
+
+        # --- vytvořím nového admina + customer ---
+        print("\n=== PREP: create test users ===")
+        cur1 = conn.execute("""
+            INSERT INTO users (email, password_hash, first_name, last_name, phone_number, role_id, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """, ("reservations_test_admin@example.com", "HASH", "Admin", "Tester", "123", ROLE_ADMIN))
+        admin_id = cur1.lastrowid
+
+        cur2 = conn.execute("""
+            INSERT INTO users (email, password_hash, first_name, last_name, phone_number, role_id, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """, ("reservations_test_customer@example.com", "HASH", "Cust", "Tester", "123", ROLE_CUSTOMER))
+        customer_id = cur2.lastrowid
 
         conn.commit()
 
-        print("\n=== PREP: creating test admin, customer, room, booking ===")
+        # --- TEST: create_reservation ---
+        print("\n=== TEST: create_reservation ===")
+        b1 = service.create_reservation(user_id=customer_id)
+        print("Created:", b1)
+        reservation_id = b1["id"]
 
-        admin_id = conn.execute("""
-            INSERT INTO users (email, password_hash, first_name, last_name, role_id, created_at)
-            VALUES ('res_test_admin@example.com', 'X', 'Res', 'Admin', ?, datetime('now'))
-        """, (ROLE_ADMIN,)).lastrowid
+        print("\n=== TEST: get_reservation_by_id ===")
+        print(service.get_reservation_by_id(reservation_id))
 
-        customer_id = conn.execute("""
-            INSERT INTO users (email, password_hash, first_name, last_name, role_id, created_at)
-            VALUES ('res_test_customer@example.com', 'X', 'Res', 'Cust', ?, datetime('now'))
-        """, (ROLE_CUSTOMER,)).lastrowid
+        print("\n=== TEST: list_reservations ===")
+        print(service.list_reservations())
 
-        conn.commit()
+        print("\n=== TEST: list_reservations_by_user ===")
+        print(service.list_reservations_by_user(customer_id))
 
-        room_id = conn.execute("""
-            INSERT INTO rooms (number, room_type_id, room_status_id, image_path, floor)
-            VALUES (777, 1, 1, 'test.jpg', 1)
-        """).lastrowid
-
-        booking_id = conn.execute("""
-            INSERT INTO bookings (user_id, code, status_id, created_at)
-            VALUES (?, 'RESTEST', 1, datetime('now'))
-        """, (customer_id,)).lastrowid
-
-        conn.commit()
-
-        print("Admin ID:", admin_id)
-        print("Customer ID:", customer_id)
-        print("Room ID:", room_id)
-        print("Booking ID:", booking_id)
-
-        print("\n=== TEST 1: create_reservation (valid) ===")
-        r1 = service.create_reservation(
-            room_id=room_id,
-            check_in="2025-02-01",
-            check_out="2025-02-05",
-            adults=2,
-            children=0,
-            booking_id=booking_id,
+        # ---- CUSTOMER STATUS CHANGE (valid) ----
+        print("\n=== TEST: customer CANCEL reservation ===")
+        updated = service.update_reservation_status(
+            reservation_id=reservation_id,
+            new_status_id=RESERVATION_STATUS_CANCELLED,
             current_user_id=customer_id,
-            current_user_role=ROLE_CUSTOMER
+            current_user_role=ROLE_CUSTOMER,
         )
-        print("Created:", r1)
-        r1_id = r1["id"]
+        print("Cancelled:", updated)
 
-        print("\n=== TEST 2: list_reservations_by_booking (customer OK) ===")
-        print(service.list_reservations_by_booking(booking_id, customer_id, ROLE_CUSTOMER))
-
-        print("\n=== TEST 3: customer tries to read someone else's booking (FAIL) ===")
+        # ---- CUSTOMER STATUS CHANGE (invalid) ----
+        print("\n=== TEST: customer tries CONFIRM reservation (should fail) ===")
         try:
-            service.list_reservations_by_booking(booking_id, 999, ROLE_CUSTOMER)
-        except PermissionError as e:
-            print("Expected error:", e)
-
-        print("\n=== TEST 4: creating conflicting reservation (should FAIL) ===")
-        try:
-            service.create_reservation(
-                room_id=room_id,
-                check_in="2025-02-03",
-                check_out="2025-02-06",
-                adults=2,
-                children=0,
-                booking_id=booking_id,
+            service.update_reservation_status(
+                reservation_id=reservation_id,
+                new_status_id=RESERVATION_STATUS_PENDING,  # něco jiného než cancel
                 current_user_id=customer_id,
-                current_user_role=ROLE_CUSTOMER
+                current_user_role=ROLE_CUSTOMER,
             )
-        except ValueError as e:
-            print("Expected conflict:", e)
-
-        print("\n=== TEST 5: admin deletes reservation (OK) ===")
-        deleted = service.delete_reservation(r1_id, ROLE_ADMIN)
-        print("Deleted:", deleted)
-
-        print("\n=== TEST 6: customer tries to delete reservation (FAIL) ===")
-        try:
-            service.delete_reservation(r1_id, ROLE_CUSTOMER)
         except PermissionError as e:
-            print("Expected:", e)
+            print("Expected PermissionError:", e)
+
+        # ---- CUSTOMER tries to change someone else’s reservation ----
+        print("\n=== TEST: customer tries to modify foreign reservation (should fail) ===")
+        try:
+            service.update_reservation_status(
+                reservation_id=reservation_id,
+                new_status_id=RESERVATION_STATUS_CANCELLED,
+                current_user_id=999,  # cizí
+                current_user_role=ROLE_CUSTOMER,
+            )
+        except PermissionError as e:
+            print("Expected PermissionError:", e)
+
+        # ---- ADMIN UPDATE reservations (code/user_id) ----
+        print("\n=== TEST: admin_update_reservation ===")
+        b2 = service.create_reservation(user_id=customer_id)
+        updated_admin = service.admin_update_reservation(
+            reservation_id=b2["id"],
+            current_user_role=ROLE_ADMIN,
+            user_id=admin_id,
+            code="TEST_UPDATED",
+        )
+        print("Updated admin reservation:", updated_admin)
+
+        # ---- CUSTOMER cannot admin-update ----
+        print("\n=== TEST: customer tries admin_update_reservation (should fail) ===")
+        try:
+            service.admin_update_reservation(
+                reservation_id=b2["id"],
+                current_user_role=ROLE_CUSTOMER,
+                user_id=customer_id,
+            )
+        except PermissionError as e:
+            print("Expected PermissionError:", e)
+
+        # ---- DELETE reservation as admin ----
+        print("\n=== TEST: delete_reservation as ADMIN ===")
+        result = service.delete_reservation(b2["id"], current_user_role=ROLE_ADMIN)
+        print("Deleted:", result)
+
+        # ---- DELETE reservation as customer (should fail) ----
+        print("\n=== TEST: delete_reservation as CUSTOMER (should fail) ===")
+        try:
+            service.delete_reservation(reservation_id, current_user_role=ROLE_CUSTOMER)
+        except PermissionError as e:
+            print("Expected PermissionError:", e)

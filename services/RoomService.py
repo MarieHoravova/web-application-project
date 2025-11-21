@@ -10,7 +10,7 @@ from repositories.RoomRepository import (
     update_room as repo_update_room,
     delete_room as repo_delete_room,
 )
-from repositories.ReservationRepository import (
+from repositories.ReservationItemRepository import (
     find_conflicting_reservations as repo_find_conflicts,
 )
 

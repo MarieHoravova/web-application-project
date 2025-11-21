@@ -4,8 +4,8 @@ from typing import List, Dict, Any
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 
-from services.BookingService import BookingService
 from services.ReservationService import ReservationService
+from services.ReservationItemService import ReservationItemService
 from services.ContactMessageService import ContactMessageService
 
 from dependencies import booking_service, reservation_service, contact_message_service
@@ -28,8 +28,8 @@ def _profile_role_flags(current_user: dict) -> dict:
 @router.get("/profile", name="user_profile")
 async def user_profile(
     request: Request,
-    booking_svc: BookingService = Depends(booking_service),
-    res_svc: ReservationService = Depends(reservation_service),
+    booking_svc: ReservationItemService = Depends(booking_service),
+    res_svc: ReservationItemService = Depends(reservation_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
@@ -43,7 +43,7 @@ async def user_profile(
     customer_bookings: List[Dict[str, Any]] = []
     last_booking: Dict[str, Any] | None = None
     if flags["is_customer"]:
-        customer_bookings = booking_svc.list_bookings_by_user(user_id)
+        customer_bookings = booking_svc.list_reservations_by_user(user_id)
         last_booking = customer_bookings[0] if customer_bookings else None
 
     # ---- data pro recepci a admina – nejbližší rezervace ----

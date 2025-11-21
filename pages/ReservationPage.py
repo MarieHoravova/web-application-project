@@ -4,8 +4,8 @@ from fastapi.responses import RedirectResponse
 from starlette import status
 from starlette.templating import Jinja2Templates
 
+from services.ReservationItemService import ReservationItemService
 from services.ReservationService import ReservationService
-from services.BookingService import BookingService
 from dependencies import reservation_service, booking_service, room_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST
@@ -20,13 +20,13 @@ async def reservations_by_booking(
     booking_id: int,
     request: Request,
     res_svc: ReservationService = Depends(reservation_service),
-    booking_svc: BookingService = Depends(booking_service),
+    booking_svc: ReservationService = Depends(booking_service),
     current_user=Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = booking_svc.get_booking_by_id(booking_id)
+    booking = booking_svc.get_reservation_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
 
@@ -65,13 +65,13 @@ async def reservations_create_for_booking(
     adults: int = Form(...),
     children: int = Form(0),
     res_svc: ReservationService = Depends(reservation_service),
-    booking_svc: BookingService = Depends(booking_service),
+    booking_svc: ReservationService = Depends(booking_service),
     current_user=Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = booking_svc.get_booking_by_id(booking_id)
+    booking = booking_svc.get_reservation_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
 

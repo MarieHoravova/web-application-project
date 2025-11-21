@@ -10,7 +10,7 @@ from dependencies import room_service, room_type_service, room_status_service
 from auth_dependencies import get_current_user
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 
-from repositories.ReservationRepository import (
+from repositories.ReservationItemRepository import (
     find_conflicting_reservations as repo_find_conflicts,
 )
 

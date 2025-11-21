@@ -3,8 +3,8 @@ from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from starlette import status
 
-from services.BookingService import BookingService
-from services.BookingStatusService import BookingStatusService
+from services.ReservationService import ReservationService
+from services.ReservationStatusService import ReservationStatusService
 from dependencies import booking_service, booking_status_service
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from auth_dependencies import get_current_user
@@ -25,7 +25,7 @@ def _profile_role_flags(current_user: dict) -> dict:
 async def bookings_list(
     request: Request,
     user_id: Optional[int] = None,
-    svc: BookingService = Depends(booking_service),
+    svc: ReservationService = Depends(booking_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
@@ -36,14 +36,14 @@ async def bookings_list(
     current_user_id = current_user["id"]
 
     if flags["is_customer"]:
-        bookings: List[Dict[str, Any]] = svc.list_bookings_by_user(current_user_id)
+        bookings: List[Dict[str, Any]] = svc.list_reservations_by_user(current_user_id)
         filter_user_id = current_user_id
     else:
         if user_id is not None:
-            bookings = svc.list_bookings_by_user(user_id)
+            bookings = svc.list_reservations_by_user(user_id)
             filter_user_id = user_id
         else:
-            bookings = svc.list_bookings()
+            bookings = svc.list_reservations()
             filter_user_id = None
 
     tpl = request.app.state.templates
@@ -63,14 +63,14 @@ async def bookings_list(
 async def booking_detail(
     booking_id: int,
     request: Request,
-    svc: BookingService = Depends(booking_service),
-    status_svc: BookingStatusService = Depends(booking_status_service),
+    svc: ReservationService = Depends(booking_service),
+    status_svc: ReservationStatusService = Depends(booking_status_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
 
-    booking = svc.get_booking_by_id(booking_id)
+    booking = svc.get_reservation_by_id(booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking nenalezen")
 
@@ -101,7 +101,7 @@ async def booking_update_status(
     booking_id: int,
     request: Request,
     new_status_id: int = Form(...),
-    svc: BookingService = Depends(booking_service),
+    svc: ReservationService = Depends(booking_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
@@ -111,7 +111,7 @@ async def booking_update_status(
     current_user_role = current_user["role_id"]
 
     try:
-        svc.update_booking_status(
+        svc.update_reservation_status(
             booking_id=booking_id,
             new_status_id=new_status_id,
             current_user_id=current_user_id,
