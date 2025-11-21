@@ -4,9 +4,9 @@ from starlette.templating import Jinja2Templates
 
 from pages.HomePage import router as home_router
 from pages.AuthPage import router as auth_router
-from pages.BookingPage import router as booking_router
-from pages.PaymentPage import router as payment_router
 from pages.ReservationPage import router as reservation_router
+from pages.PaymentPage import router as payment_router
+from pages.ReservationItemPage import router as reservation_item_router
 from pages.UserPage import router as user_router
 from pages.RoomPage import router as room_router
 from pages.RoomTypePage import router as room_types_router
@@ -24,9 +24,9 @@ def create_app() -> FastAPI:
 
     app.include_router(home_router)
     app.include_router(auth_router, prefix="/auth", tags=["auth"])
-    app.include_router(booking_router, prefix="/bookings", tags=["bookings"])
-    app.include_router(payment_router, prefix="/payments", tags=["payments"])
     app.include_router(reservation_router, prefix="/reservations", tags=["reservations"])
+    app.include_router(payment_router, prefix="/payments", tags=["payments"])
+    app.include_router(reservation_item_router, prefix="/reservation_items", tags=["reservation_items"])
     app.include_router(user_router, prefix="/users", tags=["users"])
     app.include_router(room_router, prefix="/rooms", tags=["rooms"])
     app.include_router(room_types_router, prefix="/room_types", tags=["room_types"])

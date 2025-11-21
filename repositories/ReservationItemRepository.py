@@ -80,3 +80,7 @@ if __name__ == "__main__":
         delete_reservation_item(conn, r1["id"])
         delete_reservation_item(conn, r2["id"])
         print("After delete:", list_reservation_items_by_room(conn, room_id))
+
+
+def find_conflicting_reservations():
+    return None

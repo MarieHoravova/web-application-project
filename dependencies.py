@@ -5,10 +5,12 @@ from database.database import open_connection
 
 from services.AuthService import AuthService
 from services.ReservationService import ReservationService
+from services.ReservationItemService import ReservationItemService
 from services.ReservationStatusService import ReservationStatusService
+
 from services.PaymentMethodService import PaymentMethodService
 from services.PaymentService import PaymentService
-from services.ReservationItemService import ReservationItemService
+
 from services.RoleService import RoleService
 from services.RoomService import RoomService
 from services.RoomStatusService import RoomStatusService
@@ -24,10 +26,18 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 def auth_service(conn: sqlite3.Connection = Depends(get_conn)) -> AuthService:
     return AuthService(conn)
 
-def booking_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationItemService:
+
+# 🔹 HLAVIČKY rezervací (ReservationService)
+def reservation_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationService:
+    return ReservationService(conn)
+
+
+# 🔹 POLOŽKY rezervace (konkrétní pokoje – ReservationItemService)
+def reservation_item_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationItemService:
     return ReservationItemService(conn)
 
-def booking_status_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationStatusService:
+
+def reservation_status_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationStatusService:
     return ReservationStatusService(conn)
 
 def payment_method_service(conn: sqlite3.Connection = Depends(get_conn)) -> PaymentMethodService:
@@ -35,9 +45,6 @@ def payment_method_service(conn: sqlite3.Connection = Depends(get_conn)) -> Paym
 
 def payment_service(conn: sqlite3.Connection = Depends(get_conn)) -> PaymentService:
     return PaymentService(conn)
-
-def reservation_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationItemService:
-    return ReservationItemService(conn)
 
 def role_service(conn: sqlite3.Connection = Depends(get_conn)) -> RoleService:
     return RoleService(conn)
@@ -56,4 +63,3 @@ def user_service(conn: sqlite3.Connection = Depends(get_conn)) -> UserService:
 
 def contact_message_service(conn: sqlite3.Connection = Depends(get_conn)) -> ContactMessageService:
     return ContactMessageService(conn)
-
