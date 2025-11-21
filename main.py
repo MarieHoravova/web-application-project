@@ -12,6 +12,7 @@ from pages.RoomPage import router as room_router
 from pages.PublicRoomsPage import router as public_rooms_router
 from pages.ProfilePage import router as profile_router
 from pages.GalleryPage import router as gallery_router
+from pages.ContactPage import router as contact_router
 
 
 def create_app() -> FastAPI:
@@ -30,7 +31,7 @@ def create_app() -> FastAPI:
     app.include_router(public_rooms_router)
     app.include_router(profile_router)
     app.include_router(gallery_router)
-
+    app.include_router(contact_router)
     return app
 
 

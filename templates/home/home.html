@@ -94,36 +94,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Řádek: mapa + kontaktní formulář -->
-    <div class="home-row">
-      <div class="home-card home-map">
-        <h2 class="home-card-title">Kde nás najdete</h2>
-        <div class="home-map-box">
-          Mapa hotelu – později sem vložíme mapu (např. Google Maps).
-        </div>
-      </div>
-
-      <div class="home-card home-contact" id="kontakt">
-        <h2 class="home-card-title">Máte dotazy? Napište nám</h2>
-        <form class="home-contact-form" method="post" action="{{ url_for('home_contact') }}">
-          <label>
-            Jméno
-            <input type="text" name="name" placeholder="Vaše jméno" required>
-          </label>
-          <label>
-            E-mail
-            <input type="email" name="email" placeholder="vas@email.cz" required>
-          </label>
-          <label>
-            Zpráva
-            <textarea name="message" rows="4" placeholder="Jak vám můžeme pomoci?" required></textarea>
-          </label>
-          <button type="submit" class="btn btn-primary">Odeslat</button>
-        </form>
-      </div>
-    </div>
-
   </div>
 </section>
 {% endblock %}
