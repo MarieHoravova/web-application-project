@@ -1,97 +1,93 @@
 {% extends "profile/profile_base.html" %}
-
-{% block title %}Rezervace{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
   <section class="reservations-page">
-    <div class="reservations-layout">
 
-      {# ADMIN / RECEPCE – plná tabulka + filtr #}
-      {% if is_admin_or_receptionist %}
-        <div class="reservations-side">
+    {# ADMIN / RECEPCE – filtr nahoře, tabulka pod tím #}
+    {% if is_admin_or_receptionist %}
+      <h2>{{ title }}</h2>
 
-          <form method="get"
-                action="{{ url_for('reservations_list') }}"
-                class="admin-form admin-form-inline">
-            <label>
-              ID uživatele
-              <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
-            </label>
-            <div class="admin-filter-actions">
-              <button type="submit" class="btn btn-secondary">Filtrovat</button>
-              <a href="{{ url_for('reservations_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
-            </div>
-          </form>
+      <form method="get"
+            action="{{ url_for('reservations_list') }}"
+            class="admin-form admin-form-inline">
+        <label>
+          ID uživatele
+          <input type="number" name="user_id" value="{{ filter_user_id or '' }}">
+        </label>
+        <div class="admin-filter-actions">
+          <button type="submit" class="btn btn-secondary">Filtrovat</button>
+          <a href="{{ url_for('reservations_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
         </div>
+      </form>
 
-        <div class="reservations-main">
-          <h3>Rezervace</h3>
-          {% if reservations|length == 0 %}
-            <p>Žádné rezervace k zobrazení.</p>
-          {% else %}
-            <table class="data">
-              <thead>
+      <div class="reservations-main">
+        <h3>Rezervace hostů</h3>
+        {% if reservations|length == 0 %}
+          <p>Žádné rezervace k zobrazení.</p>
+        {% else %}
+          <table class="data">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Kód</th>
+                <th>Uživatel</th>
+                <th>Status</th>
+                <th>Vytvořeno</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reservations %}
                 <tr>
-                  <th>ID</th>
-                  <th>Kód</th>
-                  <th>Uživatel</th>
-                  <th>Status</th>
-                  <th>Vytvořeno</th>
+                  <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
+                  <td>{{ r.code }}</td>
+                  <td>{{ r.user_id }}</td>
+                  <td>{{ r.status_id }}</td>
+                  <td>{{ r.created_at }}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {% for r in reservations %}
-                  <tr>
-                    <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
-                    <td>{{ r.code }}</td>
-                    <td>{{ r.user_id }}</td>
-                    <td>{{ r.status_id }}</td>
-                    <td>{{ r.created_at }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+
+    {# CUSTOMER – moje rezervace + tlačítko Nová rezervace #}
+    {% else %}
+      <div class="reservations-main reservations-main-full">
+        <h2>Moje rezervace</h2>
+
+        <div class="profile-actions" style="margin-bottom: 16px;">
+          <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
+            Nová rezervace
+          </a>
         </div>
 
-      {# CUSTOMER – jen moje rezervace + tlačítko Nová rezervace #}
-      {% else %}
-        <div class="reservations-main reservations-main-full">
-          <h3>Moje rezervace</h3>
-
-          <div class="profile-actions" style="margin-bottom: 16px;">
-            <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
-              Nová rezervace
-            </a>
-          </div>
-
-          {% if reservations|length == 0 %}
-            <p>Nemáte žádné rezervace.</p>
-          {% else %}
-            <table class="data">
-              <thead>
+        {% if reservations|length == 0 %}
+          <p>Nemáte žádné rezervace.</p>
+        {% else %}
+          <table class="data">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Kód</th>
+                <th>Status</th>
+                <th>Vytvořeno</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reservations %}
                 <tr>
-                  <th>ID</th>
-                  <th>Kód</th>
-                  <th>Status</th>
-                  <th>Vytvořeno</th>
+                  <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
+                  <td>{{ r.code }}</td>
+                  <td>{{ r.status_id }}</td>
+                  <td>{{ r.created_at }}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {% for r in reservations %}
-                  <tr>
-                    <td><a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="table-id-link">{{ r.id }}</a></td>
-                    <td>{{ r.code }}</td>
-                    <td>{{ r.status_id }}</td>
-                    <td>{{ r.created_at }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
-        </div>
-      {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+    {% endif %}
 
-    </div>
   </section>
 {% endblock %}
