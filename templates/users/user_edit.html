@@ -5,6 +5,17 @@
 
   <div class="admin-detail-header">
     <h2>Upravit uživatele {{ user.first_name + " " + user.last_name }}</h2>
+
+    {% if is_admin %}
+      <form method="post"
+            action="{{ url_for('user_delete', user_id=user.id) }}"
+            onsubmit="return confirm('Opravdu chcete tohoto uživatele smazat? Tuto akci nelze vrátit.');"
+            style="margin:0">
+        <button type="submit" class="btn btn-destructive">
+          Smazat uživatele
+        </button>
+      </form>
+    {% endif %}
   </div>
 
   <div class="admin-detail">
@@ -41,9 +52,7 @@
 
       <div class="admin-detail-form-actions">
         <button type="submit" class="btn btn-primary">Uložit změny</button>
-        <a href="{{ url_for('user_detail', user_id=user.id) }}" class="btn btn-tertiary">
-          Zpět na detail
-        </a>
+        <a href="{{ url_for('user_detail', user_id=user.id) }}" class="btn btn-tertiary">Zpět na detail</a>
       </div>
     </form>
 
@@ -70,7 +79,6 @@
           <button type="submit" class="btn btn-secondary">Změnit roli</button>
         </div>
       </form>
-
     {% endif %}
   </div>
 

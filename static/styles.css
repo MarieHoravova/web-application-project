@@ -126,6 +126,17 @@ h1 {
     background-color: var(--color-primary-100);
 }
 
+.btn-destructive {
+    background-color: var(--color-error);
+    color: var(--color-primary-white);
+    border-color: var(--color-error);
+}
+
+.btn-destructive:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+}
+
 .site-header{
     border-bottom: 1px solid var(--color-border-subtle);
     background: #fff;
