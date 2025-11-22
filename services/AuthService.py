@@ -24,6 +24,7 @@ class AuthService:
         token = create_access_token(sub=str(user["id"]), roles=[str(role)])
         return token
 
+    # RegisterRequest z Auth model = kontroluje heslo
     def register(self, data: RegisterRequest) -> Dict[str, Any]:
         if repo_get_by_email(self.conn, data.email):
             raise ValueError("Uživatel s tímto emailem již existuje")
@@ -41,6 +42,7 @@ class AuthService:
         )
         return user
 
+    # ChangePasswordRequest z Auth model = kontroluje heslo
     def change_password(self, user_id: int, data: ChangePasswordRequest):
         user = get_user_by_id(self.conn, user_id)
         if not user:
@@ -59,7 +61,7 @@ class AuthService:
         return get_user_by_id(self.conn, user_id)
 
 
-# TEST
+# TEST BLOK
 if __name__ == "__main__":
     from database.database import open_connection
 

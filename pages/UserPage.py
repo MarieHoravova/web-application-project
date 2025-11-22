@@ -70,8 +70,7 @@ async def users_list(
     else:
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit seznam uživatelů")
 
-    tpl = request.app.state.templates
-    return tpl.TemplateResponse(
+    return request.app.state.templates.TemplateResponse(
         "users/users_list.html",
         {
             "request": request,
