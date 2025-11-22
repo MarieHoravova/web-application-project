@@ -11,6 +11,16 @@ def get_by_email(conn: sqlite3.Connection, email: str) -> Optional[Dict[str, Any
     row = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
     return dict(row) if row else None
 
+def list_users(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
+    rows = conn.execute(
+        "SELECT * FROM users ORDER BY created_at DESC"
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+def list_users_by_role(conn: sqlite3.Connection, role_id: int) -> List[Dict[str, Any]]:
+    rows = conn.execute("SELECT * FROM users WHERE role_id = ?", (role_id,)).fetchall()
+    return [dict(r) for r in rows]
+
 def create_user(
     conn: sqlite3.Connection,
     email: str,
@@ -74,26 +84,15 @@ def update_user(
 
     return get_by_id(conn, user_id)
 
-
-def delete_user(conn: sqlite3.Connection, user_id: int) -> None:
-    conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
-    conn.commit()
-
-def list_users(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-    rows = conn.execute(
-        "SELECT * FROM users ORDER BY created_at DESC"
-    ).fetchall()
-    return [dict(r) for r in rows]
-
-def list_users_by_role(conn: sqlite3.Connection, role_id: int) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM users WHERE role_id = ?", (role_id,)).fetchall()
-    return [dict(r) for r in rows]
-
 def update_password(conn: sqlite3.Connection, user_id: int, hashed_password: str) -> Optional[Dict[str, Any]]:
     conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hashed_password, user_id))
     conn.commit()
     return get_by_id(conn, user_id)
 
+
+def delete_user(conn: sqlite3.Connection, user_id: int) -> None:
+    conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
 
 # TEST
 if __name__ == "__main__":
