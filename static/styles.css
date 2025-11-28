@@ -1,4 +1,4 @@
-html, body {
+html {
     height: 100%;
 }
 
@@ -40,6 +40,7 @@ body {
     margin: 0;
     background: var(--color-bg-main);
     color: var(--color-text-main);
+    min-height: 100vh;
 }
 h1 {
     font-size: 32px;
@@ -305,6 +306,7 @@ h1 {
 /*HOME PAGE*/
 .page-main {
     padding: 24px 24px 40px;
+    flex: 1;
 }
 .home-container {
     max-width: 1200px;
@@ -792,189 +794,102 @@ html {
     box-shadow: 0 0 0 3px var(--color-primary-100); /* Focus ring efekt */
 }
 
+/* --- AUTH STRÁNKY (Login / Register) --- */
+.auth-section {
+    /* Vycentrování formuláře vertikálně i horizontálně */
+    flex: 1; /* Roztáhne se v rámci main */
+    display: flex;
+    align-items: center; /* Vertikálně střed */
+    justify-content: center; /* Horizontálně střed */
+    padding: 20px 0;
+}
+.auth-container {
+    width: 100%;
+    max-width: 420px; /* Úzký sloupec pro přihlášení */
+}
+/* Karta přihlášení - stejný styl jako Home Card */
+.auth-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 12px;
+    padding: 32px; /* Větší padding uvnitř */
 
-
-
-/* Kontaktní formulář, auth formulář */
+    /* Stín pro hloubku */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+.auth-card h1 {
+    margin-top: 0;
+    text-align: center; /* Nadpis na střed */
+    font-size: 24px;
+}
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
+    margin-top: 24px;
 }
-
 .auth-form label {
     display: flex;
     flex-direction: column;
     font-size: 14px;
+    font-weight: 500;
     color: var(--color-text-main);
-    gap: 4px;
+    gap: 6px;
 }
-
-.auth-form input,
-.auth-form textarea {
-    padding: 8px 10px;
-    border-radius: 6px;
+.auth-form input {
+    padding: 10px 12px;
+    border-radius: 8px;
     border: 1px solid var(--color-border-subtle);
     font-family: inherit;
     font-size: 14px;
+    background: var(--color-bg-main);
+    transition: all 0.2s;
 }
-
-.auth-form input:focus,
-.auth-form textarea:focus {
-    outline: none; /* vypnu default */
-    border-color: var(--color-primary-500); /* dám vlastní zvýraznění */
-}
-
-/* NICE TO HAVE */
-
-/*@media (max-width: 900px) {*/
-/*    .gallery-page {*/
-/*        padding: 16px;*/
-/*    }*/
-
-/*    .gallery-grid {*/
-/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
-/*    }*/
-/*}*/
-
-/*@media (max-width: 600px) {*/
-/*    .gallery-grid {*/
-/*        grid-template-columns: 1fr;*/
-/*    }*/
-/*}*/
-
-
-
-
-/*NICE TO HAVE*/
-/*!* jednoduchá responsivita homepage *!*/
-/*@media (max-width: 900px) {*/
-/*    .home-hero {*/
-/*        flex-direction: column;*/
-/*        align-items: flex-start;*/
-/*    }*/
-
-/*    .home-row {*/
-/*        flex-direction: column;*/
-/*    }*/
-
-/*    .home-quick-info,*/
-/*    .home-basic-info,*/
-/*    .home-amenities,*/
-/*    .home-gallery,*/
-/*    .home-map,*/
-/*    .home-contact {*/
-/*        flex: 1 1 auto;*/
-/*    }*/
-
-/*    .page-main {*/
-/*        padding: 16px;*/
-/*    }*/
-/*}*/
-
-
-/*!* NICE TO HAVE *!*/
-/*@media (max-width: 768px) {*/
-/*    .footer-inner {*/
-/*        flex-direction: column;*/
-/*        align-items: flex-start;*/
-/*    }*/
-
-/*    .footer-right {*/
-/*        align-items: flex-start;*/
-/*        width: 100%;*/
-/*    }*/
-
-/*    .footer-columns {*/
-/*        flex-direction: column;*/
-/*        width: 100%;*/
-/*    }*/
-
-/*    .footer-card {*/
-/*        width: 100%;*/
-/*    }*/
-/*}*/
-
-/*Celý "řádek"*/
-.auth-container {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.auth-card {
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: 10px;
-    padding: 20px 24px;
-}
-
-
-.auth-error {
-    display: block;
-    max-width: 230px;
-    margin: 0 auto 12px auto; /* auto zajistí centrování na střed*/
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: var(--color-error);
-    color: var(--color-primary-white);
-    font-size: 14px;
-    text-align: center;
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    background: var(--color-primary-white);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
 .auth-submit {
     margin-top: 8px;
+    width: 100%;     /* Tlačítko přes celou šířku */
+    padding: 10px;   /* Trochu vyšší */
+    justify-content: center;
+    display: flex;
 }
-
+/* Odkaz na registraci/přihlášení dole */
 .auth-register {
-    margin-top: 12px;
+    margin-top: 24px;
     font-size: 14px;
+    text-align: center;
+    color: var(--color-text-muted);
 }
 
 .auth-register a {
     color: var(--color-primary-500);
     text-decoration: none;
-    font-weight: 500;
-}
-
-.auth-register a:hover {
-    color: var(--color-primary-700);
-    text-decoration: underline;
-}
-
-/* volitelně – box pro debug JWT */
-.auth-token-card {
-    margin-top: 24px;
-    padding: 16px 20px;
-    background: var(--color-bg-card);
-    border-radius: 10px;
-    border: 1px solid var(--color-border-subtle);
-    font-size: 14px;
-}
-
-.auth-token-title {
-    margin: 0 0 8px 0;
-    font-size: 16px;
     font-weight: 600;
 }
 
-.auth-token-pre {
-    background: var(--color-bg-main);
-    padding: 8px;
-    border-radius: 6px;
-    overflow-x: auto;
+.auth-register a:hover {
+    text-decoration: underline;
 }
 
-.auth-token-note {
-    margin-top: 8px;
-    color: var(--color-text-muted);
-    font-size: 13px;
+/* Chybová hláška */
+.auth-error {
+    background: #FEF2F2; /* Světle červená */
+    color: var(--color-error);
+    border: 1px solid #FECACA;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 16px;
 }
+
 
 /* PROFILE */
 
