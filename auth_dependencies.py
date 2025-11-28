@@ -1,12 +1,12 @@
 from typing import Any, Dict, Optional
 
-from fastapi import Depends, Cookie
+from fastapi import Depends, Cookie, Request
 from fastapi.responses import RedirectResponse
 from fastapi import HTTPException, status
 
 from core.security import decode_access_token
-
-from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
+from services.AuthService import AuthService
+from dependencies import auth_service
 
 ACCESS_COOKIE = "access_token"  # stejné jméno jako v set_cookie v AuthPage
 
@@ -38,6 +38,23 @@ def get_current_user(
         "role_id": role_id,
         "roles": roles,
     }
+
+async def get_current_user_optional(
+    request: Request,
+    svc: AuthService = Depends(auth_service),
+) -> Optional[dict]:
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+
+    try:
+        payload = decode_access_token(token)
+        user_id = int(payload["sub"])
+    except Exception:
+        return None
+
+    user = svc.get_current_user(user_id)
+    return user
 
 def require_roles(*allowed_roles: int):
     """

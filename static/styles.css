@@ -1089,21 +1089,78 @@ table.data tbody tr:hover {
 }
 
 /*FILTR*/
-
 .admin-form {
+    background: var(--color-bg-main); /* Jemně šedé pozadí pro lištu filtru */
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    margin-bottom: 24px;
+
+    /* Flexbox pro zarovnání vedle sebe */
     display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin: 8px auto;
-    align-items: center;
-    padding-bottom: 12px;
+    align-items: center; /* Zarovnat svisle na střed */
+    gap: 16px;           /* Mezery mezi prvky */
+    flex-wrap: wrap;     /* Na mobilu se to zalomí */
 }
+.admin-form label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary-900);
+    margin: 0;
+}
+.admin-form select {
+    padding: 8px 12px;
+    padding-right: 32px; /* Místo pro šipku */
+    border-radius: 6px;
+    border: 1px solid var(--color-border-subtle);
+    background-color: var(--color-primary-white);
+    font-size: 14px;
+    color: var(--color-text-main);
+    cursor: pointer;
+    min-width: 180px; /* Aby to nebylo moc úzké */
+
+    /* Vlastní stylování focusu */
+    transition: all 0.2s;
+}
+.admin-form select:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+.admin-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 0; /* ZRUŠENO margin-left: auto -> chceme to hned vedle inputu */
+}
+.admin-link-reset-filter {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: none; /* Zrušíme rámeček, ať to vypadá jako odkaz */
+}
+.admin-link-reset-filter:hover {
+    background: #FEE2E2; /* Světle červená při najetí */
+    color: #991B1B;      /* Tmavě červená */
+    text-decoration: none;
+}
+
 
 .admin-form-inline {
     flex-direction: row;
     align-items: center;
     gap: 16px;
 }
+
+
+
+
 
 /*  */
 .admin-form-inline label {

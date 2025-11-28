@@ -2,59 +2,91 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
-  <h2>{{ title }}</h2>
+
+  <div class="dashboard-header">
+      <h1 style="margin-bottom: 8px;">{{ title }}</h1>
+  </div>
 
   {% if is_admin or is_receptionist %}
-    <form method="get" action="{{ url_for('users_list') }}" class="admin-form admin-form-inline">
+    <div style="margin-bottom: 24px;">
+        <form method="get" action="{{ url_for('users_list') }}" class="admin-form">
+          <label>
+            Role:
 
-      <label>
-        Role
-        <select name="role_id">
-          <option value="">-- všechny role --</option>
-          {% for r in roles %}
-            <option value="{{ r.id }}" {% if filter_role_id == r.id %}selected{% endif %}>
-              {{ r.id }} – {{ r.name or r.description }}
-            </option>
-          {% endfor %}
-        </select>
-      </label>
-      <div class="admin-filter-actions">
-        <button type="submit" class="btn btn-secondary">Filtrovat</button>
-        <a href="{{ url_for('users_list') }}" class="admin-link-reset-filter">Zrušit filtr</a>
-      </div>
-    </form>
+            {# Tady si definuju překlady #}
+            {% set role_translations = {
+                'admin': 'Administrátor',
+                'receptionist': 'Recepční',
+                'customer': 'Zákazník',
+                'guest': 'Host'
+            } %}
+
+            <select name="role_id">
+              <option value="">-- všechny role --</option>
+              {% for r in roles %}
+                <option value="{{ r.id }}" {% if filter_role_id == r.id %}selected{% endif %}>
+
+                  {#  Funkce .get(co, fallback) zkusí najít překlad,
+                        a když ho nenajde, vypíše původní anglický název #}
+                  {{ role_translations.get(r.description, r.description) }}
+
+                </option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <div class="admin-filter-actions">
+            <button type="submit" class="btn btn-primary btn-small">Filtrovat</button>
+
+            {% if filter_role_id %}
+                <a href="{{ url_for('users_list') }}" class="admin-link-reset-filter">✕ Zrušit filtr</a>
+            {% endif %}
+          </div>
+        </form>
+    </div>
   {% endif %}
 
-  {% if users|length == 0 %}
-    <p>Žádní uživatelé k zobrazení.</p>
-  {% else %}
-    <table class="data">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>E-mail</th>
-          <th>Jméno</th>
-          <th>Příjmení</th>
-          <th>Telefon</th>
-          <th>Role ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for u in users %}
-          <tr>
-            <td>
-              <a href="{{ url_for('user_detail', user_id=u.id) }}" class="table-id-link">
-                {{ u.id }}
-              </a>
-            </td>
-            <td>{{ u.email }}</td>
-            <td>{{ u.first_name }}</td>
-            <td>{{ u.last_name }}</td>
-            <td>{{ u.phone_number }}</td>
-            <td>{{ u.role_id }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% endif %}
+  <div class="dashboard-section">
+      {% if users|length == 0 %}
+        <p style="color: var(--color-text-muted);">Žádní uživatelé k zobrazení.</p>
+      {% else %}
+        <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Jméno a Příjmení</th>
+                  <th>E-mail</th>
+                  <th>Telefon</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for u in users %}
+                  <tr>
+                    <td>
+                      <a href="{{ url_for('user_detail', user_id=u.id) }}" class="table-id-link">
+                        #{{ u.id }}
+                      </a>
+                    </td>
+                    <td><strong>{{ u.first_name }} {{ u.last_name }}</strong></td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.phone_number }}</td>
+                    <td>
+                        {% if u.role_id == 1 %}
+                            <span style="color: var(--color-primary-500); font-weight: 600;">Admin</span>
+                        {% elif u.role_id == 2 %}
+                            <span>Recepční</span>
+                        {% else %}
+                            <span style="color: var(--color-text-muted);">Host</span>
+                        {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+      {% endif %}
+  </div>
+
 {% endblock %}
