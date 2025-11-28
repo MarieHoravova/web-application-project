@@ -36,10 +36,8 @@
               <tr>
                 <th>ID</th>
                 <th>Kód</th>
-                <th>Uživatel ID</th>
-                <th>Status</th>
+                <th>Uživatel</th> <th>Status</th>
                 <th>Vytvořeno</th>
-                <th>Akce</th>
               </tr>
             </thead>
             <tbody>
@@ -51,29 +49,37 @@
                     </a>
                   </td>
                   <td><strong>{{ r.code }}</strong></td>
+
                   <td>
                       {% if r.user_id %}
-                        <a href="{{ url_for('user_detail', user_id=r.user_id) }}" style="text-decoration: underline; color: inherit;">
-                            {{ r.user_id }}
+                        <a href="{{ url_for('user_detail', user_id=r.user_id) }}" style="text-decoration: none; color: var(--color-primary-500); font-weight: 500;">
+                            {% if r.user %}
+                                {{ r.user.first_name }} {{ r.user.last_name }}
+                            {% else %}
+                                User #{{ r.user_id }}
+                            {% endif %}
                         </a>
                       {% else %}
-                        -
+                        <span style="color: var(--color-text-muted);">-</span>
                       {% endif %}
                   </td>
+
                   <td>
-                    {% set status_map = {
+                    {% set res_status_map = {
                         1: 'Nová',
                         2: 'Potvrzená',
                         3: 'Zaplacená',
                         4: 'Zrušená'
                     } %}
-                    {# Pokud status v mapě není, vypíše se číslo #}
-                    {{ status_map.get(r.status_id, r.status_id) }}
+
+                    <span class="status-badge
+                        {% if r.status_id == 2 or r.status_id == 3 %}status-confirmed
+                        {% elif r.status_id == 4 %}status-cancelled
+                        {% else %}status-pending{% endif %}">
+                        {{ res_status_map.get(r.status_id, r.status_id) }}
+                    </span>
                   </td>
                   <td>{{ r.created_at }}</td>
-                  <td>
-                      <a href="{{ url_for('reservation_detail', reservation_id=r.id) }}" class="btn btn-secondary btn-small">Detail</a>
-                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -115,13 +121,18 @@
                   </td>
                   <td><strong>{{ r.code }}</strong></td>
                   <td>
-                    {% set status_map = {
+                    {% set res_status_map = {
                         1: 'Čeká na potvrzení',
                         2: 'Potvrzeno',
                         3: 'Zaplaceno',
                         4: 'Zrušeno'
                     } %}
-                    {{ status_map.get(r.status_id, r.status_id) }}
+                    <span class="status-badge
+                        {% if r.status_id == 2 or r.status_id == 3 %}status-confirmed
+                        {% elif r.status_id == 4 %}status-cancelled
+                        {% else %}status-pending{% endif %}">
+                        {{ res_status_map.get(r.status_id, r.status_id) }}
+                    </span>
                   </td>
                   <td>{{ r.created_at }}</td>
                 </tr>
