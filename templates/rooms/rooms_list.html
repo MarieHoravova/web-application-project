@@ -10,27 +10,28 @@
     </a>
   </div>
 
-  <form method="get" action="{{ url_for('rooms_list') }}" class="admin-form">
-    <label>
-      Status pokoje:
+<form method="get" action="{{ url_for('rooms_list') }}" class="admin-form">
+
+    <div class="filter-group">
+      <label for="status_id">Status:</label>
       {% set status_translations = {
           1: 'Volný',
           2: 'Neuklizený',
           3: 'Mimo provoz'
       } %}
-      <select name="status_id">
-        <option value="">-- všechny --</option>
+      <select name="status_id" id="status_id">
+        <option value="">-- všichni --</option>
         {% for s in statuses %}
           <option value="{{ s.id }}" {% if filter_status_id == s.id %}selected{% endif %}>
             {{ status_translations.get(s.id, s.description) }}
           </option>
         {% endfor %}
       </select>
-    </label>
+    </div>
 
-    <label>
-      Typ pokoje:
-      <select name="room_type_id">
+    <div class="filter-group">
+      <label for="room_type_id">Typ:</label>
+      <select name="room_type_id" id="room_type_id">
         <option value="">-- všechny --</option>
         {% for rt in room_types %}
           <option value="{{ rt.id }}" {% if filter_room_type_id == rt.id %}selected{% endif %}>
@@ -38,12 +39,12 @@
           </option>
         {% endfor %}
       </select>
-    </label>
+    </div>
 
     <div class="admin-filter-actions">
       <button type="submit" class="btn btn-primary btn-small">Filtrovat</button>
       {% if filter_status_id or filter_room_type_id %}
-        <a href="{{ url_for('rooms_list') }}" class="admin-link-reset-filter">✕ Zrušit filtr</a>
+        <a href="{{ url_for('rooms_list') }}" class="admin-link-reset-filter">✕ Zrušit</a>
       {% endif %}
     </div>
   </form>

@@ -8,42 +8,38 @@
   </div>
 
   {% if is_admin or is_receptionist %}
-    <div style="margin-bottom: 24px;">
-        <form method="get" action="{{ url_for('users_list') }}" class="admin-form">
-          <label>
-            Role:
+    <form method="get" action="{{ url_for('users_list') }}" class="admin-form">
 
-            {# Tady si definuju překlady #}
-            {% set role_translations = {
-                'admin': 'Administrátor',
-                'receptionist': 'Recepční',
-                'customer': 'Zákazník',
-                'guest': 'Host'
-            } %}
+      <div class="filter-group">
+        <label for="role_id">Role:</label>
 
-            <select name="role_id">
-              <option value="">-- všechny role --</option>
-              {% for r in roles %}
-                <option value="{{ r.id }}" {% if filter_role_id == r.id %}selected{% endif %}>
+        {# Definice překladů #}
+        {% set role_translations = {
+            'admin': 'Administrátor',
+            'receptionist': 'Recepční',
+            'customer': 'Zákazník',
+            'guest': 'Host'
+        } %}
 
-                  {#  Funkce .get(co, fallback) zkusí najít překlad,
-                        a když ho nenajde, vypíše původní anglický název #}
-                  {{ role_translations.get(r.description, r.description) }}
+        <select name="role_id" id="role_id">
+          <option value="">-- všechny role --</option>
+          {% for r in roles %}
+            <option value="{{ r.id }}" {% if filter_role_id == r.id %}selected{% endif %}>
+              {# Funkce .get(co, fallback) #}
+              {{ role_translations.get(r.description, r.description) }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
 
-                </option>
-              {% endfor %}
-            </select>
-          </label>
+      <div class="admin-filter-actions">
+        <button type="submit" class="btn btn-primary btn-small">Filtrovat</button>
 
-          <div class="admin-filter-actions">
-            <button type="submit" class="btn btn-primary btn-small">Filtrovat</button>
-
-            {% if filter_role_id %}
-                <a href="{{ url_for('users_list') }}" class="admin-link-reset-filter">✕ Zrušit filtr</a>
-            {% endif %}
-          </div>
-        </form>
-    </div>
+        {% if filter_role_id %}
+            <a href="{{ url_for('users_list') }}" class="admin-link-reset-filter">✕ Zrušit filtr</a>
+        {% endif %}
+      </div>
+    </form>
   {% endif %}
 
   <div class="dashboard-section">

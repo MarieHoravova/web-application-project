@@ -1087,128 +1087,106 @@ table.data tbody tr:nth-child(even) {
 table.data tbody tr:hover {
     background: var(--color-primary-100);
 }
+/* --- FILTR (ADMIN) - FINAL OPRAVA --- */
 
-/*FILTR*/
 .admin-form {
-    display: flex;
-    align-items: center; /* Svisle na střed */
-    gap: 16px;           /* Mezery mezi skupinami */
-    flex-wrap: wrap;     /* Pokud je okno moc úzké, celé skupiny se zalomí */
-
-    /* ... zbytek stylů (background, border...) nech stejný ... */
     background: var(--color-bg-main);
-    padding: 12px 16px;
-    border-radius: 8px;
+    padding: 16px 20px;
+    border-radius: 10px;
     border: 1px solid var(--color-border-subtle);
     margin-bottom: 24px;
-}
-.admin-form label {
+
+    /* Všechno hezky vedle sebe */
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 24px; /* Mezery mezi skupinami */
+}
+
+/* Skupina (Label + Select) */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Mezera mezi textem "Status:" a selectem */
+}
+
+.filter-group label {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-primary-900);
+    white-space: nowrap; /* Aby se text nezalomil */
     margin: 0;
 }
-.admin-form select {
+
+.filter-group select {
     padding: 8px 12px;
-    padding-right: 32px; /* Místo pro šipku */
+    padding-right: 32px;
     border-radius: 6px;
     border: 1px solid var(--color-border-subtle);
     background-color: var(--color-primary-white);
     font-size: 14px;
     color: var(--color-text-main);
     cursor: pointer;
-    min-width: 180px; /* Aby to nebylo moc úzké */
-
-    /* Vlastní stylování focusu */
-    transition: all 0.2s;
+    min-width: 160px; /* Pevná minimální šířka */
 }
-.admin-form select:focus {
+
+.filter-group select:focus {
     outline: none;
     border-color: var(--color-primary-500);
     box-shadow: 0 0 0 3px var(--color-primary-100);
 }
+
+/* Tlačítka - zarovnat doprava */
 .admin-filter-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-left: auto; /* Tímto to "odstrčíme" doprava, pokud je místo */
-    flex-wrap: nowrap; /* Zabráníme tomu, aby se tlačítka roztrhla */
+    margin-left: auto; /* Magie: Odstrčí tlačítka úplně doprava */
 }
+
+/* Odkaz na zrušení */
 .admin-link-reset-filter {
     font-size: 13px;
     color: var(--color-text-muted);
     text-decoration: none;
-    padding: 6px 8px;
-    border-radius: 4px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent; /* Aby neposkakoval při hoveru */
     transition: all 0.2s;
-    border: none; /* Zrušíme rámeček, ať to vypadá jako odkaz */
-}
-.admin-link-reset-filter:hover {
-    background: #FEE2E2; /* Světle červená při najetí */
-    color: #991B1B;      /* Tmavě červená */
-    text-decoration: none;
-}
-
-
-.admin-form-inline {
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-}
-
-
-
-
-
-/*  */
-.admin-form-inline label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-}
-.admin-form-inline select {
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--color-border-subtle);
-    background: var(--color-primary-white);
-    font-size: 14px;
-}
-
-/* tlačítko + zrušit filtr vedle sebe */
-.admin-filter-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-left: auto;   /* Zarovná mi to doprava */
-}
-
-.admin-link-reset-filter {
-    font-size: 13px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid;
-    text-decoration: none;
-    color: var(--color-text-muted);
+    white-space: nowrap;
 }
 
 .admin-link-reset-filter:hover {
-    border-color: var(--color-border-subtle);
-    background: var(--color-bg-main);
-    color: var(--color-primary-700);
+    background: #FEE2E2;
+    color: #991B1B;
+    border-color: #FECACA;
 }
 
-.admin-submit {
-    margin-left: auto;   /* Zarovná mi to doprava */
+/* --- RESPONSIVITA (Mobil a Tablet) --- */
+@media (max-width: 900px) {
+    .admin-form {
+        flex-direction: column; /* Pod sebe */
+        align-items: stretch;   /* Roztáhnout na šířku */
+        gap: 16px;
+    }
+
+    .filter-group {
+        flex-direction: column; /* Label nad selectem */
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    .admin-filter-actions {
+        margin-left: 0;        /* Zrušit zarovnání doprava */
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
 }
 
-.table-id-link {
-    color: var(--color-primary-700);
-    font-weight: 600;
-}
+
 
 
 
