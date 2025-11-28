@@ -55,31 +55,46 @@
     <section class="reservation-summary home-card">
       <h2 class="home-card-title">Vybrané pokoje</h2>
 
-    {% if reservation and selected_items and selected_items|length > 0 %}
-      <div class="room-summary-list">
-        {% for item in selected_items %}
-          <div class="room-summary-item">
-            <div class="room-summary-header">
-              <span>{{ loop.index }}. pokoj</span>
-              <form method="post" action="{{ url_for('reservation_item_delete', reservation_id=reservation.id, item_id=item.id) }}" style="display:inline">
-                <button type="submit" class="btn btn-secondary btn-small" onclick="return confirm('Opravdu odebrat tento pokoj z rezervace?');">Smazat</button>
-              </form>
+      {% if reservation and selected_items and selected_items|length > 0 %}
+        <div class="room-summary-list">
+          {% for item in selected_items %}
+            <div class="room-summary-item">
+              <div class="room-summary-header">
+                <span>{{ loop.index }}. pokoj</span>
+                <form method="post"
+                      action="{{ url_for('reservation_item_delete', reservation_id=reservation.id, item_id=item.id) }}"
+                      style="display:inline">
+                  <button type="submit"
+                          class="btn btn-secondary btn-small"
+                          onclick="return confirm('Opravdu odebrat tento pokoj z rezervace?');">
+                    Smazat
+                  </button>
+                </form>
+              </div>
+              <div class="room-summary-body">
+                <div>Dospělých: {{ item.adults }} &nbsp; Dětí: {{ item.children }}</div>
+                <div>Pokoj ID: {{ item.room_id }}</div>
+                <div>Od: {{ item.check_in }} &nbsp; Do: {{ item.check_out }}</div>
+              </div>
             </div>
-            <div class="room-summary-body">
-              <div>Dospělých: {{ item.adults }} &nbsp; Dětí: {{ item.children }}</div>
-              <div>Pokoj ID: {{ item.room_id }}</div>
-              <div>Od: {{ item.check_in }} &nbsp; Do: {{ item.check_out }}</div>
-            </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
 
-        <a href="#room-results" class="btn btn-tertiary">Přidat další pokoj</a>
-      </div>
-    {% else %}
+          <a href="#room-results" class="btn btn-tertiary">Přidat další pokoj</a>
 
+          {# TADY NOVĚ: dokončení rezervace #}
+          <form method="get"
+                action="{{ url_for('reservation_detail', reservation_id=reservation.id) }}"
+                class="reservation-finish-form">
+            <button type="submit" class="btn btn-primary">
+              Dokončit rezervaci
+            </button>
+          </form>
+        </div>
+      {% else %}
         <p>Zatím nemáte vybraný žádný pokoj. Vyberte si z nabídky níže.</p>
       {% endif %}
     </section>
+
 
     {# DOSTUPNÉ POKOJE #}
     <section class="room-results" id="room-results">

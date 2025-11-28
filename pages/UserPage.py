@@ -12,13 +12,14 @@ from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from helpers.profile_flags import profile_role_flags
 router = APIRouter()
 
-
+# logika pro editaci, show
 def _get_user_detail_for_view(target_user_id: int, current_user, user_svc: UserService):
     user = user_svc.get_user_by_id(target_user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Uživatel neexistuje")
 
     role_id = current_user["role_id"]
+    # True/false
     is_owner = target_user_id == current_user["id"]
 
     if role_id == ROLE_ADMIN:
@@ -140,8 +141,10 @@ async def user_change_role(
             role_id=role_id,
             current_user_role=current_user["role_id"],
         )
+    # Nemá oprávněnní měnit
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
+    # Chybná hodnota
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -166,6 +169,7 @@ async def user_edit(
         return current_user
 
     flags = profile_role_flags(current_user)
+    #
     user, is_owner, can_edit = _get_user_detail_for_view(user_id, current_user, user_svc)
 
     if not can_edit:

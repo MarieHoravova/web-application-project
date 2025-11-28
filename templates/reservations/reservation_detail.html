@@ -1,3 +1,4 @@
+
 {% extends "profile/profile_base.html" %}
 {% block title %}Detail rezervace {{ reservation.code }}{% endblock %}
 
@@ -8,6 +9,7 @@
   </div>
 
   <div class="admin-detail">
+    {# ZÁKLADNÍ INFO O REZERVACI #}
     <div class="admin-detail-grid">
       <div class="admin-detail-item">
         <div class="admin-detail-label">ID</div>
@@ -33,11 +35,6 @@
     <div class="admin-detail-extra">
       <h3>Další akce</h3>
       <ul class="admin-detail-links">
-        <li>
-          <a href="{{ url_for('reservation_items_list', reservation_id=reservation.id) }}">
-            Zobrazit / upravit položky rezervace
-          </a>
-        </li>
         {% if is_admin_or_receptionist %}
           <li>
             <a href="{{ url_for('payments_by_reservation', reservation_id=reservation.id) }}">
@@ -48,6 +45,49 @@
       </ul>
     </div>
 
+    {# ---- POKOJE V REZERVACI (reservation_items) ---- #}
+    <hr class="admin-detail-divider">
+    <h3>Pokoje v rezervaci</h3>
+
+    {% if items is not defined or items|length == 0 %}
+      <p>Rezervace nemá žádné pokoje.</p>
+    {% else %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>ID položky</th>
+            <th>Pokoj</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Dospělí</th>
+            <th>Děti</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.room_id }}</td>
+              <td>{{ item.check_in }}</td>
+              <td>{{ item.check_out }}</td>
+              <td>{{ item.adults }}</td>
+              <td>{{ item.children }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {% if is_admin_or_receptionist %}
+      <p class="admin-detail-actions">
+        <a href="{{ url_for('reservation_create_page') }}?reservation_id={{ reservation.id }}"
+           class="btn btn-secondary">
+          Upravit pokoje (přidat / odebrat)
+        </a>
+      </p>
+    {% endif %}
+
+    {# ---- ZMĚNA STATUSU jen admin/recepce ---- #}
     {% if is_admin_or_receptionist %}
       <hr class="admin-detail-divider">
 

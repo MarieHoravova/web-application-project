@@ -44,7 +44,7 @@ async def reservation_items_list(
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
-        "reservations/reservation_items_list.html",
+        "reservations/reservation_list.html",
         {
             "request": request,
             "title": f"Položky rezervace {reservation['code']}",

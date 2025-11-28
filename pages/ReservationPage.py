@@ -8,6 +8,8 @@ from services.ReservationStatusService import ReservationStatusService
 from dependencies import reservation_service, reservation_status_service
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from auth_dependencies import get_current_user
+from services.ReservationItemService import ReservationItemService
+from dependencies import reservation_item_service
 
 router = APIRouter()
 
@@ -48,7 +50,7 @@ async def reservations_list(
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
-        "reservations/reservation_items_list.html",  # <<< tady PLURAL složka
+        "reservations/reservation_list.html",  # <<< tady PLURAL složka
         {
             "request": request,
             "title": "Seznam rezervací",
@@ -60,12 +62,48 @@ async def reservations_list(
     )
 
 
+# @router.get("/{reservation_id}", name="reservation_detail")
+# async def reservation_detail(
+#     reservation_id: int,
+#     request: Request,
+#     svc: ReservationService = Depends(reservation_service),
+#     status_svc: ReservationStatusService = Depends(reservation_status_service),
+#     current_user = Depends(get_current_user),
+# ):
+#     if isinstance(current_user, RedirectResponse):
+#         return current_user
+#
+#     reservation = svc.get_reservation_by_id(reservation_id)
+#     if not reservation:
+#         raise HTTPException(status_code=404, detail="Rezervace nenalezena")
+#
+#     # zákazník vidí jen své rezervace
+#     if current_user["role_id"] == ROLE_CUSTOMER and reservation["user_id"] != current_user["id"]:
+#         raise HTTPException(status_code=403, detail="Nemáte přístup k této rezervaci")
+#
+#     statuses = status_svc.list_statuses()
+#     flags = _profile_role_flags(current_user)
+#
+#     tpl = request.app.state.templates
+#     return tpl.TemplateResponse(
+#         "reservations/reservation_detail.html",
+#         {
+#             "request": request,
+#             "title": f"Rezervace {reservation['code']}",
+#             "reservation": reservation,
+#             "statuses": statuses,
+#             "current_user": current_user,
+#             **flags,
+#         },
+#     )
+
 @router.get("/{reservation_id}", name="reservation_detail")
 async def reservation_detail(
     reservation_id: int,
     request: Request,
     svc: ReservationService = Depends(reservation_service),
     status_svc: ReservationStatusService = Depends(reservation_status_service),
+    res_item_svc: ReservationItemService = Depends(reservation_item_service),
     current_user = Depends(get_current_user),
 ):
     if isinstance(current_user, RedirectResponse):
@@ -79,6 +117,19 @@ async def reservation_detail(
     if current_user["role_id"] == ROLE_CUSTOMER and reservation["user_id"] != current_user["id"]:
         raise HTTPException(status_code=403, detail="Nemáte přístup k této rezervaci")
 
+    # --- tady nově načteme položky rezervace (pokoje) ---
+    try:
+        items: List[Dict[str, Any]] = res_item_svc.list_items_by_reservation(
+            reservation_id=reservation_id,
+            current_user_id=current_user["id"],
+            current_user_role=current_user["role_id"],
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        # třeba kdyby rezervace neexistovala – ale to už mám nahoře, takže spíš fallback
+        items = []
+
     statuses = status_svc.list_statuses()
     flags = _profile_role_flags(current_user)
 
@@ -89,12 +140,12 @@ async def reservation_detail(
             "request": request,
             "title": f"Rezervace {reservation['code']}",
             "reservation": reservation,
+            "items": items,
             "statuses": statuses,
             "current_user": current_user,
             **flags,
         },
     )
-
 
 @router.post("/{reservation_id}/status", name="reservation_update_status")
 async def reservation_update_status(

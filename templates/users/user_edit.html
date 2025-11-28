@@ -59,21 +59,21 @@
     {% if is_admin %}
       <hr class="admin-detail-divider">
 
-      <form method="post" action="{{ url_for('user_change_role', user_id=user.id) }}" class="admin-detail-form">
-        <div class="admin-detail-form-grid">
-          <div class="admin-detail-form-item">
-            <label>
-              Role
-              <select name="role_id">
-                {% for r in roles %}
-                  <option value="{{ r.id }}" {% if r.id == user.role_id %}selected{% endif %}>
-                    {{ r.id }} – {{ r.name if r.name is defined else r.description if r.description is defined else r.id }}
-                  </option>
-                {% endfor %}
-              </select>
-            </label>
+        <form method="post" action="{{ url_for('user_change_role', user_id=user.id) }}" class="admin-detail-form">
+          <div class="admin-detail-form-grid">
+            <div class="admin-detail-form-item">
+              <label>
+                Role
+                <select name="role_id">
+                  {% for r in roles %}
+                    <option value="{{ r.id }}" {% if r.id == user.role_id %}selected{% endif %}>
+                      {{ r.id }} – {{ r.description }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </label>
+            </div>
           </div>
-        </div>
 
         <div class="admin-detail-form-actions">
           <button type="submit" class="btn btn-secondary">Změnit roli</button>
