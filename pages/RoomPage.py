@@ -80,7 +80,6 @@ async def rooms_list(
             "rooms": rooms,
             "room_types": room_types,
             "statuses": statuses,
-            # Předáváme zpátky do šablony, aby select zůstal vybraný
             "filter_status_id": filter_status_id,
             "filter_room_type_id": filter_room_type_id,
             "current_user": current_user,

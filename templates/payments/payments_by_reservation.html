@@ -7,31 +7,6 @@
     <h1 style="margin: 0 0 4px 0;">{{ title }}</h1>
     <p style="color: var(--color-text-muted); margin: 0;">Správa plateb pro rezervaci {{ reservation.code }}</p>
   </div>
-
-  <div class="detail-card" style="margin-bottom: 32px;">
-    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Info o rezervaci</h3>
-    <div class="detail-grid">
-        <div class="detail-item">
-            <span class="detail-label">ID Rezervace</span>
-            <span class="detail-value">#{{ reservation.id }}</span>
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Kód</span>
-            <span class="detail-value">{{ reservation.code }}</span>
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Uživatel ID</span>
-            <span class="detail-value">
-                <a href="{{ url_for('user_detail', user_id=reservation.user_id) }}" class="table-id-link">{{ reservation.user_id }}</a>
-            </span>
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Status ID</span>
-            <span class="detail-value">{{ reservation.status_id }}</span>
-        </div>
-    </div>
-  </div>
-
   {% if is_admin_or_receptionist %}
     <div class="detail-card" style="margin-bottom: 32px; background-color: var(--color-bg-main); border: 1px dashed var(--color-border-subtle);">
         <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px;">Přidat novou platbu</h3>
