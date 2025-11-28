@@ -3,55 +3,63 @@
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>Detail uživatele {{ user.first_name + "  " + user.last_name }} </h2>
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">{{ user.first_name }} {{ user.last_name }}</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Detail uživatelského profilu</p>
+    </div>
 
     {% if can_edit %}
-      <a href="{{ url_for('user_edit', user_id=user.id) }}"
-         class="btn btn-secondary">
+      <a href="{{ url_for('user_edit', user_id=user.id) }}" class="btn btn-primary">
         Upravit profil
       </a>
     {% endif %}
   </div>
 
-  <div class="admin-detail">
-    <div class="admin-detail-grid">
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">ID</div>
-        <div class="admin-detail-value">{{ user.id }}</div>
-      </div>
+  <div class="detail-card">
+    <div class="detail-grid">
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">E-mail</div>
-        <div class="admin-detail-value">{{ user.email }}</div>
-      </div>
+        <div class="detail-item">
+            <span class="detail-label">ID uživatele</span>
+            <span class="detail-value">#{{ user.id }}</span>
+        </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Jméno</div>
-        <div class="admin-detail-value">{{ user.first_name }}</div>
-      </div>
+        <div class="detail-item">
+            <span class="detail-label">Role</span>
+            <span class="detail-value">
+                {% if user.role_id == 1 %}
+                    <span style="color: var(--color-primary-500); font-weight: 600;">Administrátor</span>
+                {% elif user.role_id == 2 %}
+                    <span>Recepční</span>
+                {% else %}
+                    <span>Zákazník</span>
+                {% endif %}
+            </span>
+        </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Příjmení</div>
-        <div class="admin-detail-value">{{ user.last_name }}</div>
-      </div>
+        <div class="detail-item full-width">
+            <span class="detail-label">E-mail</span>
+            <span class="detail-value">{{ user.email }}</span>
+        </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Telefon</div>
-        <div class="admin-detail-value">{{ user.phone_number }}</div>
-      </div>
+        <div class="detail-item full-width">
+            <span class="detail-label">Telefon</span>
+            <span class="detail-value">
+                {% if user.phone_number %}
+                    {{ user.phone_number }}
+                {% else %}
+                    <span style="color: var(--color-text-muted); font-style: italic;">Neuvedeno</span>
+                {% endif %}
+            </span>
+        </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Role ID</div>
-        <div class="admin-detail-value">{{ user.role_id }}</div>
-      </div>
     </div>
+  </div>
 
-    <div class="admin-detail-back">
-      <a href="{{ url_for('users_list') }}" class="btn btn-tertiary">
-        Zpět na seznam uživatelů
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('users_list') }}" class="btn btn-secondary">
+        &larr; Zpět na seznam uživatelů
       </a>
-    </div>
   </div>
 
 {% endblock %}

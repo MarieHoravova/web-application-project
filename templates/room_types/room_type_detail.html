@@ -1,57 +1,60 @@
 {% extends "profile/profile_base.html" %}
-
 {% block title %}{{ title }}{% endblock %}
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>{{ title }}</h2>
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">{{ room_type.name }}</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Detail typu pokoje</p>
+    </div>
 
-    {# volitelné: tlačítko na editaci typu pokoje #}
-    <a href="{{ url_for('room_type_edit', room_type_id=room_type.id) }}" class="btn btn-secondary">
+    <a href="{{ url_for('room_type_edit', room_type_id=room_type.id) }}" class="btn btn-primary">
       Upravit typ pokoje
     </a>
   </div>
 
-  <div class="admin-detail">
-    <div class="admin-detail-grid">
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">ID</div>
-        <div class="admin-detail-value">{{ room_type.id }}</div>
+  <div class="detail-card">
+    <div class="detail-grid">
+
+      <div class="detail-item">
+        <span class="detail-label">ID</span>
+        <span class="detail-value">#{{ room_type.id }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Název typu</div>
-        <div class="admin-detail-value">{{ room_type.name }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Název typu</span>
+        <span class="detail-value">{{ room_type.name }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Kapacita</div>
-        <div class="admin-detail-value">{{ room_type.capacity }}&nbsp;osob</div>
+      <div class="detail-item">
+        <span class="detail-label">Kapacita</span>
+        <span class="detail-value">{{ room_type.capacity }} osob</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Základní cena</div>
-        <div class="admin-detail-value">{{ room_type.base_price }}&nbsp;Kč / noc</div>
+      <div class="detail-item">
+        <span class="detail-label">Základní cena</span>
+        <span class="detail-value">{{ room_type.base_price }} Kč / noc</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Popis</div>
-        <div class="admin-detail-value">
+      <div class="detail-item full-width">
+        <span class="detail-label">Popis</span>
+        <span class="detail-value">
           {% if room_type.description %}
             {{ room_type.description }}
           {% else %}
-            <span class="text-muted">Bez popisu</span>
+            <span style="color: var(--color-text-muted); font-style: italic;">Bez popisu</span>
           {% endif %}
-        </div>
+        </span>
       </div>
-    </div>
 
-    <div class="admin-detail-back">
-      <a href="{{ url_for('room_types_list') }}" class="btn btn-tertiary">
-        Zpět na seznam typů pokojů
-      </a>
     </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('room_types_list') }}" class="btn btn-secondary">
+        &larr; Zpět na seznam typů pokojů
+      </a>
   </div>
 
 {% endblock %}

@@ -3,55 +3,83 @@
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>{{ title }}</h2>
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">Pokoj {{ room.number }}</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Detail pokoje</p>
+    </div>
 
     {% if is_admin or is_receptionist %}
-      <a href="{{ url_for('room_edit', room_id=room.id) }}"
-         class="btn btn-secondary admin-detail-edit">
+      <a href="{{ url_for('room_edit', room_id=room.id) }}" class="btn btn-primary">
         Upravit pokoj
       </a>
     {% endif %}
   </div>
 
-  <div class="admin-detail">
-    <div class="admin-detail-grid">
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">ID</div>
-        <div class="admin-detail-value">{{ room.id }}</div>
+  <div class="detail-card">
+    <div class="detail-grid">
+
+      <div class="detail-item">
+        <span class="detail-label">ID pokoje</span>
+        <span class="detail-value">#{{ room.id }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Číslo pokoje</div>
-        <div class="admin-detail-value">{{ room.number }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Číslo pokoje</span>
+        <span class="detail-value">{{ room.number }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Typ pokoje (ID)</div>
-        <div class="admin-detail-value">{{ room.room_type_id }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Typ pokoje</span>
+        <span class="detail-value">
+            {% if room.room_type %}
+                {{ room.room_type.name }}
+            {% else %}
+                ID: {{ room.room_type_id }}
+            {% endif %}
+        </span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Stav pokoje (ID)</div>
-        <div class="admin-detail-value">{{ room.room_status_id }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Aktuální stav</span>
+        <span class="detail-value">
+            {% set status_badges = {
+                1: 'status-confirmed',
+                2: 'status-pending',
+                3: 'status-cancelled'
+            } %}
+
+            {% set status_names = {
+                1: 'Volný',
+                2: 'Neuklizený',
+                3: 'Mimo provoz'
+            } %}
+
+            <span class="status-badge {{ status_badges.get(room.room_status_id, '') }}">
+                {{ status_names.get(room.room_status_id, room.room_status_id) }}
+            </span>
+        </span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Patro</div>
-        <div class="admin-detail-value">{{ room.floor }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Patro</span>
+        <span class="detail-value">{{ room.floor }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Obrázek</div>
-        <div class="admin-detail-value">{{ room.image_path }}</div>
+      <div class="detail-item full-width">
+        <span class="detail-label">Cesta k obrázku</span>
+        <span class="detail-value" style="font-family: monospace; color: var(--color-text-muted);">
+            {{ room.image_path }}
+        </span>
       </div>
+
     </div>
+  </div>
 
-    <div class="admin-detail-back">
-      <a href="{{ url_for('rooms_list') }}" class="btn btn-tertiary">
-        Zpět na seznam pokojů
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('rooms_list') }}" class="btn btn-secondary">
+        &larr; Zpět na seznam pokojů
       </a>
-    </div>
   </div>
 
 {% endblock %}
