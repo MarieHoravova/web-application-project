@@ -7,7 +7,6 @@ from repositories.ReservationRepository import (
     get_reservation_by_id as repo_get_by_id,
     get_reservation_by_code as repo_get_by_code,
     list_reservations as repo_list_reservations,
-    list_reservations_by_user as repo_list_reservations_by_user,
     create_reservation as repo_create_reservation,
     update_reservation_status as repo_update_reservation_status,
     update_reservation as repo_update_reservation,
@@ -46,11 +45,17 @@ class ReservationService:
         return reservation
 
     # ---- READ / LIST ----
-    def list_reservations(self) -> List[Dict[str, Any]]:
-        return repo_list_reservations(self.conn)
-
-    def list_reservations_by_user(self, user_id: int) -> List[Dict[str, Any]]:
-        return repo_list_reservations_by_user(self.conn, user_id)
+    def list_reservations(
+            self,
+            user_id: Optional[int] = None,
+            user_name: Optional[str] = None  # Nový parametr
+    ):
+        # Voláme repozitář s oběma filtry
+        return repo_list_reservations(
+            self.conn,
+            filter_user_id=user_id,
+            filter_user_name=user_name
+        )
 
     def get_reservation_by_id(self, reservation_id: int) -> Optional[Dict[str, Any]]:
         return repo_get_by_id(self.conn, reservation_id)
@@ -188,8 +193,6 @@ if __name__ == "__main__":
         print("\n=== TEST: list_reservations ===")
         print(service.list_reservations())
 
-        print("\n=== TEST: list_reservations_by_user ===")
-        print(service.list_reservations_by_user(customer_id))
 
         # ---- CUSTOMER STATUS CHANGE (valid) ----
         print("\n=== TEST: customer CANCEL reservation ===")

@@ -62,9 +62,10 @@
         <h3 style="margin: 0; font-size: 18px;">Pokoje v rezervaci</h3>
         
         {% if is_admin_or_receptionist %}
-          <a href="{{ url_for('reservation_create_page') }}?reservation_id={{ reservation.id }}" class="btn btn-secondary btn-small">
-            Upravit pokoje
-          </a>
+            <a href="{{ url_for('reservation_items_edit_page', reservation_id=reservation.id) }}" class="btn btn-secondary btn-small">
+              Upravit pokoje
+            </a>
+
         {% endif %}
     </div>
 

@@ -43,7 +43,7 @@ async def user_profile(
     customer_reservations: List[Dict[str, Any]] = []
     last_reservation: Dict[str, Any] | None = None
     if flags["is_customer"]:
-        customer_reservations = reservation_svc.list_reservations_by_user(user_id)
+        customer_reservations = reservation_svc.list_reservations(user_id=user_id)
         last_reservation = customer_reservations[0] if customer_reservations else None
 
     # ---- data pro recepci a admina – nadcházející pobyty (items) ----

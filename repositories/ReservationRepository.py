@@ -48,17 +48,40 @@ def get_reservation_by_code(conn: sqlite3.Connection, code: str) -> Optional[Dic
     return _map_reservation_with_user(row)
 
 
-def list_reservations(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-    # --- HLAVNÍ ZMĚNA ZDE ---
-    # Místo pouhého SELECT * FROM reservations děláme JOIN s tabulkou users.
-    # "LEFT JOIN" znamená: vezmi rezervaci a pokud k ní existuje uživatel, přilep ho.
-    query = """ SELECT r.*, u.first_name, u.last_name, u.email
-                FROM reservations r LEFT JOIN users u ON r.user_id = u.id
-                ORDER BY r.created_at DESC \
+def list_reservations(
+        conn: sqlite3.Connection,
+        filter_user_id: int = None,
+        filter_user_name: str = None  # NOVÝ PARAMETR
+) -> List[Dict[str, Any]]:
+    # Základní query s JOINem na usera
+    query = """
+            SELECT r.*, \
+                   u.first_name, \
+                   u.last_name, \
+                   u.email
+            FROM reservations r
+                     LEFT JOIN users u ON r.user_id = u.id
+            WHERE 1 = 1 \
             """
-    rows = conn.execute(query).fetchall()
+    params = []
 
-    # Použijeme pomocnou funkci pro naformátování každého řádku
+    # Filtr podle ID
+    if filter_user_id:
+        query += " AND r.user_id = ?"
+        params.append(filter_user_id)
+
+    # Filtr podle jména (hledáme ve first_name i last_name)
+    if filter_user_name:
+        query += " AND (u.first_name LIKE ? OR u.last_name LIKE ?)"
+        # Přidáme % pro vyhledávání části textu
+        search_pattern = f"%{filter_user_name}%"
+        params.append(search_pattern)
+        params.append(search_pattern)
+
+    query += " ORDER BY r.created_at DESC"
+
+    rows = conn.execute(query, params).fetchall()
+
     return [_map_reservation_with_user(r) for r in rows]
 
 def list_reservations_by_user(conn: sqlite3.Connection, user_id: int) -> List[Dict[str, Any]]:

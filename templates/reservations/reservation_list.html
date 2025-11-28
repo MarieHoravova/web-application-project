@@ -10,15 +10,25 @@
     </div>
 
     <form method="get" action="{{ url_for('reservations_list') }}" class="admin-form">
-      <label>
-        ID uživatele:
-        <input type="number" name="user_id" value="{{ filter_user_id or '' }}"
-               style="padding: 8px 12px; border: 1px solid var(--color-border-subtle); border-radius: 6px; width: 100px;">
-      </label>
+
+      <div class="filter-group">
+        <label>
+          ID uživatele:
+          <input type="number" name="user_id" value="{{ filter_user_id or '' }}"
+                 style="padding: 8px 12px; border: 1px solid var(--color-border-subtle); border-radius: 6px; width: 100px;">
+        </label>
+
+        <label>
+          Jméno uživatele:
+          <input type="text" name="user_name" value="{{ filter_user_name or '' }}" placeholder="Např. Novák"
+                 style="padding: 8px 12px; border: 1px solid var(--color-border-subtle); border-radius: 6px; min-width: 200px;">
+        </label>
+      </div>
 
       <div class="admin-filter-actions">
         <button type="submit" class="btn btn-primary btn-small">Filtrovat</button>
-        {% if filter_user_id %}
+
+        {% if filter_user_id or filter_user_name %}
             <a href="{{ url_for('reservations_list') }}" class="admin-link-reset-filter">✕ Zrušit</a>
         {% endif %}
       </div>
@@ -36,7 +46,8 @@
               <tr>
                 <th>ID</th>
                 <th>Kód</th>
-                <th>Uživatel</th> <th>Status</th>
+                <th>Uživatel</th>
+                <th>Status</th>
                 <th>Vytvořeno</th>
               </tr>
             </thead>
@@ -48,13 +59,15 @@
                       #{{ r.id }}
                     </a>
                   </td>
+
                   <td><strong>{{ r.code }}</strong></td>
 
                   <td>
                       {% if r.user_id %}
-                        <a href="{{ url_for('user_detail', user_id=r.user_id) }}" style="text-decoration: none; color: var(--color-primary-500); font-weight: 500;">
+                        <a href="{{ url_for('user_detail', user_id=r.user_id) }}" style="text-decoration: none; color: var(--color-text-main);">
                             {% if r.user %}
-                                {{ r.user.first_name }} {{ r.user.last_name }}
+                                <span style="font-weight: 600; color: var(--color-primary-500);">{{ r.user.first_name }} {{ r.user.last_name }}</span>
+                                <span style="color: var(--color-text-muted); font-size: 13px;">(#{{ r.user_id }})</span>
                             {% else %}
                                 User #{{ r.user_id }}
                             {% endif %}
@@ -79,6 +92,7 @@
                         {{ res_status_map.get(r.status_id, r.status_id) }}
                     </span>
                   </td>
+
                   <td>{{ r.created_at }}</td>
                 </tr>
               {% endfor %}
