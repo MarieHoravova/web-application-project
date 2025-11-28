@@ -1,127 +1,150 @@
-
 {% extends "profile/profile_base.html" %}
 {% block title %}Detail rezervace {{ reservation.code }}{% endblock %}
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>Rezervace {{ reservation.code }}</h2>
+  <div class="dashboard-header" style="margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">Rezervace {{ reservation.code }}</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Detail objednávky</p>
+    </div>
   </div>
 
-  <div class="admin-detail">
-    {# ZÁKLADNÍ INFO O REZERVACI #}
-    <div class="admin-detail-grid">
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">ID</div>
-        <div class="admin-detail-value">{{ reservation.id }}</div>
+  <div class="detail-card" style="margin-bottom: 32px;">
+    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 12px;">Základní údaje</h3>
+    
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">ID Rezervace</span>
+        <span class="detail-value">#{{ reservation.id }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Uživatel (ID)</div>
-        <div class="admin-detail-value">{{ reservation.user_id }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Uživatel</span>
+        <span class="detail-value">
+            {% if reservation.user %}
+                <a href="{{ url_for('user_detail', user_id=reservation.user_id) }}" style="color: var(--color-primary-500); font-weight: 500;">
+                    {{ reservation.user.first_name }} {{ reservation.user.last_name }}
+                </a>
+            {% else %}
+                ID: {{ reservation.user_id }}
+            {% endif %}
+        </span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Aktuální status (ID)</div>
-        <div class="admin-detail-value">{{ reservation.status_id }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Vytvořeno</span>
+        <span class="detail-value">{{ reservation.created_at }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Vytvořeno</div>
-        <div class="admin-detail-value">{{ reservation.created_at }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Aktuální status</span>
+        <span class="detail-value">
+            {% set status_map = {
+                1: 'Nová', 
+                2: 'Potvrzená', 
+                3: 'Zaplacená',
+                4: 'Zrušená'
+            } %}
+            <span class="status-badge 
+                {% if reservation.status_id == 2 or reservation.status_id == 3 %}status-confirmed
+                {% elif reservation.status_id == 4 %}status-cancelled
+                {% else %}status-pending{% endif %}">
+                {{ status_map.get(reservation.status_id, reservation.status_id) }}
+            </span>
+        </span>
       </div>
     </div>
+  </div>
 
-    <div class="admin-detail-extra">
-      <h3>Další akce</h3>
-      <ul class="admin-detail-links">
+  <div class="detail-card" style="margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="margin: 0; font-size: 18px;">Pokoje v rezervaci</h3>
+        
         {% if is_admin_or_receptionist %}
-          <li>
-            <a href="{{ url_for('payments_by_reservation', reservation_id=reservation.id) }}">
-              Zobrazit / upravit platby k této rezervaci
-            </a>
-          </li>
+          <a href="{{ url_for('reservation_create_page') }}?reservation_id={{ reservation.id }}" class="btn btn-secondary btn-small">
+            Upravit pokoje
+          </a>
         {% endif %}
-      </ul>
     </div>
-
-    {# ---- POKOJE V REZERVACI (reservation_items) ---- #}
-    <hr class="admin-detail-divider">
-    <h3>Pokoje v rezervaci</h3>
 
     {% if items is not defined or items|length == 0 %}
-      <p>Rezervace nemá žádné pokoje.</p>
+      <p style="color: var(--color-text-muted);">Tato rezervace zatím neobsahuje žádné pokoje.</p>
     {% else %}
-      <table class="data">
-        <thead>
-          <tr>
-            <th>ID položky</th>
-            <th>Pokoj</th>
-            <th>Check-in</th>
-            <th>Check-out</th>
-            <th>Dospělí</th>
-            <th>Děti</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td>{{ item.id }}</td>
-              <td>{{ item.room_id }}</td>
-              <td>{{ item.check_in }}</td>
-              <td>{{ item.check_out }}</td>
-              <td>{{ item.adults }}</td>
-              <td>{{ item.children }}</td>
+              <th>Pokoj ID</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Hosté</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td><strong>{{ item.room_id }}</strong></td>
+                <td>{{ item.check_in }}</td>
+                <td>{{ item.check_out }}</td>
+                <td>{{ item.adults }} dospělí, {{ item.children }} děti</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% endif %}
+  </div>
 
-    {% if is_admin_or_receptionist %}
-      <p class="admin-detail-actions">
-        <a href="{{ url_for('reservation_create_page') }}?reservation_id={{ reservation.id }}"
-           class="btn btn-secondary">
-          Upravit pokoje (přidat / odebrat)
-        </a>
-      </p>
-    {% endif %}
+{% if is_admin_or_receptionist %}
+    <div class="detail-card" style="background-color: var(--color-bg-main); border: 1px dashed var(--color-border-subtle); margin-top: 32px;">
+        <h3 style="margin: 0; font-size: 16px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Administrace</h3>
 
-    {# ---- ZMĚNA STATUSU jen admin/recepce ---- #}
-    {% if is_admin_or_receptionist %}
-      <hr class="admin-detail-divider">
+        <div style="display: flex; gap: 32px; flex-wrap: wrap; margin-top: 16px;">
 
-      <form method="post"
-            action="{{ url_for('reservation_update_status', reservation_id=reservation.id) }}"
-            class="admin-detail-form">
-        <div class="admin-detail-form-grid">
-          <div class="admin-detail-form-item">
-            <label>
-              Nový status
-              <select name="new_status_id">
-                {% for s in statuses %}
-                  <option value="{{ s.id }}" {% if s.id == reservation.status_id %}selected{% endif %}>
-                    {{ s.id }} – {{ s.description }}
-                  </option>
-                {% endfor %}
-              </select>
-            </label>
-          </div>
+            <div style="flex: 1; min-width: 280px;">
+                <form method="post" action="{{ url_for('reservation_update_status', reservation_id=reservation.id) }}" style="margin: 0;">
+
+                    {# 1. Definice překladů (podle toho, co máš v DB v description) #}
+                    {% set status_translations = {
+                        'pending': 'Čeká na potvrzení',
+                        'confirmed': 'Potvrzená',
+                        'paid': 'Zaplacená',
+                        'cancelled': 'Zrušená'
+                    } %}
+
+                    <div style="display: flex; gap: 12px; align-items: flex-end;">
+                        <label style="flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 500; color: var(--color-text-main);">
+                            Změnit status na:
+
+                            {# 2. Select se styly jako ve filtru #}
+                            <select name="new_status_id" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--color-border-subtle); background-color: var(--color-primary-white); font-size: 14px; cursor: pointer;">
+                                {% for s in statuses %}
+                                <option value="{{ s.id }}" {% if s.id == reservation.status_id %}selected{% endif %}>
+                                    {# 3. Použití překladu #}
+                                    {{ status_translations.get(s.description, s.description) }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <button type="submit" class="btn btn-primary" style="height: 38px;">Uložit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div style="flex: 1; min-width: 280px; display: flex; align-items: flex-end;">
+                <a href="{{ url_for('payments_by_reservation', reservation_id=reservation.id) }}" class="btn btn-secondary" style="width: 100%; justify-content: center; display: flex; height: 38px; align-items: center;">
+                    Zobrazit / Upravit platby
+                </a>
+            </div>
         </div>
-
-        <div class="admin-detail-form-actions">
-          <button type="submit" class="btn btn-primary">
-            Uložit změnu statusu
-          </button>
-        </div>
-      </form>
-    {% endif %}
-
-    <div class="admin-detail-back">
-      <a href="{{ url_for('reservations_list') }}" class="btn btn-tertiary">
-        Zpět na seznam rezervací
-      </a>
     </div>
+  {% endif %}
+
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('reservations_list') }}" class="btn btn-secondary">
+        &larr; Zpět na seznam rezervací
+      </a>
   </div>
 
 {% endblock %}
