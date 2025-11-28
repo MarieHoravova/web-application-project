@@ -9,9 +9,9 @@ from services.ReservationService import ReservationService
 from dependencies import payment_service, payment_method_service, reservation_service
 from domain.constants import ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_CUSTOMER
 from auth_dependencies import get_current_user
+from helpers.profile_flags import profile_role_flags
 
 router = APIRouter()
-
 
 @router.get("/", name="payments_list")
 async def payments_list(
@@ -20,16 +20,31 @@ async def payments_list(
     method_svc: PaymentMethodService = Depends(payment_method_service),
     current_user = Depends(get_current_user),
 ):
+    # nepřihlášený -> přesměrování
     if isinstance(current_user, RedirectResponse):
         return current_user
 
+    flags = profile_role_flags(current_user)
     role_id = current_user["role_id"]
+    user_id = current_user["id"]
 
-    try:
-        payments: List[Dict[str, Any]] = pay_svc.list_all_payments(current_user_role=role_id)
-    except PermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    # kdo co vidí
+    if flags["is_customer"]:
+        # zákazník -> jen své platby
+        payments: List[Dict[str, Any]] = pay_svc.list_payments_by_user(
+            user_id=user_id,
+            current_user_role=role_id,
+            current_user_id=user_id,
+        )
+        title = "Seznam všech plateb"
+    elif role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST):
+        # admin / recepce -> všechny platby
+        payments = pay_svc.list_all_payments(current_user_role=role_id)
+        title = "Seznam všech plateb"
+    else:
+        raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit platby")
 
+    # mapování metod platby (id -> 'cash' / 'card' / 'transfer' ...)
     methods = method_svc.list_methods()
     method_map = {m["id"]: m["description"] for m in methods}
 
@@ -38,13 +53,11 @@ async def payments_list(
         "payments/payments_list.html",
         {
             "request": request,
-            "title": "Seznam všech plateb",
+            "title": title,
             "payments": payments,
             "method_map": method_map,
             "current_user": current_user,
-            "is_admin_or_receptionist": role_id in (ROLE_ADMIN, ROLE_RECEPTIONIST),
-            "is_admin": role_id == ROLE_ADMIN,
-            "is_customer": role_id == ROLE_CUSTOMER,
+            **flags,  # tady se do profile_base dostanou is_admin / is_receptionist / is_customer
         },
     )
 

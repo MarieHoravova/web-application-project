@@ -8,6 +8,7 @@ from repositories.PaymentRepository import (
     list_payments_by_reservation as repo_list_by_reservation,
     create_payment as repo_create_payment,
     delete_payment as repo_delete_payment,
+    list_payments_by_user as repo_list_by_user,
 )
 from repositories.ReservationRepository import (
     get_reservation_by_id as repo_get_reservation_by_id,
@@ -82,6 +83,18 @@ class PaymentService:
         repo_delete_payment(self.conn, payment_id)
         return True
 
+    def list_payments_by_user(
+        self,
+        user_id: int,
+        current_user_role: int,
+        current_user_id: int,
+    ) -> List[Dict[str, Any]]:
+        # CUSTOMER: může jen své platby
+        if current_user_role == ROLE_CUSTOMER and user_id != current_user_id:
+            raise PermissionError("Nemůžete zobrazit platby jiného uživatele")
+
+        # ADMIN / RECEPCE: klidně cizí uživatele (můžeš si případně omezit)
+        return repo_list_by_user(self.conn, user_id)
 
 # TEST
 if __name__ == "__main__":
