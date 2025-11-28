@@ -1,0 +1,116 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block profile_content %}
+
+  <!-- HLAVIČKA -->
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">Úprava pokojů</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Rezervace {{ reservation.code }}</p>
+    </div>
+  </div>
+
+  <!-- 1. SEZNAM AKTUÁLNÍCH POKOJŮ -->
+  <div class="detail-card" style="margin-bottom: 32px;">
+    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px;">Aktuální pokoje</h3>
+
+    {% if items|length == 0 %}
+        <p style="color: var(--color-text-muted);">V této rezervaci zatím nejsou žádné pokoje.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Pokoj</th>
+                        <th>Termín</th>
+                        <th>Hosté</th>
+                        <th style="text-align: right;">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('room_detail', room_id=item.room_id) }}" class="table-id-link">
+                                    #{{ item.room_id }}
+                                </a>
+                                <!-- Pokud máš data o pokoji, můžeš vypsat i číslo -->
+                            </td>
+                            <td>{{ item.check_in }} – {{ item.check_out }}</td>
+                            <td>{{ item.adults }} dosp., {{ item.children }} dětí</td>
+                            <td style="text-align: right;">
+                                <form method="post" 
+                                      action="{{ url_for('reservation_item_delete', reservation_id=reservation.id, item_id=item.id) }}" 
+                                      onsubmit="return confirm('Opravdu odebrat tento pokoj z rezervace?');"
+                                      style="margin: 0;">
+                                    <button type="submit" class="btn btn-destructive" style="padding: 4px 10px; font-size: 12px;">
+                                        Odebrat
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+  </div>
+
+  <!-- PŘIDAT NOVÝ POKOJ -->
+  <div class="detail-card" style="background-color: var(--color-bg-main); border: 1px dashed var(--color-border-subtle);">
+    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px;">Přidat pokoj do rezervace</h3>
+    
+
+    <form method="post" action="{{ url_for('reservation_items_create', reservation_id=reservation.id) }}">
+        <div class="detail-grid">
+            
+            <!-- Výběr pokoje -->
+            <div class="detail-item full-width">
+                <label class="detail-label">Vyberte pokoj</label>
+                <select name="room_id" required class="form-input">
+                    <option value="">-- Zvolte pokoj --</option>
+                    {% for r in rooms %}
+                        <option value="{{ r.id }}">
+                            Pokoj {{ r.number }} ({{ r.room_type.name if r.room_type else 'ID:' + r.room_type_id|string }}) - Kapacita: {{ r.room_type.capacity if r.room_type else '?' }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Termín -->
+            <div class="detail-item">
+                <label class="detail-label">Check-in</label>
+                <input type="date" name="check_in" required class="form-input">
+            </div>
+            <div class="detail-item">
+                <label class="detail-label">Check-out</label>
+                <input type="date" name="check_out" required class="form-input">
+            </div>
+
+            <!-- Počty osob -->
+            <div class="detail-item">
+                <label class="detail-label">Dospělí</label>
+                <input type="number" name="adults" min="1" value="1" required class="form-input">
+            </div>
+            <div class="detail-item">
+                <label class="detail-label">Děti</label>
+                <input type="number" name="children" min="0" value="0" required class="form-input">
+            </div>
+
+        </div>
+
+        <div style="margin-top: 24px;">
+            <button type="submit" class="btn btn-primary">Přidat pokoj</button>
+        </div>
+    </form>
+  </div>
+
+  <!-- TLAČÍTKO ZPĚT -->
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('reservation_detail', reservation_id=reservation.id) }}" class="btn btn-secondary">
+        &larr; Zpět na detail rezervace
+      </a>
+  </div>
+
+{% endblock %}
