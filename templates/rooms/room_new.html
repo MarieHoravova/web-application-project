@@ -2,64 +2,66 @@
 {% block title %}Nový pokoj{% endblock %}
 
 {% block profile_content %}
-  <section class="rooms-page">
-    <div class="admin-detail">
-      <div class="admin-detail-header">
-        <h2>Nový pokoj</h2>
-        <a href="{{ url_for('rooms_list') }}" class="btn btn-tertiary">← Zpět na seznam pokojů</a>
+
+  <div class="dashboard-header" style="margin-bottom: 24px;">
+    <h1 style="margin: 0 0 4px 0;">Nový pokoj</h1>
+    <p style="color: var(--color-text-muted); margin: 0;">Přidání nového pokoje do systému</p>
+  </div>
+
+  <div class="detail-card">
+    <form method="post" action="{{ url_for('rooms_create') }}">
+      <div class="detail-grid">
+
+        <div class="detail-item">
+          <label class="detail-label">Číslo pokoje</label>
+          <input type="number" name="number" placeholder="Např. 101" required class="form-input">
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">Patro</label>
+          <input type="number" name="floor" value="1" required class="form-input">
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">Typ pokoje</label>
+          <select name="room_type_id" required class="form-input">
+            {% for rt in room_types %}
+              <option value="{{ rt.id }}">{{ rt.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">Status</label>
+
+          {# Definice překladů pro konzistenci #}
+          {% set status_translations = {
+              1: 'Volný (Available)',
+              2: 'Neuklizený (Dirty)',
+              3: 'Mimo provoz (Out of Service)'
+          } %}
+
+          <select name="room_status_id" required class="form-input">
+            {% for s in statuses %}
+              <option value="{{ s.id }}">
+                {{ status_translations.get(s.id, s.description) }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="detail-item full-width">
+          <label class="detail-label">Cesta k obrázku</label>
+          <input type="text" name="image_path" value="default.jpg" required class="form-input">
+        </div>
+
       </div>
 
-      <form method="post" action="{{ url_for('rooms_create') }}" class="admin-detail-form">
-        <div class="admin-detail-form-grid">
-          <div class="admin-detail-form-item">
-            <label>
-              Číslo pokoje
-              <input type="number" name="number" required>
-            </label>
-          </div>
+      <div style="margin-top: 24px; display: flex; gap: 12px;">
+        <button type="submit" class="btn btn-primary">Vytvořit pokoj</button>
+        <a href="{{ url_for('rooms_list') }}" class="btn btn-tertiary">Zrušit</a>
+      </div>
+    </form>
+  </div>
 
-          <div class="admin-detail-form-item">
-            <label>
-              Typ pokoje
-              <select name="room_type_id" required>
-                {% for rt in room_types %}
-                  <option value="{{ rt.id }}">{{ rt.id }} – {{ rt.name }}</option>
-                {% endfor %}
-              </select>
-            </label>
-          </div>
-
-          <div class="admin-detail-form-item">
-            <label>
-              Status
-              <select name="room_status_id" required>
-                {% for s in statuses %}
-                  <option value="{{ s.id }}">{{ s.id }} – {{ s.description }}</option>
-                {% endfor %}
-              </select>
-            </label>
-          </div>
-
-          <div class="admin-detail-form-item">
-            <label>
-              Patro
-              <input type="number" name="floor" value="1" required>
-            </label>
-          </div>
-
-          <div class="admin-detail-form-item">
-            <label>
-              Cesta k obrázku
-              <input type="text" name="image_path" value="default.jpg" required>
-            </label>
-          </div>
-        </div>
-
-        <div class="admin-detail-form-actions">
-          <button type="submit" class="btn btn-primary">Vytvořit pokoj</button>
-          <a href="{{ url_for('rooms_list') }}" class="btn btn-tertiary">Zrušit</a>
-        </div>
-      </form>
-    </div>
-  </section>
 {% endblock %}
