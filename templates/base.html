@@ -1,88 +1,75 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %}Hotel App{% endblock %}</title>
+    <meta charset="utf-8">
+    <title>{% block title %}Hotel App{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=TASA+Orbiter:wght@400..800&display=swap" rel="stylesheet">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <!-- Logo vlevo -->
-      <a href="/" class="logo">Hotel App</a>
-
-      <!-- Menu uprostřed -->
-      <nav class="main-nav">
-        <a href="{{ url_for('home_page')}}">Domů</a>
-        <span class="divider">|</span>
-        <a href="{{ url_for('gallery_page') }}">Galerie</a>
-        <span class="divider">|</span>
-        <a href="{{ url_for('contact_page') }}">Kontakt</a>
-      </nav>
-
-      <!-- Tlačítka vpravo -->
-<div class="header-actions">
-  {% if current_user is defined and current_user %}
-    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
-    <a href="/profile" class="btn btn-secondary">Můj účet</a>
-    <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
-  {% else %}
-    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
-    <a href="{{ url_for('auth_login') }}" class="btn btn-secondary">Přihlásit se</a>
-  {% endif %}
-</div>
-
-
-
-    </div>
-  </header>
-
-  <main class="page-main">
-    {% block content %}{% endblock %}
-  </main>
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <!-- Logo / název vlevo -->
-      <div>
-        <div class="footer-logo">Hotel App</div>
-        <p class="footer-tagline">Váš klidný pobyt v srdci Prahy.</p>
-      </div>
-
-      <!-- Kontakt + adresa + sociální sítě vpravo -->
-      <div class="footer-right">
-        <div class="footer-columns">
-          <div class="footer-column">
-            <h4>Kontakt</h4>
-            <div class="footer-card">
-              <p><strong>Telefon:</strong><br>+420 123 456 789</p>
-              <p><strong>E-mail:</strong><br>recepce@hotel-aurora.cz</p>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">Hotel Aurora</a>
+            <nav class="main-nav">
+                <a href="{{ url_for('home_page')}}">Domů</a>
+                <a href="{{ url_for('gallery_page') }}">Galerie</a>
+                <a href="{{ url_for('contact_page') }}">Kontakt</a>
+            </nav>
+            <div class="header-actions">
+                {% if current_user is defined and current_user %}
+                    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
+                    <a href="/profile" class="btn btn-secondary">Můj účet</a>
+                    <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
+                {% else %}
+                    <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
+                    <a href="{{ url_for('auth_login') }}" class="btn btn-secondary">Přihlásit se</a>
+                {% endif %}
             </div>
-          </div>
+        </div>
+    </header>
 
-          <div class="footer-column">
-            <h4>Adresa</h4>
-            <div class="footer-card">
-              <p>Hotel Aurora</p>
-              <p>Náměstí 1</p>
-              <p>110 00 Praha 1</p>
-              <p>Česká republika</p>
-            </div>
-          </div>
+    <main class="page-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+
+        <div class="footer-left">
+            <div class="footer-logo">Hotel App</div>
+            <p class="footer-tagline">Váš klidný pobyt v srdci Prahy.</p>
         </div>
 
-        <div class="footer-social">
-          <a href="#" class="social-link">IG</a>
-          <a href="#" class="social-link">f</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+        <div class="footer-right-section">
+            <div class="footer-columns">
 
+                <div class="footer-column">
+                    <h4>Kontakt</h4>
+                    <div class="footer-card">
+                        <p><strong>Telefon:</strong><br>+420 123 456 789</p>
+                        <p style="margin-top: 8px;"><strong>E-mail:</strong><br>recepce@hotel-aurora.cz</p>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Adresa</h4>
+                    <div class="footer-card">
+                        <p>Hotel Aurora<br>
+                            Náměstí 1<br>
+                            110 00 Praha 1<br>
+                            Česká republika</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-social">
+                <a href="#" class="social-link">IG</a>
+                <a href="#" class="social-link">f</a>
+            </div>
+        </div>
+        </div>
+    </footer>
 </body>
-
 </html>

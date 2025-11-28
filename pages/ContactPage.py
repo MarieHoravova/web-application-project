@@ -6,7 +6,8 @@ from services.ContactMessageService import ContactMessageService
 from dependencies import contact_message_service
 
 router = APIRouter()
-
+# může (ale nemusí) dostat query parametr message_sent,
+# když nepřijde = False, když přijde = zobrazí se alert "Děkujeme za zprávu...".
 @router.get("/contact", name="contact_page")
 async def contact_page(request: Request, message_sent: bool = False):
     tpl = request.app.state.templates
@@ -27,11 +28,8 @@ async def contact_submit(
         message: str = Form(...),
         contact_svc: ContactMessageService = Depends(contact_message_service),
 ):
-    # MARK: ukládání do db
+    # MARK: ukládání do seznamu v admin/recepční
     contact_svc.create_contact_message(name=name, email=email, message=message)
-
-    # debug log
-    print(f"[CONTACT] {name} <{email}>: {message}")
 
     # Tohle mám kvůli warningu na contact page
     url = request.url_for("contact_page")

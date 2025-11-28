@@ -6,15 +6,11 @@
 <section id="home-section">
   <div class="home-container">
 
-
-
-    <h1>O hotelu</h1>
-
-    <!-- Horní box: popisek + tlačítka -->
     <div class="home-hero home-card">
-      <div>
+      <div style="flex: 1;">
+        <h1 style="color: white; margin-bottom: 16px;">Vítejte v Hotelu Aurora</h1>
         <p class="home-hero-text">
-          Hotel Aurora je moderní, klidný hotel v centru Prahy. Nabízí pohodlné pokoje, snídaně formou bufetu a skvělé spojení MHD.
+          Moderní a klidný hotel v centru Prahy. Užijte si pohodlné pokoje, snídaně formou bufetu a skvělé spojení MHD kamkoliv po městě.
         </p>
       </div>
       <div class="home-hero-actions">
@@ -23,71 +19,69 @@
       </div>
     </div>
 
-    <!-- Řádek: Rychlé info + služby -->
     <div class="home-row">
+
       <div class="home-card home-quick-info">
         <h2 class="home-card-title">Rychlé info</h2>
         <ul class="home-quick-info-list">
-          <li>Check-in: 14:00</li>
-          <li>Check-out: 10:00</li>
-          <li>Počet pokojů: 45</li>
-          <li>Nekuřácký hotel</li>
-          <li>Platby kartou</li>
+          <li><span>Check-in</span> <strong>14:00</strong></li>
+          <li><span>Check-out</span> <strong>10:00</strong></li>
+          <li><span>Počet pokojů</span> <strong>45</strong></li>
+          <li><span>Typ</span> <strong>Nekuřácký</strong></li>
+          <li><span>Platba</span> <strong>Kartou / Hotově</strong></li>
         </ul>
       </div>
-<div class="home-card home-amenities">
-  <h2 class="home-card-title">Služby</h2>
-  <p class="home-amenities-text">
-    Hostům nabízíme pohodlné zázemí pro odpočinek i práci. Všechny služby máte zahrnuté přímo v pobytu.
-  </p>
-  <div class="home-amenities-icons">
-    <div class="home-amenity-item">
-      <span class="home-amenity-icon">☕</span>
-      <span class="home-amenity-label">Snídaně formou bufetu</span>
-    </div>
-    <div class="home-amenity-item">
-      <span class="home-amenity-icon">📶</span>
-      <span class="home-amenity-label">Wi-Fi zdarma v celém hotelu</span>
-    </div>
-    <div class="home-amenity-item">
-      <span class="home-amenity-icon">ℹ️</span>
-      <span class="home-amenity-label">Recepce a info 24/7</span>
-    </div>
-    <div class="home-amenity-item">
-      <span class="home-amenity-icon">🅿️</span>
-      <span class="home-amenity-label">Parkování u hotelu</span>
-    </div>
-    <div class="home-amenity-item">
-      <span class="home-amenity-icon">🐾</span>
-      <span class="home-amenity-label">Domácí mazlíčci vítáni</span>
-    </div>
-  </div>
-</div>
 
+      <div class="home-card home-amenities">
+        <h2 class="home-card-title">Služby v ceně</h2>
+        <p class="home-amenities-text">
+          Všechny služby máte zahrnuté přímo v pobytu. Žádné skryté poplatky.
+        </p>
+        <div class="home-amenities-icons">
+          <div class="home-amenity-item">
+            <span class="home-amenity-icon">☕</span>
+            <span class="home-amenity-label">Snídaně bufet</span>
+          </div>
+          <div class="home-amenity-item">
+            <span class="home-amenity-icon">📶</span>
+            <span class="home-amenity-label">Rychlá Wi-Fi</span>
+          </div>
+          <div class="home-amenity-item">
+            <span class="home-amenity-icon">ℹ️</span>
+            <span class="home-amenity-label">Recepce 24/7</span>
+          </div>
+          <div class="home-amenity-item">
+            <span class="home-amenity-icon">🅿️</span>
+            <span class="home-amenity-label">Parkování</span>
+          </div>
+          <div class="home-amenity-item">
+            <span class="home-amenity-icon">🐾</span>
+            <span class="home-amenity-label">Pet friendly</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Řádek: Základní info + galerie -->
     <div class="home-row" id="pokoje">
       <div class="home-card home-basic-info">
-        <h2 class="home-card-title">Základní info</h2>
+        <h2 class="home-card-title">Kde nás najdete</h2>
         <p><strong>Hotel Aurora</strong></p>
-        <p>Náměstí 1</p>
-        <p>110 00 Praha 1</p>
-        <p>Česká republika</p>
-        <p class="home-basic-info-contact">
-          Tel.: +420 123 456 789<br>
-          E-mail: recepce@hotel-aurora.cz
-        </p>
+        <p>Náměstí 1, 110 00 Praha 1</p>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border-subtle);">
+          <p class="home-basic-info-contact">
+            📞 +420 123 456 789<br>
+            ✉️ recepce@hotel-aurora.cz
+          </p>
+        </div>
       </div>
 
       <div class="home-card home-gallery" id="galerie">
         <h2 class="home-card-title">Galerie</h2>
         <div class="home-gallery-grid">
-          <div class="home-gallery-item">Obrázek</div>
-          <div class="home-gallery-item">Obrázek</div>
-          <div class="home-gallery-item">Obrázek</div>
-          <div class="home-gallery-item">Obrázek</div>
-
+          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/1F5A96/white?text=Pokoj'); background-size: cover;"></div>
+          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/D4A857/white?text=Lobby'); background-size: cover;"></div>
+          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/123457/white?text=Snídaně'); background-size: cover;"></div>
+          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/0B1F33/white?text=Koupelna'); background-size: cover;"></div>
         </div>
       </div>
     </div>
