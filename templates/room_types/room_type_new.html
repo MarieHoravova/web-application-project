@@ -3,48 +3,40 @@
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>Nový typ pokoje</h2>
+  <div class="dashboard-header" style="margin-bottom: 24px;">
+    <h1 style="margin: 0 0 4px 0;">Nový typ pokoje</h1>
+    <p style="color: var(--color-text-muted); margin: 0;">Vytvoření nové kategorie pokojů</p>
   </div>
 
-  <div class="admin-detail">
-    <form method="post"
-          action="{{ url_for('room_types_create') }}"
-          class="admin-detail-form">
+  <div class="form-card">
+    <form method="post" action="{{ url_for('room_types_create') }}">
+      <div class="detail-grid">
 
-      <div class="admin-detail-form-grid">
-        <div class="admin-detail-form-item">
-          <label>
-            Název typu
-            <input type="text" name="name" required>
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Název typu</label>
+          <input type="text" name="name" placeholder="Např. Apartmá Deluxe" required class="form-input">
         </div>
 
-        <div class="admin-detail-form-item">
-          <label>
-            Kapacita (osoby)
-            <input type="number" name="capacity" min="1" step="1" required>
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Kapacita (osoby)</label>
+          <input type="number" name="capacity" min="1" step="1" placeholder="2" required class="form-input">
         </div>
 
-        <div class="admin-detail-form-item">
-          <label>
-            Cena od (Kč / noc)
-            <input type="number" name="base_price" step="0.01" min="0" required>
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Cena od (Kč / noc)</label>
+          <input type="number" name="base_price" step="0.01" min="0" placeholder="2500" required class="form-input">
         </div>
 
-        <div class="admin-detail-form-item admin-detail-form-item-full">
-          <label>
-            Popis
-            <textarea name="description" rows="3" placeholder="Krátký popis typu pokoje"></textarea>
-          </label>
+        <div class="detail-item full-width">
+          <label class="detail-label">Popis</label>
+          <textarea name="description" rows="4" placeholder="Krátký popis typu pokoje a vybavení..." class="form-input"></textarea>
         </div>
+
       </div>
 
-      <div class="admin-detail-form-actions">
-        <button type="submit" class="btn btn-primary">Uložit typ pokoje</button>
-        <a href="{{ url_for('room_types_list') }}" class="btn btn-tertiary">Zpět na typy pokojů</a>
+      <div style="margin-top: 24px; display: flex; gap: 12px;">
+        <button type="submit" class="btn btn-primary">Vytvořit typ</button>
+        <a href="{{ url_for('room_types_list') }}" class="btn btn-tertiary">Zrušit</a>
       </div>
     </form>
   </div>
