@@ -21,7 +21,9 @@
             <div class="header-actions">
                 {% if current_user is defined and current_user %}
                     <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>
-                    <a href="/profile" class="btn btn-secondary">Můj účet</a>
+
+                    <a href="{{ url_for('user_detail', user_id=current_user.id) }}" class="btn btn-secondary">Můj účet</a>
+
                     <a href="{{ url_for('auth_logout') }}" class="logout-link">Odhlásit</a>
                 {% else %}
                     <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">Rezervace</a>

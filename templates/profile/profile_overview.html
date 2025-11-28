@@ -1,89 +1,71 @@
 {# profile/profile_overview.html #}
 {% extends "profile/profile_base.html" %}
 
-{% block title %}Můj profil{% endblock %}
+{% block title %}Přehled{% endblock %}
 
 {% block profile_content %}
-  <h1>Přehled</h1>
 
-  {# HOST / CUSTOMER #}
+
+  {# --- HOST / ZÁKAZNÍK --- #}
   {% if is_customer %}
     <section class="profile-block">
       <h2>Moje poslední rezervace</h2>
 
       {% if last_reservation %}
-        <div class="card">
-          <p><strong>Kód rezervace:</strong> {{ last_reservation.code }}</p>
-          <p><strong>Stav:</strong> {{ last_reservation.status_id }}</p>
-          <p><strong>Vytvořeno:</strong> {{ last_reservation.created_at }}</p>
-          <p>
-            <a href="{{ url_for('reservation_detail', reservation_id=last_reservation.id) }}">
-              Detail rezervace
-            </a>
-          </p>
+        <div style="background: var(--color-primary-100); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: 20px;">
+          <p style="margin: 0 0 8px;"><strong>Kód rezervace:</strong> {{ last_reservation.code }}</p>
+          <p style="margin: 0 0 8px;"><strong>Stav:</strong> {{ last_reservation.status_id }}</p>
+          <p style="margin: 0 0 16px;"><strong>Vytvořeno:</strong> {{ last_reservation.created_at }}</p>
+
+          <a href="{{ url_for('reservation_detail', reservation_id=last_reservation.id) }}" class="btn btn-secondary btn-small">
+            Detail rezervace
+          </a>
         </div>
       {% else %}
         <p>Nemáte žádné rezervace.</p>
       {% endif %}
 
-      <div class="profile-actions">
+      <div style="margin-top: 24px;">
         <a href="{{ url_for('reservation_create_page') }}" class="btn btn-primary">
           Nová rezervace
         </a>
       </div>
     </section>
 
-  {# RECEPCE #}
-  {% elif is_receptionist %}
+  {# --- ADMIN / RECEPCE --- #}
+  {% elif is_receptionist or is_admin %}
     <section class="profile-block">
-      <h2>Nadcházející rezervace (příštích 7 dní)</h2>
+      <h2 style="margin-bottom: 16px;">Přehled obsazenosti</h2>
 
       {% if upcoming_reservations|length == 0 %}
         <p>Žádné rezervace v nejbližších dnech.</p>
       {% else %}
-        <table class="data">
-          <tr>
-            <th>Datum příjezdu</th>
-            <th>Datum odjezdu</th>
-            <th>Pokoj</th>
-            <th>Rezervace ID</th>
-          </tr>
-          {% for r in upcoming_reservations %}
-            <tr>
-              <td>{{ r.check_in }}</td>
-              <td>{{ r.check_out }}</td>
-              <td>{{ r.room_id }}</td>
-              <td>{{ r.reservation_id }}</td>
-            </tr>
-          {% endfor %}
-        </table>
-      {% endif %}
-    </section>
-
-  {# ADMIN #}
-  {% elif is_admin %}
-    <section class="profile-block">
-      <h2>Přehled rezervací / obsazenosti</h2>
-
-      {% if upcoming_reservations|length == 0 %}
-        <p>Žádné rezervace v nejbližších dnech.</p>
-      {% else %}
-        <table class="data">
-          <tr>
-            <th>Datum příjezdu</th>
-            <th>Datum odjezdu</th>
-            <th>Pokoj</th>
-            <th>Rezervace ID</th>
-          </tr>
-          {% for r in upcoming_reservations %}
-            <tr>
-              <td>{{ r.check_in }}</td>
-              <td>{{ r.check_out }}</td>
-              <td>{{ r.room_id }}</td>
-              <td>{{ r.reservation_id }}</td>
-            </tr>
-          {% endfor %}
-        </table>
+        <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                    <th>Rezervace ID</th>
+                    <th>Datum příjezdu</th>
+                    <th>Datum odjezdu</th>
+                    <th>Pokoj</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in upcoming_reservations %}
+                  <tr>
+                    <td>
+                        <a href="{{ url_for('reservation_detail', reservation_id=r.reservation_id) }}" class="table-id-link">
+                            {{ r.reservation_id }}
+                        </a>
+                    </td>
+                    <td>{{ r.check_in }}</td>
+                    <td>{{ r.check_out }}</td>
+                    <td>{{ r.room_id }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
       {% endif %}
     </section>
   {% endif %}

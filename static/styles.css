@@ -41,6 +41,8 @@ body {
     background: var(--color-bg-main);
     color: var(--color-text-main);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 h1 {
     font-size: 32px;
@@ -891,50 +893,106 @@ html {
 }
 
 
-/* PROFILE */
-
+/* --- PROFILE & DASHBOARD LAYOUT --- */
+.profile-page {
+    /* Místo fixní výšky necháme flexbox (z body), ať se postará o roztažení */
+    flex: 1;
+    padding: 40px 24px;
+    background: var(--color-bg-main);
+    display: flex; /* Aby se vnitřek mohl centrovat nebo roztahovat */
+    flex-direction: column;
+}
 .profile-layout {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    gap: 24px;
+    gap: 32px;
+    align-items: flex-start;
+    flex: 1;
 }
-
-/* levý sloupec – menu */
-
+/* --- LEVÝ SIDEBAR --- */
 .profile-sidebar {
-    flex: 0 0 240px; /* má pevnou šířku, zbytek se donastaví auto*/
-    border-right: 1px solid var(--color-border-subtle);
-    padding-right: 20px;
+    flex: 0 0 260px; /* Pevná šířka menu */
+    position: sticky;
+    top: 100px; /* Pokud je obsah dlouhý, menu pojede s námi */
 }
-
-.profile-sidebar h2 {
-    margin: 0 0 16px 0;
-    font-size: 20px;
+.sidebar-header {
+    margin-bottom: 24px;
+}
+.sidebar-header h2 {
+    font-size: 24px;
+    margin: 0 0 4px 0;
+}
+.user-role-badge {
+    display: inline-block;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--color-primary-900);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--color-primary-100);
+    color: var(--color-primary-700);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0;
 }
 
 /* menu bloky */
 .profile-menu h3 {
-    margin: 20px 0 8px 0;
-    font-size: 13px;
-    font-weight: 600;
+    margin: 24px 0 12px 12px; /* Odsazení nadpisu sekce */
+    font-size: 12px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-text-muted);
 }
-
 .profile-menu ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-
 .profile-menu li {
     margin-bottom: 4px;
 }
+.nav-item {
+    display: block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--color-text-main);
+    transition: all 0.2s;
+}
+.nav-item:hover {
+    background: var(--color-primary-white); /* Bílé podbarvení při hoveru */
+    color: var(--color-primary-700);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03); /* Jemný stín */
+    transform: translateX(2px);
+}
+.nav-item.is-active {
+    background: var(--color-primary-500);
+    color: var(--color-primary-white);
+}
+.profile-main {
+    flex: 1; /* Zabere zbytek šířky */
+    min-width: 0; /* Fix pro tabulky, aby nepřetekly kontejner */
+}
+.profile-content-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 12px;
+    padding: 32px;
 
+    /* Stín jako na homepage */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+.profile-content-card h1,
+.profile-content-card h2 {
+    margin-top: 0;
+    color: var(--color-primary-900);
+}
 .profile-menu a {
     display: block;
     padding: 6px 0;
@@ -942,19 +1000,54 @@ html {
     color: var(--color-text-main);
     text-decoration: none;
 }
-
 .profile-menu a:hover {
     color: var(--color-primary-500);
 }
 
-/*  aktivní položka  */
-.profile-menu a.is-active {
+/* --- TABULKY (Dashboard styl) --- */
+.table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 8px; /* Zaoblení rohů okolo celé tabulky */
+}
+table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+table.data-table th {
+    background: var(--color-primary-100); /* Tvoje světle modrá */
+    color: var(--color-primary-900);
     font-weight: 600;
-    color: var(--color-primary-700);
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+table.data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-text-main);
+    vertical-align: middle;
+}
+table.data-table tr:last-child td {
+    border-bottom: none;
+}
+.table-id-link {
+    color: var(--color-text-main);
+    text-decoration: none;
+    font-weight: 500;
+}
+.table-id-link:hover {
+    color: var(--color-primary-500);
+    text-decoration: underline;
 }
 
-/* pravý sloupec – obsah */
 
+
+
+
+
+/* pravý sloupec – obsah */
 .profile-main {
     flex: 1;
     background: var(--color-bg-card);

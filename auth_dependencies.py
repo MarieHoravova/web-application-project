@@ -39,7 +39,6 @@ def get_current_user(
         "roles": roles,
     }
 
-
 def require_roles(*allowed_roles: int):
     """
     Dependency, která:

@@ -4,41 +4,46 @@
 {% block title %}Můj profil{% endblock %}
 
 {% block content %}
-<section class="profile-layout">
-  <div class="profile-sidebar">
-    <h2>Profil</h2>
-
-    <nav class="profile-menu">
-      <h3>Přehled</h3>
-      <ul>
-        {% if is_customer %}
-          <li><a href="{{ url_for('reservations_list') }}">Moje rezervace</a></li>
-        {% elif is_receptionist %}
-          <li><a href="{{ url_for('users_list') }}">Uživatelé</a></li>
-          <li><a href="{{ url_for('contact_messages_list') }}">Přijaté zprávy</a></li>
-          <li><a href="{{ url_for('reservations_list') }}">Rezervace hostů</a></li>
-          <li><a href="#">Kalendář obsazenosti</a></li>
-        {% elif is_admin %}
-          <li><a href="{{ url_for('users_list') }}">Uživatelé</a></li>
-          <li><a href="{{ url_for('reservations_list') }}">Rezervace hostů</a></li>
-          <li><a href="{{ url_for('rooms_list') }}">Pokoje</a></li>
-          <li><a href="{{ url_for('room_types_list') }}">Typy pokojů</a></li>
-          <li><a href="{{ url_for('contact_messages_list') }}">Přijaté zprávy</a></li>
-          <li><a href="#">Reporty</a></li>
-        {% endif %}
-      </ul>
-
-      <h3>Osobní údaje</h3>
-      <ul>
-        <li><a href="{{ url_for('user_detail', user_id=current_user.id) }}">Správa údajů</a></li>
-        <li><a href="{{ url_for('profile_terms') }}">Podmínky / souhlasy</a></li>
-      </ul>
-    </nav>
-  </div>
-
-  <div class="profile-main">
-<!--    {# sem budou jednotlivé stránky profilů vkládat svůj obsah #}-->
-    {% block profile_content %}{% endblock %}
-  </div>
+<section class="profile-page">
+    <div class="profile-layout">
+        <aside class="profile-sidebar">
+            <div class="sidebar-header">
+                <h2>Můj profil</h2>
+                <p class="user-role-badge">
+                    {% if is_admin %}Administrátor{% elif is_receptionist %}Recepční{% else %}Zákazník{% endif %}
+                </p>
+            </div>
+            <nav class="profile-menu">
+                <h3>Menu</h3> <ul>
+                    <li><a href="/profile" class="nav-item">Nástěnka</a></li>
+                {% if is_customer %}
+                    <li><a href="{{ url_for('reservations_list') }}" class="nav-item">Moje rezervace</a></li>
+                {% elif is_receptionist %}
+                    <li><a href="{{ url_for('users_list') }}" class="nav-item">Uživatelé</a></li>
+                    <li><a href="{{ url_for('contact_messages_list') }}" class="nav-item">Přijaté zprávy</a></li>
+                    <li><a href="{{ url_for('reservations_list') }}" class="nav-item">Rezervace hostů</a></li>
+                    <li><a href="#" class="nav-item">Kalendář obsazenosti</a></li>
+                {% elif is_admin %}
+                    <li><a href="{{ url_for('users_list') }}" class="nav-item">Uživatelé</a></li>
+                    <li><a href="{{ url_for('reservations_list') }}" class="nav-item">Rezervace hostů</a></li>
+                    <li><a href="{{ url_for('rooms_list') }}" class="nav-item">Pokoje</a></li>
+                    <li><a href="{{ url_for('room_types_list') }}" class="nav-item">Typy pokojů</a></li>
+                    <li><a href="{{ url_for('contact_messages_list') }}" class="nav-item">Přijaté zprávy</a></li>
+                    <li><a href="#" class="nav-item">Reporty</a></li>
+                {% endif %}
+            </ul>
+                <h3>Nastavení</h3>
+                <ul>
+                    <li><a href="{{ url_for('user_detail', user_id=current_user.id) }}" class="nav-item">Osobní údaje</a></li>
+                    <li><a href="{{ url_for('profile_terms') }}" class="nav-item">Podmínky / souhlasy</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="profile-main">
+            <div class="profile-content-card">
+                {% block profile_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
 </section>
 {% endblock %}
