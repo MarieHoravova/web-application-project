@@ -22,10 +22,12 @@
                     <li><a href="{{ url_for('users_list') }}" class="nav-item">Uživatelé</a></li>
                     <li><a href="{{ url_for('contact_messages_list') }}" class="nav-item">Přijaté zprávy</a></li>
                     <li><a href="{{ url_for('reservations_list') }}" class="nav-item">Rezervace hostů</a></li>
+                    <li><a href="{{ url_for('payments_list') }}" class="nav-item">Platby</a></li>
                     <li><a href="#" class="nav-item">Kalendář obsazenosti</a></li>
                 {% elif is_admin %}
                     <li><a href="{{ url_for('users_list') }}" class="nav-item">Uživatelé</a></li>
                     <li><a href="{{ url_for('reservations_list') }}" class="nav-item">Rezervace hostů</a></li>
+                    <li><a href="{{ url_for('payments_list') }}" class="nav-item">Platby</a></li>
                     <li><a href="{{ url_for('rooms_list') }}" class="nav-item">Pokoje</a></li>
                     <li><a href="{{ url_for('room_types_list') }}" class="nav-item">Typy pokojů</a></li>
                     <li><a href="{{ url_for('contact_messages_list') }}" class="nav-item">Přijaté zprávy</a></li>

@@ -1,35 +1,62 @@
-{% extends "base.html" %}
+{% extends "profile/profile_base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
-{% block content %}
-  <h2>{{ title }}</h2>
+{% block profile_content %}
 
-  {% if payments|length == 0 %}
-    <p>Zatím žádné platby.</p>
-  {% else %}
-    <table class="data">
-      <tr>
-        <th>ID</th>
-        <th>Rezervace ID</th>
-        <th>Částka</th>
-        <th>Metoda</th>
-        <th>Zaplaceno kdy</th>
-        <th>Akce</th>
-      </tr>
-      {% for p in payments %}
-        <tr>
-          <td>{{ p.id }}</td>
-          <td>{{ p.reservation_id }}</td>
-          <td>{{ "%.2f"|format(p.amount) }} Kč</td>
-          <td>{{ method_map.get(p.method_id, p.method_id) }}</td>
-          <td>{{ p.paid_at }}</td>
-          <td>
-            <a href="{{ url_for('payments_by_reservation', reservation_id=p.reservation_id) }}">
-              Detail / úprava
-            </a>
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
+  <div class="dashboard-header">
+    <h1 style="margin-bottom: 8px;">{{ title }}</h1>
+  </div>
+
+  <div class="dashboard-section">
+    {% if payments|length == 0 %}
+      <p style="color: var(--color-text-muted);">Zatím nebyly provedeny žádné platby.</p>
+    {% else %}
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Rezervace</th>
+              <th>Částka</th>
+              <th>Metoda</th>
+              <th>Zaplaceno kdy</th>
+              <th>Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in payments %}
+              <tr>
+                <td>
+                    <a href="{{ url_for('payments_by_reservation', reservation_id=p.reservation_id) }}">
+                    <span style="color: var(--color-text-muted);"> #{{ p.id }} </span></a></td>
+
+                <td>
+                    <a href="{{ url_for('reservation_detail', reservation_id=p.reservation_id) }}" class="table-id-link">
+                        #{{ p.reservation_id }}
+                    </a>
+                </td>
+
+                <td><strong>{{ "%.2f"|format(p.amount) }} Kč</strong></td>
+
+                <td>
+                    {% set method_translations = {
+                        'cash': 'Hotovost',
+                        'card': 'Platební karta',
+                        'transfer': 'Bankovní převod'
+                    } %}
+                    {# Získáme název metody z mapy, co posílá backend, a zkusíme ho přeložit #}
+                    {% set raw_method = method_map.get(p.method_id, p.method_id) %}
+                    {{ method_translations.get(raw_method, raw_method) }}
+                </td>
+
+                <td>{{ p.paid_at }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
 {% endblock %}

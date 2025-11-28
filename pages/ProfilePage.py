@@ -70,35 +70,35 @@ async def user_profile(
         },
     )
 
-
-@router.get("/profile/messages", name="contact_messages_list")
-async def contact_messages_list(
-    request: Request,
-    contact_svc: ContactMessageService = Depends(contact_message_service),
-    current_user = Depends(get_current_user),
-):
-    if isinstance(current_user, RedirectResponse):
-        return current_user
-
-    flags = _profile_role_flags(current_user)
-
-    # Jen admin + recepce
-    if not (flags["is_admin"] or flags["is_receptionist"]):
-        raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit zprávy z kontaktu")
-
-    messages = contact_svc.list_contact_messages(current_user_role=current_user["role_id"])
-
-    tpl = request.app.state.templates
-    return tpl.TemplateResponse(
-        "profile/profile_contact_messages.html",
-        {
-            "request": request,
-            "title": "Přijaté zprávy",
-            "current_user": current_user,
-            "contact_messages": messages,
-            **flags,
-        },
-    )
+#
+# @router.get("/profile/messages", name="contact_messages_list")
+# async def contact_messages_list(
+#     request: Request,
+#     contact_svc: ContactMessageService = Depends(contact_message_service),
+#     current_user = Depends(get_current_user),
+# ):
+#     if isinstance(current_user, RedirectResponse):
+#         return current_user
+#
+#     flags = _profile_role_flags(current_user)
+#
+#     # Jen admin + recepce
+#     if not (flags["is_admin"] or flags["is_receptionist"]):
+#         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit zprávy z kontaktu")
+#
+#     messages = contact_svc.list_contact_messages(current_user_role=current_user["role_id"])
+#
+#     tpl = request.app.state.templates
+#     return tpl.TemplateResponse(
+#         "profile/profile_contact_messages.html",
+#         {
+#             "request": request,
+#             "title": "Přijaté zprávy",
+#             "current_user": current_user,
+#             "contact_messages": messages,
+#             **flags,
+#         },
+#     )
 
 
 @router.get("/profile/terms", name="profile_terms")

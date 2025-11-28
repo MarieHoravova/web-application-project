@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Request, Depends, HTTPException, Query
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 
 from services.ContactMessageService import ContactMessageService
@@ -13,7 +13,6 @@ router = APIRouter()
 @router.get("/profile/messages", name="contact_messages_list")
 async def contact_messages_list(
     request: Request,
-    name: Optional[str] = Query(None, description="Filtrování podle jména odesílatele"),
     msg_svc: ContactMessageService = Depends(contact_message_service),
     current_user = Depends(get_current_user),
 ):
@@ -21,15 +20,20 @@ async def contact_messages_list(
         return current_user
 
     role_id = current_user["role_id"]
-
     is_admin = role_id == ROLE_ADMIN
     is_receptionist = role_id == ROLE_RECEPTIONIST
     is_customer = role_id == ROLE_CUSTOMER
 
-    try:
-        messages: List[Dict[str, Any]] = msg_svc.list_contact_messages(current_user_role=role_id, name=name)
-    except PermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    raw_params = dict(request.query_params)
+    print("DEBUG /profile/messages raw_params:", raw_params)
+
+    filter_name = request.query_params.get("name")
+    print("DEBUG /profile/messages filter_name:", repr(filter_name))
+
+    messages = msg_svc.list_contact_messages(
+        current_user_role=role_id,
+        name=filter_name,
+    )
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
@@ -42,9 +46,15 @@ async def contact_messages_list(
             "is_receptionist": is_receptionist,
             "is_customer": is_customer,
             "contact_messages": messages,
-            "filter_name": name or "",
+            "filter_name": filter_name or "",
         },
     )
+
+@router.get("/debug/messages")
+async def debug_messages(request: Request):
+    print("DEBUG /debug/messages raw_params:", dict(request.query_params))
+    return {"raw_params": dict(request.query_params)}
+
 
 
 @router.get("/profile/messages/{msg_id}", name="contact_message_detail")
@@ -66,6 +76,10 @@ async def contact_message_detail(
     if not message:
         raise HTTPException(status_code=404, detail="Zpráva nenalezena")
 
+    is_admin = role_id == ROLE_ADMIN
+    is_receptionist = role_id == ROLE_RECEPTIONIST
+    is_customer = role_id == ROLE_CUSTOMER
+
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
         "profile/profile_contact_message_detail.html",
@@ -74,6 +88,8 @@ async def contact_message_detail(
             "title": f"Zpráva #{message['id']}",
             "current_user": current_user,
             "message": message,
+            "is_admin": is_admin,
+            "is_receptionist": is_receptionist,
+            "is_customer": is_customer,
         },
     )
-
