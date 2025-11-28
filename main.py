@@ -14,7 +14,7 @@ from pages.PublicRoomsPage import router as public_rooms_router
 from pages.ProfilePage import router as profile_router
 from pages.GalleryPage import router as gallery_router
 from pages.ContactPage import router as contact_router
-from pages.ContactAdminPage import router as contact_admin_router
+from pages.ContactMessagePage import router as contact_admin_router
 
 
 def create_app() -> FastAPI:
