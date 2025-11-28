@@ -1,38 +1,48 @@
 {% extends "profile/profile_base.html" %}
-{% block title %}Zpráva #{{ message.id }}{% endblock %}
+{% block title %}Detail zprávy{% endblock %}
 
 {% block profile_content %}
-  <div class="admin-detail-header">
-    <h2>Zpráva #{{ message.id }}</h2>
+
+  <div class="dashboard-header" style="margin-bottom: 24px;">
+    <h1 style="margin: 0 0 4px 0;">Zpráva #{{ message.id }}</h1>
+    <p style="color: var(--color-text-muted); margin: 0;">Detail kontaktní zprávy</p>
   </div>
 
-  <div class="admin-detail">
-    <div class="admin-detail-grid">
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Jméno</div>
-        <div class="admin-detail-value">{{ message.name }}</div>
+  <div class="detail-card">
+    <div class="detail-grid">
+
+      <div class="detail-item">
+        <span class="detail-label">Jméno odesílatele</span>
+        <span class="detail-value">{{ message.name }}</span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">E-mail</div>
-        <div class="admin-detail-value">{{ message.email }}</div>
+      <div class="detail-item">
+        <span class="detail-label">E-mail</span>
+        <span class="detail-value">
+            <a href="mailto:{{ message.email }}" style="color: var(--color-primary-500); text-decoration: none; font-weight: 500;">
+                {{ message.email }}
+            </a>
+        </span>
       </div>
 
-      <div class="admin-detail-item">
-        <div class="admin-detail-label">Vytvořeno</div>
-        <div class="admin-detail-value">{{ message.created_at }}</div>
+      <div class="detail-item">
+        <span class="detail-label">Datum přijetí</span>
+        <span class="detail-value">{{ message.created_at }}</span>
       </div>
-    </div>
 
-    <div class="admin-detail-item">
-      <div class="admin-detail-label">Zpráva</div>
-      <div class="admin-detail-value">
-        <pre>{{ message.message }}</pre>
+      <div class="detail-item full-width">
+        <span class="detail-label">Obsah zprávy</span>
+        <div class="detail-value"
+             style="background: var(--color-bg-main); padding: 20px; border-radius: 8px; border: 1px solid var(--color-border-subtle); margin-top: 8px; white-space: pre-wrap; line-height: 1.6;">{{ message.message }}</div>
       </div>
-    </div>
 
-    <div class="admin-detail-back">
-      <a href="{{ url_for('contact_messages_list') }}" class="btn btn-tertiary">Zpět na seznam zpráv</a>
     </div>
   </div>
+
+  <div style="margin-top: 24px;">
+      <a href="{{ url_for('contact_messages_list') }}" class="btn btn-secondary">
+        &larr; Zpět na seznam zpráv
+      </a>
+  </div>
+
 {% endblock %}
