@@ -28,8 +28,8 @@
             {% for p in payments %}
               <tr>
                 <td>
-                    <a href="{{ url_for('payments_by_reservation', reservation_id=p.reservation_id) }}">
-                    <span style="color: var(--color-text-muted);"> #{{ p.id }} </span></a></td>
+                    <a class = table-id-link href="{{ url_for('payments_by_reservation', reservation_id=p.reservation_id) }}">
+                     #{{ p.id }}</a></td>
 
                 <td>
                     <a href="{{ url_for('reservation_detail', reservation_id=p.reservation_id) }}" class="table-id-link">

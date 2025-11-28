@@ -980,13 +980,7 @@ html {
 }
 .profile-content-card {
     background: var(--color-bg-card);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: 12px;
     padding: 32px;
-
-    /* Stín jako na homepage */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-                0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 .profile-content-card h1,
 .profile-content-card h2 {
@@ -1196,8 +1190,7 @@ table.data tbody tr:hover {
     border: 1px solid var(--color-border-subtle);
     border-radius: 12px;
     padding: 32px;
-    /* Volitelně: jemný stín, pokud ho chceš i uvnitř dashboardu */
-    /* box-shadow: 0 2px 4px rgba(0,0,0,0.02); */
+
 }
 .detail-grid {
     display: grid;
@@ -1307,47 +1300,69 @@ table.data tbody tr:hover {
 
 
 /* EDITACE – formulář v podobném gridu jako detail */
-.admin-detail-form {
-    margin-top: 8px;
+
+.form-card {
+    background: var(--color-primary-white);
 }
 
-.admin-detail-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 12px 24px;
-}
-
-.admin-detail-form-item label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 14px;
-    color: var(--color-text-main);
-}
-
-.admin-detail-form-item input,
-.admin-detail-form-item select {
-    padding: 8px 10px;
-    border-radius: 6px;
+.form-input {
+    padding: 10px 12px;
     border: 1px solid var(--color-border-subtle);
-    font-family: inherit;
+    border-radius: 6px;
     font-size: 14px;
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    width: 100%; /* Aby vyplnil buňku gridu */
+    transition: all 0.2s;
 }
-
-/* stejné zvýraznění fokusu jako u ostatních formulářů */
-.admin-detail-form-item input:focus,
-.admin-detail-form-item select:focus {
+.form-input:focus {
     outline: none;
     border-color: var(--color-primary-500);
+    background-color: var(--color-primary-white);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
-/* tlačítka dole */
-.admin-detail-form-actions {
-    margin-top: 16px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
+/*.admin-detail-form {*/
+/*    margin-top: 8px;*/
+/*}*/
+
+/*.admin-detail-form-grid {*/
+/*    display: grid;*/
+/*    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));*/
+/*    gap: 12px 24px;*/
+/*}*/
+
+/*.admin-detail-form-item label {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 4px;*/
+/*    font-size: 14px;*/
+/*    color: var(--color-text-main);*/
+/*}*/
+
+/*.admin-detail-form-item input,*/
+/*.admin-detail-form-item select {*/
+/*    padding: 8px 10px;*/
+/*    border-radius: 6px;*/
+/*    border: 1px solid var(--color-border-subtle);*/
+/*    font-family: inherit;*/
+/*    font-size: 14px;*/
+/*}*/
+
+/*!* stejné zvýraznění fokusu jako u ostatních formulářů *!*/
+/*.admin-detail-form-item input:focus,*/
+/*.admin-detail-form-item select:focus {*/
+/*    outline: none;*/
+/*    border-color: var(--color-primary-500);*/
+/*}*/
+
+/*!* tlačítka dole *!*/
+/*.admin-detail-form-actions {*/
+/*    margin-top: 16px;*/
+/*    display: flex;*/
+/*    gap: 12px;*/
+/*    align-items: center;*/
+/*}*/
 
 /* RESERVATIONS LIST  */
 

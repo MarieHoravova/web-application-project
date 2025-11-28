@@ -35,7 +35,7 @@
   {# --- ADMIN / RECEPCE --- #}
   {% elif is_receptionist or is_admin %}
     <section class="profile-block">
-      <h2 style="margin-bottom: 16px;">Přehled obsazenosti</h2>
+      <h1 style="margin-bottom: 16px;">Přehled obsazenosti</h1>
 
       {% if upcoming_reservations|length == 0 %}
         <p>Žádné rezervace v nejbližších dnech.</p>
@@ -55,7 +55,7 @@
                   <tr>
                     <td>
                         <a href="{{ url_for('reservation_detail', reservation_id=r.reservation_id) }}" class="table-id-link">
-                            {{ r.reservation_id }}
+                            #{{ r.reservation_id }}
                         </a>
                     </td>
                     <td>{{ r.check_in }}</td>

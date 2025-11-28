@@ -84,7 +84,11 @@
           <tbody>
             {% for item in items %}
               <tr>
-                <td><strong>{{ item.room_id }}</strong></td>
+                <td>
+                    <a href="{{ url_for('room_detail', room_id=item.room_id) }}" class="table-id-link">
+                        #{{ item.room_id }}
+                    </a>
+                </td>
                 <td>{{ item.check_in }}</td>
                 <td>{{ item.check_out }}</td>
                 <td>{{ item.adults }} dospělí, {{ item.children }} děti</td>
