@@ -3,8 +3,11 @@
 
 {% block profile_content %}
 
-  <div class="admin-detail-header">
-    <h2>Upravit uživatele {{ user.first_name + " " + user.last_name }}</h2>
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+        <h1 style="margin: 0 0 4px 0;">Upravit profil</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">{{ user.first_name }} {{ user.last_name }}</p>
+    </div>
 
     {% if is_admin %}
       <form method="post"
@@ -18,68 +21,73 @@
     {% endif %}
   </div>
 
-  <div class="admin-detail">
-    <form method="post" action="{{ url_for('user_update', user_id=user.id) }}" class="admin-detail-form">
-      <div class="admin-detail-form-grid">
-        <div class="admin-detail-form-item">
-          <label>
-            E-mail
-            <input type="email" name="email" value="{{ user.email }}" required>
-          </label>
+  <div class="form-card">
+
+    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 12px;">Osobní údaje</h3>
+
+    <form method="post" action="{{ url_for('user_update', user_id=user.id) }}">
+      <div class="detail-grid">
+
+        <div class="detail-item">
+          <label class="detail-label">E-mail</label>
+          <input type="email" name="email" value="{{ user.email }}" required class="form-input">
         </div>
 
-        <div class="admin-detail-form-item">
-          <label>
-            Jméno
-            <input type="text" name="first_name" value="{{ user.first_name }}" required>
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Telefon</label>
+          <input type="text" name="phone_number" value="{{ user.phone_number or '' }}" class="form-input">
         </div>
 
-        <div class="admin-detail-form-item">
-          <label>
-            Příjmení
-            <input type="text" name="last_name" value="{{ user.last_name }}" required>
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Jméno</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" required class="form-input">
         </div>
 
-        <div class="admin-detail-form-item">
-          <label>
-            Telefon
-            <input type="text" name="phone_number" value="{{ user.phone_number or '' }}">
-          </label>
+        <div class="detail-item">
+          <label class="detail-label">Příjmení</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" required class="form-input">
         </div>
+
       </div>
 
-      <div class="admin-detail-form-actions">
+      <div style="margin-top: 24px; display: flex; gap: 12px;">
         <button type="submit" class="btn btn-primary">Uložit změny</button>
-        <a href="{{ url_for('user_detail', user_id=user.id) }}" class="btn btn-tertiary">Zpět na detail</a>
+        <a href="{{ url_for('user_detail', user_id=user.id) }}" class="btn btn-tertiary">Zrušit</a>
       </div>
     </form>
 
     {% if is_admin %}
-      <hr class="admin-detail-divider">
+      <div style="margin-top: 40px;">
+        <h3 style="margin-bottom: 16px; font-size: 18px; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 12px;">Nastavení oprávnění</h3>
 
-        <form method="post" action="{{ url_for('user_change_role', user_id=user.id) }}" class="admin-detail-form">
-          <div class="admin-detail-form-grid">
-            <div class="admin-detail-form-item">
-              <label>
-                Role
-                <select name="role_id">
-                  {% for r in roles %}
-                    <option value="{{ r.id }}" {% if r.id == user.role_id %}selected{% endif %}>
-                      {{ r.id }} – {{ r.description }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </label>
+        <form method="post" action="{{ url_for('user_change_role', user_id=user.id) }}">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label class="detail-label">Role uživatele</label>
+
+              {% set role_translations = {
+                  'admin': 'Administrátor',
+                  'receptionist': 'Recepční',
+                  'customer': 'Zákazník',
+                  'guest': 'Host'
+              } %}
+
+              <div style="display: flex; gap: 12px; align-items: center;">
+                  <select name="role_id" class="form-input" style="flex: 1; max-width: 300px;">
+                    {% for r in roles %}
+                      <option value="{{ r.id }}" {% if r.id == user.role_id %}selected{% endif %}>
+                        {{ role_translations.get(r.description, r.description) }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-secondary">Změnit roli</button>
+              </div>
             </div>
           </div>
-
-        <div class="admin-detail-form-actions">
-          <button type="submit" class="btn btn-secondary">Změnit roli</button>
-        </div>
-      </form>
+        </form>
+      </div>
     {% endif %}
+
   </div>
 
 {% endblock %}
