@@ -1090,17 +1090,17 @@ table.data tbody tr:hover {
 
 /*FILTR*/
 .admin-form {
-    background: var(--color-bg-main); /* Jemně šedé pozadí pro lištu filtru */
+    display: flex;
+    align-items: center; /* Svisle na střed */
+    gap: 16px;           /* Mezery mezi skupinami */
+    flex-wrap: wrap;     /* Pokud je okno moc úzké, celé skupiny se zalomí */
+
+    /* ... zbytek stylů (background, border...) nech stejný ... */
+    background: var(--color-bg-main);
     padding: 12px 16px;
     border-radius: 8px;
     border: 1px solid var(--color-border-subtle);
     margin-bottom: 24px;
-
-    /* Flexbox pro zarovnání vedle sebe */
-    display: flex;
-    align-items: center; /* Zarovnat svisle na střed */
-    gap: 16px;           /* Mezery mezi prvky */
-    flex-wrap: wrap;     /* Na mobilu se to zalomí */
 }
 .admin-form label {
     display: flex;
@@ -1134,7 +1134,8 @@ table.data tbody tr:hover {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-left: 0; /* ZRUŠENO margin-left: auto -> chceme to hned vedle inputu */
+    margin-left: auto; /* Tímto to "odstrčíme" doprava, pokud je místo */
+    flex-wrap: nowrap; /* Zabráníme tomu, aby se tlačítka roztrhla */
 }
 .admin-link-reset-filter {
     font-size: 13px;

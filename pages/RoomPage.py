@@ -47,27 +47,26 @@ async def rooms_list(
     if role_id not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
         raise HTTPException(status_code=403, detail="Nemáte oprávnění zobrazit pokoje")
 
-    rooms: List[Dict[str, Any]] = room_svc.list_rooms()
-
-    # status_id může být None, "", nebo "1" / "2"...
+    # Zpracování parametrů filtru (převedení na int nebo None)
     filter_status_id: Optional[int] = None
     if status_id not in (None, ""):
         try:
             filter_status_id = int(status_id)
         except ValueError:
-            filter_status_id = None
-        else:
-            rooms = [r for r in rooms if r["room_status_id"] == filter_status_id]
+            pass
 
-    # room_type_id může být None, "", nebo "1" / "2"...
     filter_room_type_id: Optional[int] = None
     if room_type_id not in (None, ""):
         try:
             filter_room_type_id = int(room_type_id)
         except ValueError:
-            filter_room_type_id = None
-        else:
-            rooms = [r for r in rooms if r["room_type_id"] == filter_room_type_id]
+            pass
+
+    # TADY JE TA ZMĚNA: Předáme filtry rovnou do servisu -> repozitáře -> SQL
+    rooms: List[Dict[str, Any]] = room_svc.list_rooms(
+        status_id=filter_status_id,
+        room_type_id=filter_room_type_id
+    )
 
     room_types = room_type_svc.list_room_types()
     statuses = room_status_svc.list_statuses()
@@ -81,12 +80,14 @@ async def rooms_list(
             "rooms": rooms,
             "room_types": room_types,
             "statuses": statuses,
+            # Předáváme zpátky do šablony, aby select zůstal vybraný
             "filter_status_id": filter_status_id,
             "filter_room_type_id": filter_room_type_id,
             "current_user": current_user,
             **flags,
         },
     )
+
 @router.get("/new", name="room_new")
 async def room_new(
     request: Request,

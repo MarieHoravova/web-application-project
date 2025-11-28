@@ -27,31 +27,38 @@ class RoomService:
         return repo_get_by_id(self.conn, room_id)
 
     # ---- LIST ----
-    def list_rooms(self):
-        return repo_list_rooms(self.conn)
+    def list_rooms(self, status_id: Optional[int] = None, room_type_id: Optional[int] = None):
+        return repo_list_rooms(
+            self.conn,
+            filter_status_id=status_id,
+            filter_room_type_id=room_type_id
+        )
 
     def list_available_rooms(
-        self,
-        check_in: str,
-        check_out: str,
-        adults: int,
-        children: int,
+            self,
+            check_in: str,
+            check_out: str,
+            adults: int,
+            children: int,
     ) -> List[Dict[str, Any]]:
         """
         Najde pokoje, které NEMAJÍ žádnou rezervaci překrývající se
         s intervalem [check_in, check_out).
-        Případná kontrola kapacity se dá doplnit podle toho,
-        kde kapacitu v DB ukládáš.
         """
-        total_guests = adults + children
-
-        all_rooms = repo_list_rooms(self.conn)
+        # Tady voláme list_rooms bez filtrů (chceme všechny pro kontrolu dostupnosti)
+        all_rooms = self.list_rooms()
         available_rooms: List[Dict[str, Any]] = []
 
         for room in all_rooms:
-            # Pokud máš v rooms nebo přes JOIN kapacitu, můžeš kontrolovat i ji.
-            # Např.: if "capacity" in room and room["capacity"] < total_guests:
-            #           continue
+            # Kontrola kapacity (pokud ji máš v room_type, je teď dostupná díky JOINu)
+            # room['room_type'] je slovník, takže:
+            room_capacity = 0
+            if room.get('room_type'):
+                room_capacity = room['room_type'].get('capacity', 0)
+
+            # Volitelné: filtrovat podle kapacity
+            # if room_capacity < (adults + children):
+            #    continue
 
             conflicts = repo_find_conflicts(
                 self.conn,
@@ -71,15 +78,14 @@ class RoomService:
     def list_rooms_by_type(self, room_type_id: int):
         return repo_list_by_type(self.conn, room_type_id)
 
-    # ---- CREATE (ADMIN ONLY) ----
     def create_room(
-        self,
-        number: int,
-        room_type_id: int,
-        room_status_id: int,
-        image_path: str,
-        floor: int,
-        current_user_role: int
+            self,
+            number: int,
+            room_type_id: int,
+            room_status_id: int,
+            image_path: str,
+            floor: int,
+            current_user_role: int
     ) -> Dict[str, Any]:
 
         if current_user_role != ROLE_ADMIN:
@@ -96,14 +102,14 @@ class RoomService:
 
     # ---- UPDATE (ADMIN or RECEPCE) ----
     def update_room(
-        self,
-        room_id: int,
-        current_user_role: int,
-        number: Optional[int] = None,
-        room_type_id: Optional[int] = None,
-        room_status_id: Optional[int] = None,
-        image_path: Optional[str] = None,
-        floor: Optional[int] = None
+            self,
+            room_id: int,
+            current_user_role: int,
+            number: Optional[int] = None,
+            room_type_id: Optional[int] = None,
+            room_status_id: Optional[int] = None,
+            image_path: Optional[str] = None,
+            floor: Optional[int] = None
     ) -> Dict[str, Any]:
 
         if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
@@ -136,7 +142,6 @@ class RoomService:
 
         repo_delete_room(self.conn, room_id)
         return True
-
 
 # TEST
 if __name__ == "__main__":
