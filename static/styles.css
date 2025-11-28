@@ -435,8 +435,6 @@ h1 {
     background: white;
     color: var(--color-primary-900);
 }
-
-
 /* pevná šířky sloupců */
 .home-quick-info,
 .home-basic-info {
@@ -524,13 +522,6 @@ h1 {
     color: var(--color-text-main);
 }
 
-/* Galerie */
-.home-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-}
-
 /*MARK: Trochu je zvětším, až tam budu dávat ty obrázky..?*/
 .home-gallery-item {
     background: var(--color-primary-100);
@@ -543,8 +534,7 @@ h1 {
     padding: 20px 0;
     height: 120px;
 }
-
-/* --- RESPONSIVITA (Media Queries) - MOBIL --- */
+/* --- RESPONSIVITA - MOBIL --- */
 @media (max-width: 576px) {
     h1 {
         font-size: 24px;
@@ -587,54 +577,231 @@ h1 {
 }
 
 
-/* KONTAKT */
-/* Mapa – placeholder */
-.contact-map-box {
-    background: var(--color-primary-100);
-    border-radius: 8px;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* GALERIE */
+html {
+    scroll-behavior: smooth; /* zajišťuje plynulé scrolování */
+}
+.gallery-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+.gallery-header {
     text-align: center;
+    max-width: 700px;
+    margin: 0 auto 48px;
+}
+.gallery-header h1 {
+    margin-bottom: 16px;
+}
+.gallery-header p {
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+/* navigace/filtry */
+.gallery-nav {
+    margin-bottom: 60px;
+}
+.gallery-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.gallery-nav a {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: 100px;
+    text-decoration: none;
     font-size: 14px;
+    font-weight: 500;
+
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-main);
+    transition: all 0.2s ease;
+}
+.gallery-nav a:hover {
+    background: var(--color-primary-100);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-700);
+    transform: translateY(-2px);
+}
+.gallery-section {
+    margin-bottom: 80px;
+    scroll-margin-top: 100px; /* aby nadpis nezajel pod fixní menu při kliknutí */
+}
+.home-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.gallery-section-header {
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding-bottom: 16px;
+}
+.gallery-section h2 {
+    font-size: 24px;
+    color: var(--color-primary-900);
+    margin: 0 0 8px 0;
+}
+.gallery-section p {
+    color: var(--color-text-muted);
+    margin: 0;
+    font-size: 15px;
+}
+/* --- SCROLLER SYSTÉM pro galerii --- */
+.gallery-scroller {
+    display: flex;
+    overflow-x: auto;           /* Povolí scrollování do boku */
+    gap: 24px;
+    padding: 4px 4px 24px 4px;
+    scroll-snap-type: x mandatory; /* "Snap" efekt - při scrollování se to hezky "přichytí" k kartě */
+    scrollbar-width: none;  /* Skrytí scrollbaru*/
+}
+/* GRID – 3 obrázky vedle sebe */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+.gallery-item {
+    flex: 0 0 320px;            /* Fixní šířka karty */
+    scroll-snap-align: start;   /* Karta se při zastavení scrollování zarovná vlevo, nebude vidět "napůl" */
+    margin: 0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 12px;
+    overflow: hidden; /* kdyby ten obr byl větší */
+
+    /* Stíny jako na HP */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+.gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
+                0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+/* Obal na obrázek (pro zachování poměru stran) */
+.gallery-img-wrapper {
+    width: 100%;
+    height: 200px;
+    background: var(--color-primary-100);
+}
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* Popisek pod obrázkem */
+.gallery-item figcaption {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px solid var(--color-border-subtle);
+}
+.gallery-item figcaption strong {
+    font-size: 16px;
+    color: var(--color-text-main);
+    font-weight: 600;
+}
+.gallery-item figcaption span {
+    font-size: 13px;
     color: var(--color-text-muted);
 }
-
-.contact-intro {
-    margin: 0 auto 20px auto;
+/* Responsivita */
+@media (max-width: 600px) {
+    .gallery-item {
+        flex: 0 0 280px; /* Užší karty na mobilu */
+    }
 }
 
+/* --- KONTAKT PAGE --- */
+.contact-intro {
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+/* První řádek - karty s info */
 .contact-top-row {
     justify-content: center;
+    margin-bottom: 32px;
 }
-
-.contact-card {
-    flex: 0 1 320px;  /* dvě hezky široké karty */
-    font-size: 14px;
-}
+.contact-card,
 .contact-card-address {
-    flex: 0 1 200px;  /* dvě hezky široké karty */
-    font-size: 14px;
+    flex: 0 1 320px; /* Karty mají fixní šířku, ale mohou se zmenšit */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .contact-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--color-text-main);
 }
-.contact-list li {
-    margin-bottom: 4px;
+.contact-form-row {
+    display: flex;
+    justify-content: center;
+}
+.contact-page .home-contact {
+    flex: 0 1 600px;
+    width: 100%;
+}
+.home-contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.home-contact-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-main);
+    gap: 6px;
+}
+.home-contact-form input,
+.home-contact-form textarea {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--color-bg-main);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.home-contact-form input:focus,
+.home-contact-form textarea:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    background: var(--color-primary-white);
+    box-shadow: 0 0 0 3px var(--color-primary-100); /* Focus ring efekt */
 }
 
+
+
+
 /* Kontaktní formulář, auth formulář */
-.home-contact-form,
 .auth-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.home-contact-form label,
 .auth-form label {
     display: flex;
     flex-direction: column;
@@ -643,8 +810,6 @@ h1 {
     gap: 4px;
 }
 
-.home-contact-form input,
-.home-contact-form textarea,
 .auth-form input,
 .auth-form textarea {
     padding: 8px 10px;
@@ -654,120 +819,11 @@ h1 {
     font-size: 14px;
 }
 
-.home-contact-form input:focus,
-.home-contact-form textarea:focus,
 .auth-form input:focus,
 .auth-form textarea:focus {
     outline: none; /* vypnu default */
     border-color: var(--color-primary-500); /* dám vlastní zvýraznění */
 }
-/* GALERIE – layout*/
-.gallery-page {
-    max-width: 1200px;
-    margin: 0 auto 40px;
-    padding: 24px 24px 0;
-}
-
-/* navigace – záložky místo odrážek */
-.gallery-nav {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-}
-
-.gallery-nav ul {
-    list-style: none;     /* zruší tečky */
-    margin: 0;
-    padding: 0 0 8px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.gallery-nav a {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 14px;
-    text-decoration: none;
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border-subtle);
-    color: var(--color-text-main);
-}
-
-.gallery-nav a:hover {
-    background: var(--color-primary-100);
-    border-color: var(--color-primary-500);
-    color: var(--color-primary-700);
-}
-
-/* jednotlivé sekce galerie jako „karty“ */
-.gallery-section {
-    margin-top: 24px;
-    background: var(--color-bg-card);
-    border-radius: 10px;
-    border: 1px solid var(--color-border-subtle);
-    padding: 16px 20px 20px;
-}
-
-.gallery-section h2 {
-    margin: 0 0 6px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-primary-900);
-}
-
-.gallery-section-intro {
-    margin: 0 0 16px 0;
-    font-size: 14px;
-    color: var(--color-text-muted);
-    max-width: 60ch;
-}
-
-/* GRID – 3 obrázky vedle sebe */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));  /* 3 sloupce */
-    gap: 16px;
-}
-
-/* styl položek */
-.gallery-item {
-    border-radius: 10px;
-    border: 1px solid var(--color-border-subtle);
-}
-
-.gallery-item img {
-    display: block;
-    width: 100%;
-    height: 180px;
-    object-fit: cover;   /* zajistí mi výřez obrázku, ne deformaci */
-}
-
-.gallery-item figcaption {
-    padding: 8px 10px;
-    font-size: 13px;
-    color: var(--color-text-main);
-}
-
-/*!* Nice to have *!*/
-/*@media (max-width: 900px) {*/
-/*    .gallery-page {*/
-/*        padding: 16px;*/
-/*    }*/
-
-/*    .gallery-grid {*/
-/*        grid-template-columns: repeat(2, minmax(0, 1fr));*/
-/*    }*/
-/*}*/
-
-/*@media (max-width: 600px) {*/
-/*    .gallery-grid {*/
-/*        grid-template-columns: 1fr;*/
-/*    }*/
-/*}*/
-
 
 /* NICE TO HAVE */
 

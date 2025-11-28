@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Galerie hotelu{% endblock %}
 
 {% block content %}
 <section class="gallery-page">
+
   <div class="gallery-header">
     <h1>Galerie hotelu</h1>
     <p>
@@ -11,106 +12,181 @@
     </p>
   </div>
 
-  <!-- MARK: Kategorie / "filtry" -->
   <nav class="gallery-nav">
     <ul>
       <li><a href="#gallery-rooms">Pokoje</a></li>
       <li><a href="#gallery-restaurant">Restaurace</a></li>
-      <li><a href="#gallery-lobby">Lobby & společné prostory</a></li>
-      <li><a href="#gallery-surroundings">Okolí hotelu</a></li>
+      <li><a href="#gallery-lobby">Společné prostory</a></li>
+      <li><a href="#gallery-surroundings">Okolí</a></li>
     </ul>
   </nav>
 
-  <!-- Pokoje -->
   <section id="gallery-rooms" class="gallery-section">
-    <h2>Pokoje</h2>
-    <p class="gallery-section-intro">
-      Nabízíme útulné pokoje pro dvě osoby i rodinné apartmány. Všechny mají vlastní koupelnu, Wi-Fi a pohodlné matrace.
-    </p>
+    <div class="gallery-section-header">
+      <h2>Pokoje</h2>
+      <p>Nabízíme útulné pokoje pro dvě osoby i rodinné apartmány.</p>
+    </div>
 
-    <div class="gallery-grid">
+    <div class="gallery-scroller">
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Pokoj+Standard" alt="Dvoulůžkový pokoj Standard">
-        <figcaption>Pokoj Standard – dvoulůžkový</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Standard+1" alt="Pokoj Standard">
+        </div>
+        <figcaption>
+            <strong>Pokoj Standard</strong>
+            <span>Dvoulůžkový s výhledem do dvora</span>
+        </figcaption>
       </figure>
+
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Pokoj+Family" alt="Rodinný pokoj se dvěma ložnicemi">
-        <figcaption>Rodinný pokoj se dvěma ložnicemi</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Standard+Plus" alt="Pokoj Standard Plus">
+        </div>
+        <figcaption>
+            <strong>Standard Plus</strong>
+            <span>Dvoulůžkový s balkonem</span>
+        </figcaption>
       </figure>
+
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Pokoj+Detail" alt="Detail postele a pracovního stolu">
-        <figcaption>Detail pokoje – pracovní stůl a posezení</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Family" alt="Rodinný pokoj">
+        </div>
+        <figcaption>
+            <strong>Rodinný apartmán</strong>
+            <span>Dvě oddělené ložnice</span>
+        </figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Superior" alt="Pokoj Superior">
+        </div>
+        <figcaption>
+            <strong>Superior Suite</strong>
+            <span>Luxusní vybavení a vana</span>
+        </figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Detail" alt="Detail">
+        </div>
+        <figcaption>
+            <strong>Detail vybavení</strong>
+            <span>Pracovní kout a Wi-Fi</span>
+        </figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- Restaurace / snídaně -->
   <section id="gallery-restaurant" class="gallery-section">
-    <h2>Restaurace a snídaně</h2>
-    <p class="gallery-section-intro">
-      Ráno podáváme snídani formou bufetu, během dne je k dispozici lehké občerstvení a káva.
-    </p>
-
-    <div class="gallery-grid">
+    <div class="gallery-section-header">
+      <h2>Restaurace a snídaně</h2>
+      <p>Snídaně formou bufetu a celodenní káva.</p>
+    </div>
+    <div class="gallery-scroller">
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Restaurace" alt="Restaurace hotelu">
-        <figcaption>Restaurace s denním světlem</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Restaurace" alt="Restaurace">
+        </div>
+        <figcaption>
+            <strong>Restaurace</strong>
+            <span>Prostor s denním světlem</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Snídaně" alt="Snídaňový bufet">
-        <figcaption>Snídaňový bufet – sladké i slané</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Bufet" alt="Snídaně">
+        </div>
+        <figcaption>
+            <strong>Snídaňový bufet</strong>
+            <span>Sladké i slané variace</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Kavarna" alt="Šálek kávy na stole">
-        <figcaption>Káva a drobné občerstvení během dne</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Káva" alt="Káva">
+        </div>
+        <figcaption>
+            <strong>Lobby bar</strong>
+            <span>Káva a drobné občerstvení</span>
+        </figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- Lobby & společné prostory -->
   <section id="gallery-lobby" class="gallery-section">
-    <h2>Lobby a společné prostory</h2>
-    <p class="gallery-section-intro">
-      V lobby najdete pohodlné posezení, recepci 24/7 a malý koutek na práci s Wi-Fi.
-    </p>
-
-    <div class="gallery-grid">
+    <div class="gallery-section-header">
+      <h2>Lobby a společné prostory</h2>
+      <p>V lobby najdete pohodlné posezení, recepci 24/7 a malý koutek na práci.</p>
+    </div>
+    <div class="gallery-scroller">
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Lobby" alt="Hotelové lobby s posezením">
-        <figcaption>Lobby – místo pro krátké setkání nebo čekání</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Lobby" alt="Lobby">
+        </div>
+        <figcaption>
+            <strong>Lobby</strong>
+            <span>Místo pro setkání</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Recepce" alt="Recepce hotelu">
-        <figcaption>Recepce hotelu Aurora – k dispozici 24/7</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Recepce" alt="Recepce">
+        </div>
+        <figcaption>
+            <strong>Recepce</strong>
+            <span>K dispozici 24/7</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Spolecna+zona" alt="Společná zóna pro hosty">
-        <figcaption>Společná zóna pro práci i odpočinek</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Work" alt="Práce">
+        </div>
+        <figcaption>
+            <strong>Co-working</strong>
+            <span>Klidná zóna na práci</span>
+        </figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- Okolí -->
   <section id="gallery-surroundings" class="gallery-section">
-    <h2>Okolí hotelu</h2>
-    <p class="gallery-section-intro">
-      Hotel se nachází v klidné části Prahy s dobrou dostupností do centra i na letiště.
-    </p>
-
-    <div class="gallery-grid">
+    <div class="gallery-section-header">
+      <h2>Okolí hotelu</h2>
+      <p>Klidná část Prahy s dobrou dostupností do centra.</p>
+    </div>
+    <div class="gallery-scroller">
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Mesto" alt="Ulice v okolí hotelu">
-        <figcaption>Ulice v okolí hotelu – kavárny a obchody</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Město" alt="Město">
+        </div>
+        <figcaption>
+            <strong>Okolí</strong>
+            <span>Kavárny a obchody v ulici</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Park" alt="Park v blízkosti hotelu">
-        <figcaption>Park pár minut chůze od hotelu</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Park" alt="Park">
+        </div>
+        <figcaption>
+            <strong>Park</strong>
+            <span>Příroda 5 minut chůze</span>
+        </figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="https://placehold.co/800x500?text=Doprava" alt="Zastávka MHD">
-        <figcaption>Zastávka MHD nedaleko hotelu</figcaption>
+        <div class="gallery-img-wrapper">
+            <img src="https://placehold.co/800x600/F4F6FB/111827?text=MHD" alt="MHD">
+        </div>
+        <figcaption>
+            <strong>Doprava</strong>
+            <span>Zastávka tramvaje u hotelu</span>
+        </figcaption>
       </figure>
     </div>
   </section>
+
 </section>
 {% endblock %}

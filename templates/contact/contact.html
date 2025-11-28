@@ -4,23 +4,25 @@
 {% block content %}
 <section class="contact-page">
   <div class="home-container">
+
     {% if message_sent %}
       <div class="home-alert">Děkujeme za zprávu, brzy se vám ozveme.</div>
     {% endif %}
 
-    <h1>Kontakt</h1>
-    <p class="contact-intro">
-      Máte dotaz k rezervaci nebo pobytu? Ozvěte se nám telefonicky, e-mailem nebo využijte kontaktní formulář.
-      Hotel Aurora najdete v centru Prahy s dobrou dostupností MHD i autem.
-    </p>
+    <div style="text-align: center; max-width: 700px; margin: 0 auto 40px;">
+        <h1>Kontakt</h1>
+        <p class="contact-intro">
+          Máte dotaz k rezervaci nebo pobytu? Ozvěte se nám telefonicky, e-mailem nebo využijte kontaktní formulář níže.
+          Hotel Aurora najdete v centru Prahy s dobrou dostupností MHD i autem.
+        </p>
+    </div>
 
-    <!-- 1. řádek: Kontaktní údaje + Adresa -->
     <div class="home-row contact-top-row">
       <div class="home-card contact-card">
         <h2 class="home-card-title">Kontaktní údaje</h2>
         <ul class="contact-list">
-          <li><strong>Telefon:</strong> +420 123 456 789</li>
-          <li><strong>E-mail:</strong> recepce@hotel-aurora.cz</li>
+          <li><strong>Telefon:</strong> <a href="tel:+420123456789" style="color: inherit; text-decoration: none;">+420 123 456 789</a></li>
+          <li><strong>E-mail:</strong> <a href="mailto:recepce@hotel-aurora.cz" style="color: inherit; text-decoration: none;">recepce@hotel-aurora.cz</a></li>
           <li><strong>Recepce:</strong> denně 24/7</li>
         </ul>
       </div>
@@ -33,19 +35,10 @@
               <li>110 00 Praha 1</li>
               <li>Česká republika</li>
           </ul>
-
       </div>
     </div>
 
-    <!-- 2. řádek: mapa + formulář (jako dřív) -->
-    <div class="home-row">
-      <div class="home-card home-map">
-        <h2 class="home-card-title">Kde nás najdete</h2>
-        <div class="contact-map-box">
-          Mapa hotelu – později sem vložíme mapu (např. Google Maps).
-        </div>
-      </div>
-
+    <div class="contact-form-row">
       <div class="home-card home-contact">
         <h2 class="home-card-title">Máte dotazy? Napište nám</h2>
         <form class="home-contact-form" method="post" action="{{ url_for('contact_submit') }}">
@@ -59,12 +52,13 @@
           </label>
           <label>
             Zpráva
-            <textarea name="message" rows="4" placeholder="Jak vám můžeme pomoci?" required></textarea>
+            <textarea name="message" rows="5" placeholder="Jak vám můžeme pomoci?" required></textarea>
           </label>
-          <button type="submit" class="btn btn-primary">Odeslat</button>
+          <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Odeslat zprávu</button>
         </form>
       </div>
     </div>
+
   </div>
 </section>
 {% endblock %}
