@@ -11,9 +11,9 @@
     {% if is_admin %}
       <form method="post"
             action="{{ url_for('room_type_delete', room_type_id=room_type.id) }}"
-            onsubmit="return confirm('Opravdu chcete smazat tento typ pokoje? Pozor: Pokud existují pokoje tohoto typu, smazání může být zamítnuto.');"
+            onsubmit="return confirm('Opravdu chcete smazat tento typ pokoje?');"
             style="margin:0">
-        <button type="submit" class="btn btn-destructive">Smazat</button>
+        <button type="submit" class="btn btn-destructive">Smazat typ</button>
       </form>
     {% endif %}
   </div>
