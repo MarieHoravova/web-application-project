@@ -8,10 +8,17 @@
         <h1 style="margin: 0 0 4px 0;">Upravit typ: {{ room_type.name }}</h1>
     </div>
 
-    {# Zde by případně mohlo být tlačítko pro smazání, pokud ho pro typy pokojů máš #}
+    {% if is_admin %}
+      <form method="post"
+            action="{{ url_for('room_type_delete', room_type_id=room_type.id) }}"
+            onsubmit="return confirm('Opravdu chcete smazat tento typ pokoje? Pozor: Pokud existují pokoje tohoto typu, smazání může být zamítnuto.');"
+            style="margin:0">
+        <button type="submit" class="btn btn-destructive">Smazat</button>
+      </form>
+    {% endif %}
   </div>
 
-  <div class="form-card">
+  <div class="detail-card">
     <form method="post" action="{{ url_for('room_type_update', room_type_id=room_type.id) }}">
       <div class="detail-grid">
 

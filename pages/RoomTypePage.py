@@ -208,3 +208,35 @@ async def room_type_update(
         url=request.url_for("room_types_list"),
         status_code=303,
     )
+
+@router.post("/{room_type_id}/delete", name="room_type_delete")
+async def room_type_delete(
+    room_type_id: int,
+    request: Request,
+    room_type_svc: RoomTypeService = Depends(room_type_service),
+    current_user=Depends(get_current_user),
+):
+    if isinstance(current_user, RedirectResponse):
+        return current_user
+
+    flags = _profile_role_flags(current_user)
+    if not flags["is_admin"]:
+        raise HTTPException(status_code=403, detail="Pouze admin může spravovat typy pokojů")
+
+    try:
+        room_type_svc.delete_room_type(
+            room_type_id=room_type_id,
+            current_user_role=current_user["role_id"],
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        msg = str(e)
+        # Klasický pattern: 404 pro "neexistuje", jinak 400 (např. FK problém)
+        status_code = 404 if "neexistuje" in msg else 400
+        raise HTTPException(status_code=status_code, detail=msg)
+
+    return RedirectResponse(
+        url=request.url_for("room_types_list"),
+        status_code=303,
+    )
