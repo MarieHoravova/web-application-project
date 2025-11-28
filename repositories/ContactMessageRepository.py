@@ -19,9 +19,16 @@ def get_contact_message_by_id(conn: sqlite3.Connection, msg_id: int) -> Optional
     ).fetchone()
     return dict(row) if row else None
 
-
-def list_contact_messages(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-    rows = conn.execute(
-        "SELECT * FROM contact_messages ORDER BY created_at DESC"
-    ).fetchall()
+# Parametr name pro potřeby filtrování podle jména v list messages (admin, recepční)
+def list_contact_messages(conn: sqlite3.Connection, name: Optional[str] = None) -> List[Dict[str, Any]]:
+    if name:
+        like_value = f"%{name.strip()}%"
+        rows = conn.execute(
+            "SELECT * FROM contact_messages WHERE name LIKE ? ORDER BY created_at DESC",
+            (like_value,)
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM contact_messages ORDER BY created_at DESC"
+        ).fetchall()
     return [dict(r) for r in rows]

@@ -21,7 +21,7 @@ class ContactMessageService:
     def get_contact_message_by_id(self, msg_id: int) -> Optional[Dict[str, Any]]:
         return repo_get_contact_message_by_id(self.conn, msg_id)
 
-    def list_contact_messages(self, current_user_role: int) -> List[Dict[str, Any]]:
+    def list_contact_messages(self, current_user_role: int, name: Optional[str] = None) -> List[Dict[str, Any]]:
         if current_user_role not in (ROLE_ADMIN, ROLE_RECEPTIONIST):
             raise PermissionError("Pouze admin nebo recepce mohou zobrazit zprávy z kontaktu")
-        return repo_list_contact_messages(self.conn)
+        return repo_list_contact_messages(self.conn, name=name)

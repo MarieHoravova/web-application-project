@@ -1,0 +1,38 @@
+{% extends "profile/profile_base.html" %}
+{% block title %}Zpráva #{{ message.id }}{% endblock %}
+
+{% block profile_content %}
+  <div class="admin-detail-header">
+    <h2>Zpráva #{{ message.id }}</h2>
+  </div>
+
+  <div class="admin-detail">
+    <div class="admin-detail-grid">
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Jméno</div>
+        <div class="admin-detail-value">{{ message.name }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">E-mail</div>
+        <div class="admin-detail-value">{{ message.email }}</div>
+      </div>
+
+      <div class="admin-detail-item">
+        <div class="admin-detail-label">Vytvořeno</div>
+        <div class="admin-detail-value">{{ message.created_at }}</div>
+      </div>
+    </div>
+
+    <div class="admin-detail-item">
+      <div class="admin-detail-label">Zpráva</div>
+      <div class="admin-detail-value">
+        <pre>{{ message.message }}</pre>
+      </div>
+    </div>
+
+    <div class="admin-detail-back">
+      <a href="{{ url_for('contact_messages_list') }}" class="btn btn-tertiary">Zpět na seznam zpráv</a>
+    </div>
+  </div>
+{% endblock %}
