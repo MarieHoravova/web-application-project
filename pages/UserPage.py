@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, Form, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
 from services.UserService import UserService
@@ -32,10 +32,11 @@ def _get_user_detail_for_view(target_user_id: int, current_user, user_svc: UserS
     return user, is_owner, can_edit
 
 
+
 @router.get("/", name="users_list")
 async def users_list(
     request: Request,
-    role_id: Optional[int] = None,
+    role_id: Optional[str] = Query(default=None),
     user_svc: UserService = Depends(user_service),
     role_svc: RoleService = Depends(role_service),
     current_user = Depends(get_current_user),
@@ -51,13 +52,24 @@ async def users_list(
     roles: List[Dict[str, Any]] = []
 
     if current_role == ROLE_ADMIN:
-        if role_id is not None:
+        # role_id může být:
+        # - None (parametr vůbec nepřišel)
+        # - "" (uživatel vybral "-- všechny role --")
+        # - "1", "2", ... (konkrétní role)
+        if role_id not in (None, ""):
             try:
-                users = user_svc.list_users_by_role(role_id, current_user_role=ROLE_ADMIN)
-                filter_role_id = role_id
-            except PermissionError as e:
-                raise HTTPException(status_code=403, detail=str(e))
+                role_id_int = int(role_id)
+            except ValueError:
+                # když je tam bordel, prostě ignoruj filtr
+                users = user_svc.list_users(current_user_role=ROLE_ADMIN)
+            else:
+                try:
+                    users = user_svc.list_users_by_role(role_id_int, current_user_role=ROLE_ADMIN)
+                    filter_role_id = role_id_int
+                except PermissionError as e:
+                    raise HTTPException(status_code=403, detail=str(e))
         else:
+            # žádný filtr → všechny role
             users = user_svc.list_users(current_user_role=ROLE_ADMIN)
 
         roles = role_svc.list_roles()

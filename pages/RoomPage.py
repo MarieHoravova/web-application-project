@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, Form, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from starlette import status
 
@@ -26,11 +26,13 @@ def _profile_role_flags(current_user: dict) -> dict:
     }
 
 
+
+
 @router.get("/", name="rooms_list")
 async def rooms_list(
     request: Request,
-    status_id: Optional[int] = None,
-    room_type_id: Optional[int] = None,
+    status_id: Optional[str] = Query(default=None),
+    room_type_id: Optional[str] = Query(default=None),
     room_svc: RoomService = Depends(room_service),
     room_type_svc: RoomTypeService = Depends(room_type_service),
     room_status_svc: RoomStatusService = Depends(room_status_service),
@@ -47,11 +49,25 @@ async def rooms_list(
 
     rooms: List[Dict[str, Any]] = room_svc.list_rooms()
 
-    if status_id is not None:
-        rooms = [r for r in rooms if r["room_status_id"] == status_id]
+    # status_id může být None, "", nebo "1" / "2"...
+    filter_status_id: Optional[int] = None
+    if status_id not in (None, ""):
+        try:
+            filter_status_id = int(status_id)
+        except ValueError:
+            filter_status_id = None
+        else:
+            rooms = [r for r in rooms if r["room_status_id"] == filter_status_id]
 
-    if room_type_id is not None:
-        rooms = [r for r in rooms if r["room_type_id"] == room_type_id]
+    # room_type_id může být None, "", nebo "1" / "2"...
+    filter_room_type_id: Optional[int] = None
+    if room_type_id not in (None, ""):
+        try:
+            filter_room_type_id = int(room_type_id)
+        except ValueError:
+            filter_room_type_id = None
+        else:
+            rooms = [r for r in rooms if r["room_type_id"] == filter_room_type_id]
 
     room_types = room_type_svc.list_room_types()
     statuses = room_status_svc.list_statuses()
@@ -65,8 +81,8 @@ async def rooms_list(
             "rooms": rooms,
             "room_types": room_types,
             "statuses": statuses,
-            "filter_status_id": status_id,
-            "filter_room_type_id": room_type_id,
+            "filter_status_id": filter_status_id,
+            "filter_room_type_id": filter_room_type_id,
             "current_user": current_user,
             **flags,
         },

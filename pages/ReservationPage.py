@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, Form, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from starlette import status
 
@@ -27,7 +27,7 @@ def _profile_role_flags(current_user: dict) -> dict:
 @router.get("/", name="reservations_list")
 async def reservations_list(
     request: Request,
-    user_id: Optional[int] = None,
+    user_id: Optional[str] = Query(default=None),
     svc: ReservationService = Depends(reservation_service),
     current_user = Depends(get_current_user),
 ):
@@ -37,20 +37,33 @@ async def reservations_list(
     flags = _profile_role_flags(current_user)
     current_user_id = current_user["id"]
 
+    # zákazník vidí jen své rezervace, žádné filtrování
     if flags["is_customer"]:
         reservations: List[Dict[str, Any]] = svc.list_reservations_by_user(current_user_id)
-        filter_user_id = current_user_id
+        filter_user_id: Optional[int] = current_user_id
+
     else:
-        if user_id is not None:
-            reservations = svc.list_reservations_by_user(user_id)
-            filter_user_id = user_id
+        # user_id může být:
+        # - None (parametr vůbec nepřišel)
+        # - "" (vybráno "-- všichni uživatelé --")
+        # - "76", "5", ... (konkrétní uživatel)
+        if user_id not in (None, ""):
+            try:
+                user_id_int = int(user_id)
+            except ValueError:
+                # rozbitý vstup -> ignorujeme filtr, zobrazíme vše
+                reservations = svc.list_reservations()
+                filter_user_id = None
+            else:
+                reservations = svc.list_reservations_by_user(user_id_int)
+                filter_user_id = user_id_int
         else:
             reservations = svc.list_reservations()
             filter_user_id = None
 
     tpl = request.app.state.templates
     return tpl.TemplateResponse(
-        "reservations/reservation_list.html",  # <<< tady PLURAL složka
+        "reservations/reservation_list.html",
         {
             "request": request,
             "title": "Seznam rezervací",

@@ -2,21 +2,75 @@ import sqlite3
 from typing import List, Dict, Any, Optional
 
 
+def _map_reservation_with_user(row: sqlite3.Row) -> Dict[str, Any]:
+    """
+    Pomocná funkce, která vezme řádek z databáze (kde je udělaný JOIN)
+    a vytvoří slovník, který má v sobě vnořený slovník 'user'.
+    Díky tomu bude v HTML fungovat {{ r.user.first_name }}.
+    """
+    if not row:
+        return None
+
+    item = dict(row)
+
+    # Pokud jsme v SQL vytáhli i jméno uživatele (díky JOINu),
+    # vytvoříme vnořený objekt 'user'
+    # Kontrolujeme, jestli klíč 'first_name' v řádku vůbec existuje
+    if 'first_name' in item and item['first_name'] is not None:
+        item['user'] = {
+            'id': item['user_id'],
+            'first_name': item['first_name'],
+            'last_name': item['last_name'],
+            'email': item.get('email')  # email může být volitelný
+        }
+    else:
+        item['user'] = None
+
+    return item
 def get_reservation_by_id(conn: sqlite3.Connection, reservation_id: int) -> Optional[Dict[str, Any]]:
-    row = conn.execute("SELECT * FROM reservations WHERE id = ?", (reservation_id,)).fetchone()
-    return dict(row) if row else None
+    # UPRAVENO: Přidán JOIN, abychom měli detail uživatele i v detailu rezervace
+    query = """
+        SELECT r.*, u.first_name, u.last_name, u.email FROM reservations r 
+        LEFT JOIN users u ON r.user_id = u.id WHERE r.id = ?
+    """
+    row = conn.execute(query, (reservation_id,)).fetchone()
+    return _map_reservation_with_user(row)
 
 def get_reservation_by_code(conn: sqlite3.Connection, code: str) -> Optional[Dict[str, Any]]:
-    row = conn.execute("SELECT * FROM reservations WHERE code = ?", (code,)).fetchone()
-    return dict(row) if row else None
+    # UPRAVENO: Přidán JOIN
+    query = """
+        SELECT r.*, u.first_name, u.last_name, u.email
+        FROM reservations r
+        LEFT JOIN users u ON r.user_id = u.id
+        WHERE r.code = ?
+    """
+    row = conn.execute(query, (code,)).fetchone()
+    return _map_reservation_with_user(row)
+
 
 def list_reservations(conn: sqlite3.Connection) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM reservations ORDER BY created_at DESC").fetchall()
-    return [dict(r) for r in rows]
+    # --- HLAVNÍ ZMĚNA ZDE ---
+    # Místo pouhého SELECT * FROM reservations děláme JOIN s tabulkou users.
+    # "LEFT JOIN" znamená: vezmi rezervaci a pokud k ní existuje uživatel, přilep ho.
+    query = """ SELECT r.*, u.first_name, u.last_name, u.email
+                FROM reservations r LEFT JOIN users u ON r.user_id = u.id
+                ORDER BY r.created_at DESC \
+            """
+    rows = conn.execute(query).fetchall()
+
+    # Použijeme pomocnou funkci pro naformátování každého řádku
+    return [_map_reservation_with_user(r) for r in rows]
 
 def list_reservations_by_user(conn: sqlite3.Connection, user_id: int) -> List[Dict[str, Any]]:
-    rows = conn.execute("SELECT * FROM reservations WHERE user_id = ? ORDER BY created_at DESC", (user_id,)).fetchall()
-    return [dict(r) for r in rows]
+    # Tady JOIN nepotřebujeme nutně, protože víme, čí to jsou rezervace,
+    # ale pro konzistenci ho tam můžeme dát (kdybychom chtěli vypsat jméno i tady).
+    query = """ SELECT r.*, u.first_name, u.last_name, u.email FROM reservations r
+                LEFT JOIN users u ON r.user_id = u.id
+                WHERE r.user_id = ? 
+                ORDER BY r.created_at DESC
+            """
+    rows = conn.execute(query, (user_id,)).fetchall()
+    return [_map_reservation_with_user(r) for r in rows]
 
 def create_reservation(conn: sqlite3.Connection, user_id: int, code: str, status_id: int) -> Dict[str, Any]:
     cur = conn.execute(
