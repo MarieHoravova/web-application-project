@@ -26,6 +26,13 @@
     <h2>Pokoje</h2>
     <p>Nabízíme útulné pokoje pro dvě osoby i rodinné apartmány.</p>
   </div>
+    {% set description_translations = {
+      'Comfortable room for 2 guests.': 'Pohodlný pokoj pro 2 hosty',
+      'Larger room with additional amenities.': 'Prostornější pokoj s dodatečným vybavením',
+      'High-end room with luxurious furnishings.': 'Luxusní pokoj s nadstandardním vybavením',
+      'Spacious room suitable for families.': 'Prostorný pokoj ideální pro rodiny',
+      'Premium suite with separate living area.': 'Prémiové apartmá se samostatnou obývací částí'
+    } %}
 
   <div class="gallery-scroller">
     {% for room_type in rooms %}
@@ -35,14 +42,12 @@
         </div>
         <figcaption>
           <strong>{{ room_type.name }}</strong>
-          <span>{{ room_type.description|default("Popis zatím není k dispozici.") }}</span>
+          <span>{{ description_translations.get(room_type.description, room_type.description) }}</span>
         </figcaption>
       </figure>
     {% endfor %}
   </div>
 </section>
-
-    /img/room_images/superior_room.png
 
   <section id="gallery-restaurant" class="gallery-section">
     <div class="gallery-section-header">
@@ -52,29 +57,29 @@
     <div class="gallery-scroller">
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Restaurace" alt="Restaurace">
+            <img src="/img/restaurant/restaurant.png" alt="Restaurace">
         </div>
         <figcaption>
             <strong>Restaurace</strong>
-            <span>Prostor s denním světlem</span>
+            <span>Klidné prostředí pro snídaně i večeře</span>
         </figcaption>
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Bufet" alt="Snídaně">
+            <img src="/img/restaurant/breakfast.png" alt="Snídaně">
         </div>
         <figcaption>
             <strong>Snídaňový bufet</strong>
-            <span>Sladké i slané variace</span>
+            <span>Teplé i studené speciality každé ráno</span>
         </figcaption>
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/FFF5E6/D4A857?text=Káva" alt="Káva">
+            <img src="/img/restaurant/buffet.png" alt="Bufet">
         </div>
         <figcaption>
             <strong>Lobby bar</strong>
-            <span>Káva a drobné občerstvení</span>
+            <span>Káva, nápoje a lehké občerstvení po celý den</span>
         </figcaption>
       </figure>
     </div>
@@ -83,12 +88,12 @@
   <section id="gallery-lobby" class="gallery-section">
     <div class="gallery-section-header">
       <h2>Lobby a společné prostory</h2>
-      <p>V lobby najdete pohodlné posezení, recepci 24/7 a malý koutek na práci.</p>
+      <p>polečné prostory pro setkání, odpočinek i práci, s recepcí dostupnou 24 hodin denně.</p>
     </div>
     <div class="gallery-scroller">
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Lobby" alt="Lobby">
+            <img src="/img/hotel_premises/lobby.png" alt="Lobby">
         </div>
         <figcaption>
             <strong>Lobby</strong>
@@ -97,20 +102,20 @@
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Recepce" alt="Recepce">
+            <img src="/img/hotel_premises/reception.png" alt="Recepce">
         </div>
         <figcaption>
             <strong>Recepce</strong>
-            <span>K dispozici 24/7</span>
+            <span>24 hodin denně</span>
         </figcaption>
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Work" alt="Práce">
+            <img src="/img/hotel_premises/rest_room.png" alt="Rest">
         </div>
         <figcaption>
-            <strong>Co-working</strong>
-            <span>Klidná zóna na práci</span>
+            <strong>Rest_room</strong>
+            <span>Klidné místo k relaxu</span>
         </figcaption>
       </figure>
     </div>
@@ -124,29 +129,29 @@
     <div class="gallery-scroller">
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Město" alt="Město">
+            <img src="/img/surroundings/hotel.png" alt="Město">
         </div>
         <figcaption>
             <strong>Okolí</strong>
-            <span>Kavárny a obchody v ulici</span>
+            <span>Rezidenční část Prahy u hotelu</span>
         </figcaption>
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=Park" alt="Park">
+            <img src="/img/surroundings/park.png" alt="Park">
         </div>
         <figcaption>
             <strong>Park</strong>
-            <span>Příroda 5 minut chůze</span>
+            <span>Zeleň a klid jen pár minut pěšky</span>
         </figcaption>
       </figure>
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/F4F6FB/111827?text=MHD" alt="MHD">
+            <img src="/img/surroundings/road.png" alt="road">
         </div>
         <figcaption>
-            <strong>Doprava</strong>
-            <span>Zastávka tramvaje u hotelu</span>
+            <strong>Ulice</strong>
+            <span>Příjemné okolí vhodné na procházky</span>
         </figcaption>
       </figure>
     </div>
