@@ -21,64 +21,28 @@
     </ul>
   </nav>
 
-  <section id="gallery-rooms" class="gallery-section">
-    <div class="gallery-section-header">
-      <h2>Pokoje</h2>
-      <p>Nabízíme útulné pokoje pro dvě osoby i rodinné apartmány.</p>
-    </div>
+<section id="gallery-rooms" class="gallery-section">
+  <div class="gallery-section-header">
+    <h2>Pokoje</h2>
+    <p>Nabízíme útulné pokoje pro dvě osoby i rodinné apartmány.</p>
+  </div>
 
-    <div class="gallery-scroller">
+  <div class="gallery-scroller">
+    {% for room_type in rooms %}
       <figure class="gallery-item">
         <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Standard+1" alt="Pokoj Standard">
+          <img src="{{ room_type.image }}" alt="{{ room_type.name }}">
         </div>
         <figcaption>
-            <strong>Pokoj Standard</strong>
-            <span>Dvoulůžkový s výhledem do dvora</span>
+          <strong>{{ room_type.name }}</strong>
+          <span>{{ room_type.description|default("Popis zatím není k dispozici.") }}</span>
         </figcaption>
       </figure>
+    {% endfor %}
+  </div>
+</section>
 
-      <figure class="gallery-item">
-        <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Standard+Plus" alt="Pokoj Standard Plus">
-        </div>
-        <figcaption>
-            <strong>Standard Plus</strong>
-            <span>Dvoulůžkový s balkonem</span>
-        </figcaption>
-      </figure>
-
-      <figure class="gallery-item">
-        <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Family" alt="Rodinný pokoj">
-        </div>
-        <figcaption>
-            <strong>Rodinný apartmán</strong>
-            <span>Dvě oddělené ložnice</span>
-        </figcaption>
-      </figure>
-
-      <figure class="gallery-item">
-        <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Superior" alt="Pokoj Superior">
-        </div>
-        <figcaption>
-            <strong>Superior Suite</strong>
-            <span>Luxusní vybavení a vana</span>
-        </figcaption>
-      </figure>
-
-      <figure class="gallery-item">
-        <div class="gallery-img-wrapper">
-            <img src="https://placehold.co/800x600/E7F0FA/1F5A96?text=Detail" alt="Detail">
-        </div>
-        <figcaption>
-            <strong>Detail vybavení</strong>
-            <span>Pracovní kout a Wi-Fi</span>
-        </figcaption>
-      </figure>
-    </div>
-  </section>
+    /img/room_images/superior_room.png
 
   <section id="gallery-restaurant" class="gallery-section">
     <div class="gallery-section-header">

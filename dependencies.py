@@ -26,16 +26,11 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 def auth_service(conn: sqlite3.Connection = Depends(get_conn)) -> AuthService:
     return AuthService(conn)
 
-
-# 🔹 HLAVIČKY rezervací (ReservationService)
 def reservation_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationService:
     return ReservationService(conn)
 
-
-# 🔹 POLOŽKY rezervace (konkrétní pokoje – ReservationItemService)
 def reservation_item_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationItemService:
     return ReservationItemService(conn)
-
 
 def reservation_status_service(conn: sqlite3.Connection = Depends(get_conn)) -> ReservationStatusService:
     return ReservationStatusService(conn)

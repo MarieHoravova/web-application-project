@@ -21,6 +21,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Mini FastAPI – Hotel")
     app.mount("/static", StaticFiles(directory="static"), name="static")
     app.state.templates = Jinja2Templates(directory="templates")
+    app.mount("/img", StaticFiles(directory="img"), name="img")
 
     app.include_router(home_router)
     app.include_router(auth_router, prefix="/auth", tags=["auth"])
