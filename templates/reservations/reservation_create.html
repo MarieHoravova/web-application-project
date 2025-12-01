@@ -4,153 +4,159 @@
 {% block content %}
 <section class="reservation-page">
   <div class="home-container">
-    <h1>Rezervace</h1>
 
-    {# HLEDÁNÍ TERMÍNU #}
-    <form class="reservation-search-form" method="get" action="{{ url_for('reservation_create_page') }}">
-      <div class="reservation-search-grid">
-        <div class="reservation-search-field admin-detail-form-item">
-          <label for="check_in">
-            Příjezd
-            <input type="date" id="check_in" name="check_in" value="{{ search.check_in }}">
-          </label>
-        </div>
+    <div class="dashboard-header" style="margin-bottom: 24px;">
+        <h1 style="margin: 0;">Nová rezervace</h1>
+        <p style="color: var(--color-text-muted); margin: 0;">Vyberte termín a pokoje pro váš pobyt.</p>
+    </div>
 
-        <div class="reservation-search-field admin-detail-form-item">
-          <label for="check_out">
-            Odjezd
-            <input type="date" id="check_out" name="check_out" value="{{ search.check_out }}">
-          </label>
-        </div>
+    {# 1. HLEDÁNÍ TERMÍNU (Bílý box s filtrem) #}
+    <div class="home-card" style="margin-bottom: 40px;">
+      <form class="reservation-search-form" method="get" action="{{ url_for('reservation_create_page') }}">
+        <div class="reservation-search-grid">
 
-        <div class="reservation-search-field admin-detail-form-item">
-          <label for="adults">
-            Dospělých
-            <select id="adults" name="adults">
+          <div class="reservation-search-field">
+            <label for="check_in">Příjezd</label>
+            <input type="date" id="check_in" name="check_in" value="{{ search.check_in }}" class="form-input">
+          </div>
+
+          <div class="reservation-search-field">
+            <label for="check_out">Odjezd</label>
+            <input type="date" id="check_out" name="check_out" value="{{ search.check_out }}" class="form-input">
+          </div>
+
+          <div class="reservation-search-field">
+            <label for="adults">Dospělých</label>
+            <select id="adults" name="adults" class="form-input">
               {% for n in [1,2,3,4] %}
                 <option value="{{ n }}" {% if search.adults|string == n|string %}selected{% endif %}>{{ n }}</option>
               {% endfor %}
             </select>
-          </label>
-        </div>
+          </div>
 
-        <div class="reservation-search-field admin-detail-form-item">
-          <label for="children">
-            Dětí
-            <select id="children" name="children">
+          <div class="reservation-search-field">
+            <label for="children">Dětí</label>
+            <select id="children" name="children" class="form-input">
               {% for n in [0,1,2,3] %}
                 <option value="{{ n }}" {% if search.children|string == n|string %}selected{% endif %}>{{ n }}</option>
               {% endfor %}
             </select>
-          </label>
+          </div>
+
+          <div class="reservation-search-field reservation-search-actions">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Hledat termín</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {# 2. VYBRANÉ POKOJE (Košík) #}
+    {% if reservation %}
+      <section class="reservation-summary home-card" style="margin-bottom: 40px; border: 1px solid var(--color-primary-500);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 class="home-card-title" style="margin: 0;">Vaše rezervace</h2>
+            <span class="status-badge status-pending">Rozpracováno</span>
         </div>
 
-        <div class="reservation-search-field reservation-search-actions">
-          <button type="submit" class="btn btn-primary">Hledat</button>
-        </div>
-      </div>
-    </form>
+        {% if selected_items and selected_items|length > 0 %}
+          <div class="room-summary-list">
+            {% for item in selected_items %}
+              <div class="room-summary-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="display: block; font-size: 16px;">{{ loop.index }}. pokoj</strong>
+                    <span style="color: var(--color-text-muted); font-size: 14px;">
+                        {{ item.adults }} dosp., {{ item.children }} děti | {{ item.check_in }} – {{ item.check_out }}
+                    </span>
+                </div>
 
-    {# VYBRANÉ POKOJE #}
-    <section class="reservation-summary home-card">
-      <h2 class="home-card-title">Vybrané pokoje</h2>
-
-      {% if reservation and selected_items and selected_items|length > 0 %}
-        <div class="room-summary-list">
-          {% for item in selected_items %}
-            <div class="room-summary-item">
-              <div class="room-summary-header">
-                <span>{{ loop.index }}. pokoj</span>
                 <form method="post"
                       action="{{ url_for('reservation_item_delete', reservation_id=reservation.id, item_id=item.id) }}"
-                      style="display:inline">
+                      style="margin: 0;">
                   <button type="submit"
-                          class="btn btn-secondary btn-small"
-                          onclick="return confirm('Opravdu odebrat tento pokoj z rezervace?');">
-                    Smazat
+                          class="btn btn-destructive"
+                          style="padding: 6px 12px; font-size: 12px;"
+                          onclick="return confirm('Opravdu odebrat tento pokoj?');">
+                    Odebrat
                   </button>
                 </form>
               </div>
-              <div class="room-summary-body">
-                <div>Dospělých: {{ item.adults }} &nbsp; Dětí: {{ item.children }}</div>
-                <div>Pokoj ID: {{ item.room_id }}</div>
-                <div>Od: {{ item.check_in }} &nbsp; Do: {{ item.check_out }}</div>
-              </div>
+            {% endfor %}
+
+            <div style="margin-top: 24px; display: flex; gap: 16px; justify-content: flex-end; align-items: center; border-top: 1px solid var(--color-border-subtle); padding-top: 16px;">
+              <span style="color: var(--color-text-muted); font-size: 14px;">Chcete více pokojů? Vyberte další níže.</span>
+
+              {# Tlačítko DOKONČIT #}
+              <form method="get" action="{{ url_for('reservation_detail', reservation_id=reservation.id) }}" style="margin: 0;">
+                <button type="submit" class="btn btn-success" style="font-weight: 600; padding: 10px 24px;">
+                  Dokončit a potvrdit rezervaci &rarr;
+                </button>
+              </form>
             </div>
-          {% endfor %}
-
-          <a href="#room-results" class="btn btn-tertiary">Přidat další pokoj</a>
-
-          {# TADY NOVĚ: dokončení rezervace #}
-          <form method="get"
-                action="{{ url_for('reservation_detail', reservation_id=reservation.id) }}"
-                class="reservation-finish-form">
-            <button type="submit" class="btn btn-primary">
-              Dokončit rezervaci
-            </button>
-          </form>
-        </div>
-      {% else %}
-        <p>Zatím nemáte vybraný žádný pokoj. Vyberte si z nabídky níže.</p>
-      {% endif %}
-    </section>
+          </div>
+        {% else %}
+          <p style="color: var(--color-text-muted);">Zatím nemáte vybraný žádný pokoj. Vyberte si z nabídky níže.</p>
+        {% endif %}
+      </section>
+    {% endif %}
 
 
-    {# DOSTUPNÉ POKOJE #}
+    {# 3. DOSTUPNÉ POKOJE (Výpis) #}
     <section class="room-results" id="room-results">
-      <h2 class="home-card-title">Dostupné pokoje</h2>
+      <h2 class="home-card-title" style="margin-bottom: 24px;">Dostupné pokoje</h2>
 
       {% if rooms|length == 0 %}
-        <p>Žádné pokoje k zobrazení.</p>
+        <div class="home-card" style="text-align: center; padding: 40px;">
+            <p style="color: var(--color-text-muted);">Pro zadaný termín a počet osob bohužel nejsou k dispozici žádné pokoje.</p>
+            <p style="font-size: 14px;">Zkuste změnit termín nebo počet osob.</p>
+        </div>
       {% else %}
         <div class="room-card-grid">
           {% for room in rooms %}
-            <article class="room-card home-card">
-              <div class="room-card-header">
-                <h3>
-                  Pokoj {{ room.number }}
-                  {% if room.room_type_name %}
-                    ({{ room.room_type_name }})
+            <article class="room-card home-card" style="display: flex; flex-direction: column; height: 100%;">
+
+                <div class="room-card-image">
+                  {% if room.image_path and room.image_path != 'default.jpg' %}
+                    <img src="{{ room.image_path }}" alt="Pokoj">
                   {% else %}
-                    (typ {{ room.room_type_id }})
+                    <span class="room-card-placeholder">
+                      Foto pokoje {{ room.number }}
+                    </span>
+                  {% endif %}
+                </div>
+
+
+              <div class="room-card-header">
+                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--color-primary-900);">
+                  {% if room.room_type_name %}
+                    {{ room.room_type_name }}
+                  {% else %}
+                    Pokoj {{ room.number }}
                   {% endif %}
                 </h3>
               </div>
-              <div class="room-card-image">
-                <span>Obrázek pokoje</span>
-              </div>
-              <div class="room-card-body">
-                <p class="room-description">
+
+              <div class="room-card-body" style="flex: 1;">
+                <p class="room-description" style="font-size: 14px; color: var(--color-text-muted); margin-bottom: 16px;">
                   {% if room.room_type_description %}
                     {{ room.room_type_description }}
                   {% else %}
-                    Popisek pokoje…
+                    Komfortní ubytování s vlastní koupelnou a Wi-Fi.
                   {% endif %}
                 </p>
 
-                <p class="room-price-line">
-                  Cena za noc:
-                  <strong>
-                    {% if room.price_per_night %}
-                      {{ "%.2f"|format(room.price_per_night) }} Kč
-                    {% else %}
-                      –
-                    {% endif %}
-                  </strong>
-                </p>
-
-                <p class="room-price-line">
-                  Cena celkem:
-                  <strong>
-                    {% if room.total_price and room.nights %}
-                      {{ "%.2f"|format(room.total_price) }} Kč ({{ room.nights }} nocí)
-                    {% else %}
-                      –
-                    {% endif %}
-                  </strong>
-                </p>
+                <div style="background: var(--color-bg-main); padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px;">
+                        <span>Cena za noc:</span>
+                        <strong>{{ "%.0f"|format(room.price_per_night) if room.price_per_night else "–" }} Kč</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 16px; color: var(--color-primary-700);">
+                        <span>Celkem ({{ room.nights if room.nights else 1 }} nocí):</span>
+                        <strong>{{ "%.0f"|format(room.total_price) if room.total_price else "–" }} Kč</strong>
+                    </div>
+                </div>
               </div>
-              <div class="room-card-footer">
+
+              <div class="room-card-footer" style="margin-top: auto;">
                 <form method="post" action="{{ url_for('reservation_select_room') }}">
                   <input type="hidden" name="room_id" value="{{ room.id }}">
                   <input type="hidden" name="check_in" value="{{ search.check_in }}">
@@ -160,9 +166,10 @@
                   {% if reservation %}
                     <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
                   {% endif %}
-                  <button type="submit" class="btn btn-primary">Vybrat</button>
+                  <button type="submit" class="btn btn-primary" style="width: 100%;">Vybrat pokoj</button>
                 </form>
               </div>
+
             </article>
           {% endfor %}
         </div>

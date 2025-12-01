@@ -1,34 +1,28 @@
 import sqlite3
 from typing import List, Dict, Any, Optional
 
-
+# Pomocná funkce – dostane jeden řádek z databáze (sqlite3.Row) a vrátí obyčejný slovník
 def _map_reservation_with_user(row: sqlite3.Row) -> Dict[str, Any]:
-    """
-    Pomocná funkce, která vezme řádek z databáze (kde je udělaný JOIN)
-    a vytvoří slovník, který má v sobě vnořený slovník 'user'.
-    Díky tomu bude v HTML fungovat {{ r.user.first_name }}.
-    """
     if not row:
         return None
 
     item = dict(row)
 
-    # Pokud jsme v SQL vytáhli i jméno uživatele (díky JOINu),
-    # vytvoříme vnořený objekt 'user'
-    # Kontrolujeme, jestli klíč 'first_name' v řádku vůbec existuje
+    # Ve slovníku item vytvořím nový klíč user
+    # Do něj uložím další slovník s údaji o uživateli
     if 'first_name' in item and item['first_name'] is not None:
         item['user'] = {
             'id': item['user_id'],
             'first_name': item['first_name'],
             'last_name': item['last_name'],
-            'email': item.get('email')  # email může být volitelný
+            'email': item.get('email')
         }
     else:
         item['user'] = None
-
     return item
+
+# Přidán JOIN, abych měla detail uživatele i v detailu rezervace
 def get_reservation_by_id(conn: sqlite3.Connection, reservation_id: int) -> Optional[Dict[str, Any]]:
-    # UPRAVENO: Přidán JOIN, abychom měli detail uživatele i v detailu rezervace
     query = """
         SELECT r.*, u.first_name, u.last_name, u.email FROM reservations r 
         LEFT JOIN users u ON r.user_id = u.id WHERE r.id = ?
@@ -36,8 +30,8 @@ def get_reservation_by_id(conn: sqlite3.Connection, reservation_id: int) -> Opti
     row = conn.execute(query, (reservation_id,)).fetchone()
     return _map_reservation_with_user(row)
 
+# Přidán JOIN, abych měla detail uživatele
 def get_reservation_by_code(conn: sqlite3.Connection, code: str) -> Optional[Dict[str, Any]]:
-    # UPRAVENO: Přidán JOIN
     query = """
         SELECT r.*, u.first_name, u.last_name, u.email
         FROM reservations r
@@ -51,9 +45,9 @@ def get_reservation_by_code(conn: sqlite3.Connection, code: str) -> Optional[Dic
 def list_reservations(
         conn: sqlite3.Connection,
         filter_user_id: int = None,
-        filter_user_name: str = None  # NOVÝ PARAMETR
+        filter_user_name: str = None
 ) -> List[Dict[str, Any]]:
-    # Základní query s JOINem na usera
+    # Základní query s JOINem na usera, kvůli jeho jménu v list_reservation
     query = """
             SELECT r.*, \
                    u.first_name, \
@@ -70,23 +64,21 @@ def list_reservations(
         query += " AND r.user_id = ?"
         params.append(filter_user_id)
 
-    # Filtr podle jména (hledáme ve first_name i last_name)
+    # Filtr podle jména  (first_name i last_name)
     if filter_user_name:
         query += " AND (u.first_name LIKE ? OR u.last_name LIKE ?)"
-        # Přidáme % pro vyhledávání části textu
+        # % pro vyhledávání části textu
         search_pattern = f"%{filter_user_name}%"
         params.append(search_pattern)
         params.append(search_pattern)
 
     query += " ORDER BY r.created_at DESC"
-
     rows = conn.execute(query, params).fetchall()
-
     return [_map_reservation_with_user(r) for r in rows]
 
+# Tady JOIN nepotřebuju nutně, protože vím, čí to jsou rezervace,
+# ale nedostala bych se k jeho jménu, jen idečku, soo nechám to tam.
 def list_reservations_by_user(conn: sqlite3.Connection, user_id: int) -> List[Dict[str, Any]]:
-    # Tady JOIN nepotřebujeme nutně, protože víme, čí to jsou rezervace,
-    # ale pro konzistenci ho tam můžeme dát (kdybychom chtěli vypsat jméno i tady).
     query = """ SELECT r.*, u.first_name, u.last_name, u.email FROM reservations r
                 LEFT JOIN users u ON r.user_id = u.id
                 WHERE r.user_id = ? 

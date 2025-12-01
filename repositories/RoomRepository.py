@@ -17,6 +17,10 @@ def _map_room_full(row: sqlite3.Row) -> Dict[str, Any]:
 
     item = dict(row)
 
+    # Základní image_path vezmeme z typu pokoje, pokud je k dispozici
+    if "type_image_path" in item and item["type_image_path"]:
+        item["image_path"] = item["type_image_path"]
+
     # 1. Mapování Room Type
     if 'type_name' in item and item['type_name']:
         item['room_type'] = {
@@ -24,7 +28,8 @@ def _map_room_full(row: sqlite3.Row) -> Dict[str, Any]:
             'name': item['type_name'],
             'base_price': item.get('base_price'),
             'capacity': item.get('capacity'),
-            'description': item.get('type_desc')
+            'description': item.get('type_desc'),
+            'image_path': item.get('type_image_path'),
         }
     else:
         item['room_type'] = None
@@ -41,6 +46,7 @@ def _map_room_full(row: sqlite3.Row) -> Dict[str, Any]:
     return item
 
 
+
 def _get_base_query() -> str:
     """Vrací základní SELECT s JOINy pro výpis pokojů."""
     return """
@@ -49,6 +55,7 @@ def _get_base_query() -> str:
                   rt.base_price  AS base_price, \
                   rt.capacity    AS capacity, \
                   rt.description AS type_desc, \
+                  rt.image  AS type_image_path, \
                   rs.description AS status_desc
            FROM rooms r
                     LEFT JOIN room_types rt ON r.room_type_id = rt.id
