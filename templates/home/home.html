@@ -62,28 +62,51 @@
       </div>
     </div>
 
-    <div class="home-row" id="pokoje">
-      <div class="home-card home-basic-info">
-        <h2 class="home-card-title">Kde nás najdete</h2>
-        <p><strong>Hotel Aurora</strong></p>
-        <p>Náměstí 1, 110 00 Praha 1</p>
-        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border-subtle);">
-          <p class="home-basic-info-contact">
-            📞 +420 123 456 789<br>
-            ✉️ recepce@hotel-aurora.cz
-          </p>
-        </div>
-      </div>
+<div class="home-row" id="pokoje">
+    <div class="home-column-left">
+        <div class="home-card home-basic-info">
+            <h2 class="home-card-title">Kde nás najdete</h2>
+            <p><strong>Hotel Aurora</strong></p>
+            <p>Náměstí 1, 110 00 Praha 1</p>
 
-      <div class="home-card home-gallery" id="galerie">
-        <h2 class="home-card-title">Galerie</h2>
-        <div class="home-gallery-grid">
-          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/1F5A96/white?text=Pokoj'); background-size: cover;"></div>
-          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/D4A857/white?text=Lobby'); background-size: cover;"></div>
-          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/123457/white?text=Snídaně'); background-size: cover;"></div>
-          <div class="home-gallery-item" style="background-image: url('https://placehold.co/600x400/0B1F33/white?text=Koupelna'); background-size: cover;"></div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border-subtle);">
+                <p class="home-basic-info-contact">
+                    📞 +420 123 456 789<br>
+                    ✉️ recepce@hotel-aurora.cz
+                </p>
+                </div>
+            <div><h2 class="home-card-title">Máte dotazy k rezervaci nebo pobytu?</h2>
+                <p style="margin: 0 0 12px 0; color: var(--color-text-muted); font-size: 14px;">
+                    Napište nám a ozveme se vám co nejdříve.
+                </p>
+                <a href="{{ url_for('contact_page') }}" class="btn btn-secondary btn-small">
+                    Napište nám přes formulář
+                </a>
+            </div>
         </div>
-      </div>
+
+        <div class="home-card home-contact gallery-info">
+            <p>
+                Chcete vidět, jak to u nás vypadá?
+                Podívejte se do
+                <a href="{{ url_for('gallery_page') }}">fotogalerie hotelu</a>.
+            </p>
+        </div>
+    </div>
+
+    <div class="home-card home-gallery" id="galerie">
+        <a href="{{ url_for('gallery_page') }}" class="home-gallery-link">
+            <h2 class="home-card-title">Galerie</h2>
+            <div class="home-gallery-grid">
+                <div class="home-gallery-item" style="background-image: url('/img/rooms/deluxe_room.png'); background-size: cover;"></div>
+                <div class="home-gallery-item" style="background-image: url('/img/restaurant/buffet.png'); background-size: cover;"></div>
+                <div class="home-gallery-item" style="background-image: url('/img/hotel_premises/reception.png'); background-size: cover;"></div>
+                <div class="home-gallery-item" style="background-image: url('/img/surroundings/park.png'); background-size: cover;"></div>
+            </div>
+        </a>
+    </div>
+</div>
+
     </div>
   </div>
 </section>

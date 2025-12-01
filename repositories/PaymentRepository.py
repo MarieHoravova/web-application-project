@@ -14,6 +14,7 @@ def list_payments_by_reservation(conn: sqlite3.Connection, reservation_id: int) 
     rows = conn.execute("SELECT * FROM payments WHERE reservation_id = ? ORDER BY paid_at", (reservation_id,)).fetchall()
     return [dict(r) for r in rows]
 
+# Payment mají vazbu na reservation a v reservation mám id usera -> mohu vyfiltrovat
 def list_payments_by_user(conn: sqlite3.Connection, user_id: int) -> List[Dict[str, Any]]:
     rows = conn.execute(
         """

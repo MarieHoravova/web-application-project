@@ -12,7 +12,9 @@
 <body>
     <header class="site-header">
         <div class="header-inner">
-            <a href="/" class="logo">Hotel Aurora</a>
+            <a href="{{ url_for('home_page') }}">
+              <img src="/img/logo.png" alt="logo" class="site-logo">
+            </a>
             <nav class="main-nav">
                 <a href="{{ url_for('home_page')}}">Domů</a>
                 <a href="{{ url_for('gallery_page') }}">Galerie</a>

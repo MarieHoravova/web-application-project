@@ -5,6 +5,7 @@ def get_reservation_item_by_id(conn: sqlite3.Connection, item_id: int) -> Option
     row = conn.execute("SELECT * FROM reservation_items WHERE id = ?", (item_id,)).fetchone()
     return dict(row) if row else None
 
+# Reservation item = jedna rezervace pokoje, reservation = komplet rezervace
 def list_reservation_items_by_reservation(conn: sqlite3.Connection, reservation_id: int) -> List[Dict[str, Any]]:
     rows = conn.execute("SELECT * FROM reservation_items WHERE reservation_id = ? ORDER BY check_in", (reservation_id,)).fetchall()
     return [dict(r) for r in rows]
@@ -23,10 +24,11 @@ def delete_reservation_item(conn: sqlite3.Connection, item_id: int) -> None:
     conn.execute("DELETE FROM reservation_items WHERE id = ?", (item_id,))
     conn.commit()
 
+# Tohle je kvůli rezervaci, aby si nemohl další člověk rezervovt pokoj ve stejném čase
 def find_conflicting_reservation_items(conn: sqlite3.Connection, room_id: int, check_in: str, check_out: str) -> List[Dict[str, Any]]:
     rows = conn.execute("SELECT * FROM reservation_items WHERE room_id = ? AND NOT (check_out <= ? OR check_in >= ?)", (room_id, check_in, check_out)).fetchall()
     return [dict(r) for r in rows]
-
+# Přehled příjezdů
 def list_reservation_items_in_period(conn: sqlite3.Connection, date_from: str, date_to: str) -> List[Dict[str, Any]]:
     rows = conn.execute("SELECT * FROM reservation_items WHERE check_in >= ? AND check_in <= ? ORDER BY check_in", (date_from, date_to)).fetchall()
     return [dict(r) for r in rows]

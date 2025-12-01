@@ -51,9 +51,12 @@ h1 {
     color: var(--color-primary-900);
     letter-spacing: -0.02em;
 }
-/* MARK: nedokončené logo*/
-.logo {
-/*    logo bude obrázek*/
+
+.site-logo {
+    height: 35px;
+    width: auto;
+    padding: 0;
+    margin: 0;
 }
 
 /*TLAČÍTKA = obecný vzor */
@@ -445,6 +448,10 @@ h1 {
     flex: 0 0 260px;
 }
 /* Zbytek se roztáhne do zbylé části*/
+
+.home-gallery-link {
+    text-decoration: none;
+}
 .home-amenities,
 .home-gallery,
 .home-map, /*Když je to 1-1 pro home-map i home-contact, tak je to napůl */
@@ -536,7 +543,7 @@ h1 {
     align-items: center;
     justify-content: center;
     padding: 20px 0;
-    height: 120px;
+    height: 240px;
 }
 /* --- RESPONSIVITA - MOBIL --- */
 @media (max-width: 576px) {
@@ -579,7 +586,17 @@ h1 {
         flex-basis: auto; /* výchozí šířka vychází z obsahu */
     }
 }
+.home-column-left {
+    flex: 0 0 260px;        /* stejná šířka jako původní home-basic-info */
+    display: flex;
+    flex-direction: column; /* karty pod sebe */
+    gap: 24px;              /* mezera mezi kartami */
+}
+.gallery-info {
+    display:flex;
 
+    align-items: center;
+}
 
 /* GALERIE */
 html {
@@ -795,6 +812,8 @@ html {
     background: var(--color-primary-white);
     box-shadow: 0 0 0 3px var(--color-primary-100); /* Focus ring efekt */
 }
+
+
 
 /* --- AUTH STRÁNKY (Login / Register) --- */
 .auth-section {
