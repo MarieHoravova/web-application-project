@@ -1,0 +1,22 @@
+# Environment
+.env
+
+# Database
+database/database.db
+database/database.db-shm
+database/database.db-wal
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
